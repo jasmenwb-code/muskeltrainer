@@ -953,6 +953,7 @@ document.getElementById('settingsBtn').onclick=()=>{ if(typeof DUEL!=='undefined
 function regionValue(){ const n=S.regions.size, all=Object.keys(REG).length; return n===all?'Alle':n===0?'Keine':`${n} von ${all}`; }
 function renderStart(){
   S.phase='start'; stopRec(); setBack(null);
+  if(typeof GRP!=='undefined'&&GRP.named) leaveGroupRoom();
   if(typeof DUEL!=='undefined'){ DUEL.view='off'; if(DUEL.room) pushLobby(); }
   const counts={}; M.forEach(m=>counts[m.r]=(counts[m.r]||0)+1);
   const n=selected().length;
@@ -960,7 +961,7 @@ function renderStart(){
   const catRows=['U','A','F','I'].map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k].label}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
   view.innerHTML=`<div class="stack">
     <section class="group">
-      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Duell gegen Freunde<small>10 Runden live · 30 Sekunden pro Frage</small></span>${IC.chev}</button>
+      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Gegen Freunde spielen<small>Duell 1 gegen 1 oder Lobby mit bis zu 8 Spielern</small></span>${IC.chev}</button>
     </section>
 
     <p class="group-label">Lernen</p>
@@ -1225,7 +1226,7 @@ async function initLobby(){
 function resetLobby(){ DUEL.ready=false; DUEL.failed=false; DUEL.room=null; DUEL.myPeer=null; }
 function pushLobby(){
   if(!DUEL.room) return;
-  DUEL.room.presence({app:'mt',nick:myNick(),busy:DUEL.view==='game'||DUEL.view==='wait',inv:DUEL.outInv||null,dec:DUEL.decline||null}).catch(()=>{});
+  DUEL.room.presence({app:'mt',nick:myNick(),busy:DUEL.view==='game'||DUEL.view==='wait'||DUEL.view==='group',inv:DUEL.outInv||null,ginv:(typeof groupInvitePresence==='function'&&groupInvitePresence())||null,dec:DUEL.decline||null}).catch(()=>{});
 }
 function lobbyPeers(){ return DUEL.room?DUEL.room.peers().filter(p=>!p.isMe&&p.kind==='viewer'&&p.presence&&p.presence.app==='mt'):[]; }
 function onLobbyPeers(){
@@ -1235,12 +1236,23 @@ function onLobbyPeers(){
     if(d){ leaveDuel('Deine Herausforderung wurde abgelehnt.'); return; }
   }
   const inc=ps.find(p=>p.presence.inv&&p.presence.inv.to===DUEL.myPeer&&!DUEL.seen.has(p.presence.inv.code));
-  showInvite(inc||null);
+  const ginc=inc?null:ps.find(p=>{ const gi=p.presence.ginv; return gi&&Array.isArray(gi.to)&&gi.to.includes(DUEL.myPeer)&&!DUEL.seen.has('g'+gi.code); });
+  showInvite(inc||null,ginc||null);
+  if(DUEL.view==='group'&&typeof renderGroupInvite==='function') renderGroupInvite();
   if(DUEL.view==='lobby'){ renderOnline(); if(PLATFORM.refreshLobbyExtra) PLATFORM.refreshLobbyExtra(); }
 }
 const inviteBar=document.getElementById('inviteBar');
-function showInvite(p){
-  if(!p||DUEL.view==='game'||DUEL.view==='wait'){ inviteBar.hidden=true; return; }
+function showInvite(p,gp){
+  if(DUEL.view==='game'||DUEL.view==='wait'||DUEL.view==='group'){ inviteBar.hidden=true; return; }
+  if(!p&&gp){
+    const gcode=gp.presence.ginv.code;
+    inviteBar.innerHTML=`<div class="sheet-in"><p><b>${esc(gp.presence.nick||'Jemand')}</b> lädt dich in eine Lobby ein.</p><div class="btnrow"><button class="btn plain" id="invNo">Ablehnen</button><button class="btn primary" id="invYes">Beitreten</button></div></div>`;
+    inviteBar.hidden=false;
+    inviteBar.querySelector('#invYes').onclick=()=>{ DUEL.seen.add('g'+gcode); inviteBar.hidden=true; if(synth) synth.cancel(); openGroup(gcode); };
+    inviteBar.querySelector('#invNo').onclick=()=>{ DUEL.seen.add('g'+gcode); inviteBar.hidden=true; };
+    return;
+  }
+  if(!p){ inviteBar.hidden=true; return; }
   const code=p.presence.inv.code;
   inviteBar.innerHTML=`<div class="sheet-in"><p><b>${esc(p.presence.nick||'Jemand')}</b> fordert dich zum Duell heraus.</p><div class="btnrow"><button class="btn plain" id="invNo">Ablehnen</button><button class="btn primary" id="invYes">Annehmen</button></div></div>`;
   inviteBar.hidden=false;
@@ -1250,23 +1262,25 @@ function showInvite(p){
 }
 
 function renderLobby(msg){
+  if(typeof GRP!=='undefined'&&GRP.named) leaveGroupRoom();
   stopRec(); clearRoundTimers(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
   setBack('Lernen',()=>{ DUEL.view='off'; pushLobby(); renderStart(); });
   const body=DUEL.room?`
     <section class="stack-sm"><label class="group-label" style="margin:0 0 0 16px" for="nick">Dein Name im Duell</label><input id="nick" class="field" maxlength="24" autocomplete="nickname" placeholder="Name"></section>
+    <section class="group"><button class="row" id="mkGroup"><span class="tile">${IC.bolt}</span><span class="label">Lobby erstellen<small>Mit bis zu ${typeof GMAX!=='undefined'?GMAX:8} Spielern gleichzeitig spielen</small></span>${IC.chev}</button></section>
     ${PLATFORM.lobbyExtra?PLATFORM.lobbyExtra():''}
     <p class="group-label">${PLATFORM.lobbyExtra?'Weitere Spieler online':'Gerade online'}</p>
     <section class="group list" id="onlineList"></section>
-    <p class="group-label">Mit Code spielen</p>
+    <p class="group-label">Mit Code beitreten</p>
     <section class="card">
-      <button class="btn primary" id="mkCode">Duell erstellen</button>
-      <div class="coderow"><input id="codeIn" class="field" style="background:var(--fill);box-shadow:none" inputmode="numeric" maxlength="4" placeholder="Code" aria-label="Duell-Code"><button class="btn tinted" id="joinCode">Beitreten</button></div>
+      <div class="coderow"><input id="codeIn" class="field" style="background:var(--fill);box-shadow:none" inputmode="numeric" maxlength="5" placeholder="Code" aria-label="Duell- oder Lobby-Code"><button class="btn tinted" id="joinCode">Beitreten</button></div>
+      <button class="btn plain" id="mkCode">Duell-Code für 1 gegen 1 erstellen</button>
     </section>
     ${PLATFORM.accountRow?PLATFORM.accountRow():''}`
   :(DUEL.loading||(!DUEL.ready&&!DUEL.failed)?`<section class="card center"><div class="spinner" aria-hidden="true"></div><p class="sub" style="margin:0">Verbinde …</p></section>`
   :`<section class="card"><p style="margin:0">${PLATFORM.offlineText}</p><button class="btn tinted" id="retry">Erneut versuchen</button></section>`);
   view.innerHTML=`<div class="stack">
-    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h2 class="pagetitle">Duell</h2><p class="sub" style="margin:0">10 Runden · gleiche Frage für beide · 30 Sekunden · 8 Antworten, eine ist richtig. Richtig gibt 1 Punkt, wer schnell antwortet bekommt Bonus: unter 10 s +2, unter 20 s +1.</p></div>
+    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h2 class="pagetitle">Duell</h2><p class="sub" style="margin:0">10 Runden · gleiche Frage für alle · 30 Sekunden · 4 Antworten, eine ist richtig. Richtig gibt 1 Punkt, wer schnell antwortet bekommt Bonus: unter 10 s +2, unter 20 s +1.</p></div>
     ${body}
     <p class="hint" id="lobbyHint" role="status"></p>
   </div>`;
@@ -1278,8 +1292,9 @@ function renderLobby(msg){
   const ni=view.querySelector('#nick'); ni.value=DUEL.nick;
   let nt=null; ni.oninput=()=>{ DUEL.nick=ni.value.slice(0,24); lsSet('mt-nick',DUEL.nick); clearTimeout(nt); nt=setTimeout(()=>{ pushLobby(); if(PLATFORM.onNick) PLATFORM.onNick(DUEL.nick); },600); };
   view.querySelector('#mkCode').onclick=()=>hostDuel(newCode(),null);
+  view.querySelector('#mkGroup').onclick=()=>openGroup();
   const ci=view.querySelector('#codeIn');
-  const go=()=>{ const c=ci.value.replace(/\D/g,''); if(c.length!==4){ setLobbyHint('Der Code hat 4 Ziffern.',true); return; } joinDuel(c); };
+  const go=()=>{ const c=ci.value.replace(/\D/g,''); if(c.length===5){ openGroup(c); return; } if(c.length!==4){ setLobbyHint('Duell-Codes haben 4 Ziffern, Lobby-Codes 5.',true); return; } joinDuel(c); };
   view.querySelector('#joinCode').onclick=go; ci.onkeydown=e=>{ if(e.key==='Enter') go(); };
   renderOnline();
   onLobbyPeers();
@@ -1497,6 +1512,296 @@ function leaveDuel(msg){
   DUEL.unsub.forEach(u=>{try{u()}catch(e){}}); DUEL.unsub=[];
   const r=DUEL.named; DUEL.named=null; if(r) r.leave().catch(()=>{});
   DUEL.game=null; DUEL.hg=null; DUEL.lastKey=null; DUEL.myAns=null; DUEL.outInv=null; DUEL.role=null; DUEL.code=null; DUEL.target=null;
+  if(synth) synth.cancel();
+  renderLobby(msg);
+}
+
+/* ---------- Gruppen-Lobby: mehrere Spieler gleichzeitig ---------- */
+const GMAX=8;
+const GRP={named:null,code:null,host:false,game:null,hg:null,lastKey:null,myAns:null,roundStart:0,unsub:[],timers:[],
+  tInt:null,deadline:null,rTimer:null,revInt:null,hist:[],invited:new Set(),seenEnd:null};
+
+function newGroupCode(){ return String(Math.floor(10000+Math.random()*90000)); }
+const gPeers=()=>GRP.named?GRP.named.peers().filter(p=>p.presence&&p.presence.nick):[];
+const gMe=()=>{ const me=gPeers().find(p=>p.sameTab); return me?me.peer:DUEL.myPeer; };
+const gHostPeer=()=>gPeers().find(p=>p.presence.role==='host');
+const gCur=()=>GRP.host?GRP.game:GRP.hg;
+function gAvatar(p){ return PLATFORM.avatarFor&&p.by?PLATFORM.avatarFor(p.by,p.presence.nick,false):`<i class="online"></i>`; }
+
+/* ----- Einstieg ----- */
+async function openGroup(code){
+  if(PLATFORM.ensureAuth && !(await PLATFORM.ensureAuth())) return;
+  await initLobby();
+  if(!DUEL.room){ renderLobby('Keine Verbindung. Versuch es gleich nochmal.'); return; }
+  if(code) joinGroup(code); else createGroup();
+}
+async function createGroup(){ GRP.host=true; await enterGroup(newGroupCode()); }
+async function joinGroup(code){ GRP.host=false; await enterGroup(code); }
+async function enterGroup(code){
+  leaveGroupRoom();
+  GRP.code=code; GRP.invited=new Set(); DUEL.view='group'; pushLobby(); inviteBar.hidden=true;
+  renderGroupConnecting();
+  let r;
+  try{ r=await DUEL.room.join('grp-'+code); }
+  catch(e){ leaveGroup('Der Lobby konnte nicht beigetreten werden. Versuch es gleich nochmal.'); return; }
+  if(GRP.code!==code){ r.leave().catch(()=>{}); return; }
+  GRP.named=r;
+  GRP.unsub.push(r.onPeers(()=>onGroupPeers(),()=>{ if(GRP.named===r) leaveGroup('Die Verbindung zur Lobby ist abgebrochen.'); }));
+  await r.presence({role:GRP.host?'host':'m',nick:myNick()}).catch(()=>{});
+  if(GRP.host){ pushGroupHost(); renderGroupLobby(); }
+  else GRP.timers.push(setTimeout(()=>{ if(GRP.named===r&&!gHostPeer()) leaveGroup('Keine offene Lobby mit diesem Code gefunden.'); },9000));
+}
+function renderGroupConnecting(){
+  stopRec(); gClearTimers();
+  setBack('Abbrechen',()=>leaveGroup());
+  view.innerHTML=`<div class="stack"><section class="card center" style="padding-block:28px"><p class="sectionhead">Lobby ${esc(GRP.code)}</p><p style="margin:0">Verbinde …</p><div class="spinner" aria-hidden="true"></div></section></div>`;
+}
+
+/* ----- Ereignisse im Raum ----- */
+function onGroupPeers(){
+  if(!GRP.named) return;
+  if(GRP.host){
+    const g=GRP.game;
+    if(!g||g.ph==='end'){ if(document.getElementById('gMembers')) renderGroupMembers(); return; }
+    gHostCheck(); gRenderStatus();
+    return;
+  }
+  const h=gHostPeer();
+  if(!h){ if(gPeers().some(p=>p.sameTab)) leaveGroup('Der Gastgeber hat die Lobby verlassen.'); return; }
+  if(!GRP.lastKey&&gPeers().length>GMAX){ leaveGroup('Diese Lobby ist voll.'); return; }
+  const g=h.presence.g||null;
+  gGuestState(g);
+}
+function gGuestState(g){
+  const prev=GRP.hg; GRP.hg=g;
+  const me=gMe();
+  if(!g){ GRP.lastKey='lobby'; if(DUEL.view!=='group'||!document.getElementById('gMembers')){ gClearTimers(); renderGroupLobby(); } else renderGroupMembers(); return; }
+  const inGame=(g.pl||[]).includes(me);
+  const key=g.id+':'+g.r+':'+g.ph+':'+inGame;
+  if(key===GRP.lastKey){ gRenderStatus(); return; }
+  GRP.lastKey=key;
+  if(!prev||prev.id!==g.id) GRP.hist=[];
+  if(!inGame){ renderGroupSpectator(g); return; }
+  if(g.ph==='q') gStartRoundUI(g);
+  else if(g.ph==='rev'&&g.res){ gClearTimers(); stopRec(); gShowReveal(g); }
+  else if(g.ph==='end'){ gClearTimers(); gShowEnd(g); }
+}
+
+/* ----- Lobby-Ansicht ----- */
+function renderGroupLobby(msg){
+  stopRec(); gClearTimers(); S.phase='duel'; DUEL.view='group'; pushLobby(); inviteBar.hidden=true;
+  setBack('Verlassen',()=>leaveGroup());
+  const host=GRP.host;
+  const hp=gHostPeer();
+  view.innerHTML=`<div class="stack">
+    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h2 class="pagetitle">Lobby</h2><p class="sub" style="margin:0">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · 10 Runden à 30 Sekunden</p></div>
+    <section class="card center" style="padding-block:20px">
+      <p class="sectionhead">Lobby-Code</p><div class="codebig">${esc(GRP.code)}</div>
+      <p class="sub" style="margin:0">${host?'Schick den Code an deine Freunde. Sie geben ihn unter Duell → „Mit Code beitreten“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
+    </section>
+    <p class="group-label" id="gCount">Spieler</p>
+    <section class="group list" id="gMembers"></section>
+    ${host?`<button class="btn primary" id="gStart">Spiel starten</button>
+    <p class="group-label">Einladen</p>
+    <section class="group list" id="gInvite"></section>`:''}
+    <button class="btn plain" id="gLeave">Lobby verlassen</button>
+    <p class="hint" id="gHint" role="status"></p>
+  </div>`;
+  if(msg){ const h=document.getElementById('gHint'); h.textContent=msg; }
+  const st=document.getElementById('gStart'); if(st) st.onclick=()=>gStartGame();
+  document.getElementById('gLeave').onclick=()=>leaveGroup();
+  renderGroupMembers();
+  window.scrollTo({top:0});
+}
+function renderGroupMembers(){
+  const box=document.getElementById('gMembers'); if(!box) return;
+  const ps=gPeers().slice().sort((a,b)=>(b.presence.role==='host')-(a.presence.role==='host'));
+  box.innerHTML=ps.map(p=>`<div class="row">${gAvatar(p)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}${p.sameTab?' (du)':''}</span><small>${p.presence.role==='host'?'Gastgeber':'bereit'}</small></span></div>`).join('')
+    ||'<div class="row"><span class="label"><small>Verbinde …</small></span></div>';
+  const c=document.getElementById('gCount'); if(c) c.textContent=`Spieler (${ps.length} von ${GMAX})`;
+  const st=document.getElementById('gStart');
+  if(st){ st.disabled=ps.length<2; st.textContent=ps.length<2?'Warte auf Mitspieler …':`Spiel starten (${ps.length} Spieler)`; }
+  renderGroupInvite();
+}
+function renderGroupInvite(){
+  const box=document.getElementById('gInvite'); if(!box) return;
+  const inRoom=new Set(gPeers().map(p=>p.by||p.peer));
+  const seen=new Set();
+  const list=lobbyPeers().filter(p=>{ const k=p.by||p.peer; if(inRoom.has(k)||seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a,b)=>((PLATFORM.isFriend&&PLATFORM.isFriend(b.by))?1:0)-((PLATFORM.isFriend&&PLATFORM.isFriend(a.by))?1:0));
+  if(!list.length){ box.innerHTML=`<div class="row"><span class="label"><span>Gerade ist niemand sonst online.</span><small>Schick den Code einfach per Nachricht.</small></span></div>`; return; }
+  box.innerHTML=list.map(p=>{ const inv=GRP.invited.has(p.peer); const fr=PLATFORM.isFriend&&PLATFORM.isFriend(p.by);
+    return `<div class="row">${PLATFORM.avatarFor?PLATFORM.avatarFor(p.by,p.presence.nick,p.presence.busy):`<i class="online${p.presence.busy?' busy':''}"></i>`}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'spielt gerade':fr?'Freund · online':'online'}</small></span><button class="btn tinted small" data-ginv="${esc(p.peer)}" ${inv||p.presence.busy?'disabled':''}>${inv?'Eingeladen':'Einladen'}</button></div>`; }).join('');
+  box.querySelectorAll('[data-ginv]').forEach(b=>b.onclick=()=>{ GRP.invited.add(b.dataset.ginv); pushLobby(); renderGroupInvite(); });
+}
+function groupInvitePresence(){ return GRP.host&&GRP.code&&GRP.invited.size?{to:[...GRP.invited],code:GRP.code}:null; }
+
+/* ----- Host steuert das Spiel ----- */
+function pushGroupHost(){ if(GRP.named) GRP.named.presence({role:'host',nick:myNick(),g:GRP.game||null}).catch(()=>{}); }
+function gStartGame(){
+  const ps=gPeers(); if(ps.length<2) return;
+  const pl=ps.slice(0,GMAX).map(p=>p.peer);
+  const nm={}; ps.forEach(p=>nm[p.peer]=String(p.presence.nick||'Spieler').slice(0,24));
+  const sc={}; pl.forEach(p=>sc[p]=0);
+  GRP.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',pl,nm,sc};
+  GRP.invited=new Set(); GRP.hist=[]; pushLobby();
+  pushGroupHost(); gStartRoundUI(GRP.game);
+  GRP.deadline=setTimeout(gHostReveal,QTIME+3000);
+}
+function gActive(g){ const here=new Set(gPeers().map(p=>p.peer)); return (g.pl||[]).filter(p=>here.has(p)); }
+function gAnswerOf(peer,g){
+  if(peer===gMe()) return GRP.myAns;
+  const p=gPeers().find(x=>x.peer===peer); const a=p&&p.presence.a;
+  return a&&a.g===g.id&&a.r===g.r?a:null;
+}
+function gHostCheck(){
+  const g=GRP.game; if(!g||g.ph!=='q') return;
+  const act=gActive(g);
+  if(act.every(p=>{ const a=gAnswerOf(p,g); return a&&a.lk; })) gHostReveal();
+}
+function gHostReveal(){
+  const g=GRP.game; if(!g||g.ph!=='q') return;
+  gClearTimers(); stopRec();
+  if(!GRP.myAns) GRP.myAns={g:g.id,r:g.r,c:'',t:QTIME,lk:true};
+  const key=correctKey(g.qs[g.r]); const here=new Set(gPeers().map(p=>p.peer));
+  const res={};
+  (g.pl||[]).forEach(p=>{ const a=gAnswerOf(p,g)||{c:'',t:QTIME}; const e=evalChoice(a.c,key,a.t); e.gone=!here.has(p); res[p]=e; g.sc=g.sc||{}; g.sc[p]=(g.sc[p]||0)+e.pt; });
+  g.res=res; g.ph='rev';
+  pushGroupHost(); gShowReveal(g);
+  GRP.rTimer=setTimeout(()=>{
+    if(GRP.game!==g) return;
+    delete g.res;
+    if(g.r+1>=ROUNDS){ g.ph='end'; pushGroupHost(); gShowEnd(g); }
+    else { g.r++; g.ph='q'; pushGroupHost(); gStartRoundUI(g); GRP.deadline=setTimeout(gHostReveal,QTIME+3000); }
+  },REVEAL);
+}
+function gBackToLobby(){ GRP.game=null; GRP.hist=[]; pushGroupHost(); renderGroupLobby(); }
+
+/* ----- Anzeige ----- */
+function gRanking(g){
+  const sc=g.sc||{}; const nm=g.nm||{};
+  const rows=(g.pl||[]).map(p=>({p,n:nm[p]||'Spieler',s:sc[p]||0}));
+  rows.sort((a,b)=>b.s-a.s||a.n.localeCompare(b.n));
+  let rank=0,last=null; rows.forEach((r,i)=>{ if(r.s!==last){ rank=i+1; last=r.s; } r.rank=rank; });
+  return rows;
+}
+function gTopHTML(g){
+  const me=gMe(); const rk=gRanking(g); const mine=rk.find(r=>r.p===me)||{s:0,rank:'–'};
+  return `<div class="score"><div class="sc me"><small>Du</small><b>${mine.s}</b></div><div class="sc mid">Runde ${Math.min(g.r+1,ROUNDS)} von ${ROUNDS}</div><div class="sc op"><small>Platz</small><b>${mine.rank}<span style="font-size:15px;font-weight:500;color:var(--ink2)">/${rk.length}</span></b></div></div>`;
+}
+function gStartRoundUI(g){
+  gClearTimers(); stopRec(); S.phase='duel'; DUEL.view='group';
+  setBack('Verlassen',()=>leaveGroup());
+  const q=g.qs[g.r];
+  GRP.myAns=null; GRP.roundStart=performance.now();
+  view.innerHTML=`<div class="stack">${gTopHTML(g)}
+    <div class="tbar" aria-hidden="true"><span id="tfill"></span></div>
+    <p class="footnote" style="margin-top:-12px"><span id="tleft">30</span> Sekunden</p>
+    ${qCardHTML(q,false)}
+    <section class="stack-sm">
+      <p class="question">${esc(qText(q))}</p>
+      <div id="optBox">${optionsHTML(q)}</div>
+    </section>
+    <p class="opp" id="oppStat"></p>
+  </div>`;
+  view.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>gLock(b.dataset.opt));
+  window.scrollTo({top:0});
+  if(autoRead) speak(qSpeak(q));
+  const fill=document.getElementById('tfill'), left=document.getElementById('tleft');
+  GRP.tInt=setInterval(()=>{
+    const rest=Math.max(0,QTIME-(performance.now()-GRP.roundStart));
+    if(fill){ fill.style.width=(rest/QTIME*100)+'%'; fill.classList.toggle('low',rest<8000); }
+    if(left) left.textContent=Math.ceil(rest/1000);
+    if(rest<=0){ clearInterval(GRP.tInt); GRP.tInt=null; if(!GRP.myAns) gLock(''); }
+  },200);
+  gRenderStatus();
+}
+function gLock(choice){
+  const g=gCur(); if(!g||g.ph!=='q'||GRP.myAns) return;
+  const t=Math.min(Math.round(performance.now()-GRP.roundStart),QTIME);
+  GRP.myAns={g:g.id,r:g.r,c:choice,t,lk:true};
+  if(GRP.named) GRP.named.presence({a:GRP.myAns}).catch(()=>{});
+  const box=document.getElementById('optBox'); if(box) box.innerHTML=optionsHTML(g.qs[g.r],{mine:choice,locked:true});
+  const st=document.getElementById('oppStat');
+  if(st&&!st.dataset.me){ st.dataset.me='1'; st.insertAdjacentHTML('beforebegin',`<p class="footnote">${choice?`Eingeloggt nach ${(t/1000).toFixed(1).replace('.',',')} s`:'Zeit abgelaufen'}</p>`); }
+  gRenderStatus();
+  if(GRP.host) gHostCheck();
+}
+function gRenderStatus(){
+  const el=document.getElementById('oppStat'); const g=gCur(); if(!el||!g||g.ph!=='q') return;
+  const me=gMe(); const others=gActive(g).filter(p=>p!==me);
+  const done=others.filter(p=>{ const a=gAnswerOf(p,g); return a&&a.lk; }).length;
+  el.innerHTML=`<i class="${done===others.length?'done':''}"></i>${done} von ${others.length} ${others.length===1?'Mitspieler hat':'Mitspielern haben'} eingeloggt`;
+}
+function gResultRow(r,res,me){
+  const e=res[r.p]||{c:'',ok:false,pt:0,t:QTIME};
+  return `<div class="row${r.p===me?' me-row':''}"><span class="rank">${r.rank}</span><span class="label"><span>${esc(r.n)}${r.p===me?' (du)':''}</span><small>${e.gone?'hat verlassen':!e.c?'keine Antwort':(e.ok?'richtig':'falsch')+' · '+(e.t/1000).toFixed(1).replace('.',',')+' s'}</small></span><span class="badge ${e.ok?'good':'bad'}">+${e.pt}</span><span class="value"><b>${r.s}</b></span></div>`;
+}
+function gShowReveal(g){
+  const q=g.qs[g.r]; const me=gMe(); const res=g.res||{};
+  const mine=res[me]||{c:'',ok:false,pt:0,bonus:0,t:QTIME};
+  if(!GRP.hist.some(h=>h.r===g.r)) GRP.hist.push({r:g.r,mid:q.m,fk:q.k,me:mine});
+  const last=g.r+1>=ROUNDS;
+  const right=Object.values(res).filter(e=>e.ok).length;
+  view.innerHTML=`<div class="stack">${gTopHTML(g)}
+    <div class="duo" style="grid-template-columns:1fr">${verdictHTML('Du',mine)}</div>
+    <p class="footnote" style="margin-top:-8px">${right} von ${Object.keys(res).length} richtig</p>
+    ${qCardHTML(q,true)}
+    ${optionsHTML(q,{reveal:true,mine:mine.c,locked:true})}
+    <p class="group-label">Zwischenstand</p>
+    <section class="group list">${gRanking(g).map(r=>gResultRow(r,res,me)).join('')}</section>
+    <p class="footnote" id="nextIn">${last?'Gleich kommt die Auswertung …':'Nächste Runde gleich …'}</p>
+  </div>`;
+  const fb=view.querySelector('#figbtn'); if(fb) fb.onclick=()=>fb.closest('.fig').classList.toggle('big');
+  window.scrollTo({top:0});
+  const t0=performance.now(); const ni=document.getElementById('nextIn');
+  GRP.revInt=setInterval(()=>{ const s=Math.max(0,Math.ceil((REVEAL-(performance.now()-t0))/1000)); if(ni) ni.textContent=(last?'Auswertung in ':'Nächste Runde in ')+s+' s'; },250);
+  if(autoRead) speak(mine.ok?'Richtig.':'Falsch.');
+}
+function gShowEnd(g){
+  gClearTimers(); stopRec();
+  setBack('Lobby',()=>{ if(GRP.host) gBackToLobby(); else leaveGroup(); });
+  const me=gMe(); const rk=gRanking(g); const mine=rk.find(r=>r.p===me)||{rank:rk.length,s:0};
+  const head=mine.rank===1?(rk.filter(r=>r.rank===1).length>1?'Geteilter 1. Platz!':'Gewonnen!'):`Platz ${mine.rank} von ${rk.length}`;
+  const medal=['🥇','🥈','🥉'];
+  const rows=rk.map(r=>`<div class="row${r.p===me?' me-row':''}"><span class="rank">${r.rank<=3?medal[r.rank-1]:r.rank}</span><span class="label"><span>${esc(r.n)}${r.p===me?' (du)':''}</span></span><span class="value"><b>${r.s}</b> Pkt.</span></div>`).join('');
+  const hist=GRP.hist.slice().sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(QLAB[h.fk]||'')}</small></span><span class="badge ${h.me.ok?'good':'bad'}">+${h.me.pt}</span></div>`).join('');
+  view.innerHTML=`<div class="stack">
+    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h2 class="pagetitle" style="font-size:34px;${mine.rank===1?'color:var(--accent)':''}">${head}</h2><p class="sub" style="font-size:20px;font-variant-numeric:tabular-nums">${mine.s} Punkte</p></div>
+    <p class="group-label">Endstand</p>
+    <section class="group list">${rows}</section>
+    <p class="group-label">Deine Runden</p>
+    <section class="group list">${hist}</section>
+    <div class="stack-sm">${GRP.host?'<button class="btn primary" id="gAgain">Nochmal spielen</button><button class="btn tinted" id="gLobby">Zurück zur Lobby</button>':'<p class="footnote">Bleib hier – der Gastgeber kann gleich eine neue Runde starten.</p>'}<button class="btn plain" id="gLeave">Lobby verlassen</button></div>
+  </div>`;
+  const ag=view.querySelector('#gAgain'); if(ag) ag.onclick=()=>{ if(gPeers().length<2){ gBackToLobby(); return; } gStartGame(); };
+  const lb=view.querySelector('#gLobby'); if(lb) lb.onclick=()=>gBackToLobby();
+  view.querySelector('#gLeave').onclick=()=>leaveGroup();
+  window.scrollTo({top:0});
+  if(autoRead) speak(head+'. '+mine.s+' Punkte.');
+}
+function renderGroupSpectator(g){
+  gClearTimers(); stopRec(); DUEL.view='group';
+  setBack('Verlassen',()=>leaveGroup());
+  view.innerHTML=`<div class="stack"><section class="card center" style="padding-block:28px">
+    <p class="sectionhead">Lobby ${esc(GRP.code)}</p>
+    <p style="margin:0">${g.ph==='end'?'Das Spiel ist gerade zu Ende.':`Hier läuft gerade ein Spiel (Runde ${Math.min(g.r+1,ROUNDS)} von ${ROUNDS}).`} Bei der nächsten Runde bist du dabei.</p>
+    <div class="spinner" aria-hidden="true"></div></section>
+    <button class="btn plain" id="gLeave">Lobby verlassen</button></div>`;
+  view.querySelector('#gLeave').onclick=()=>leaveGroup();
+}
+function gClearTimers(){
+  clearInterval(GRP.tInt); GRP.tInt=null; clearTimeout(GRP.deadline); GRP.deadline=null; clearInterval(GRP.revInt); GRP.revInt=null;
+}
+function leaveGroupRoom(){
+  gClearTimers(); clearTimeout(GRP.rTimer); GRP.rTimer=null;
+  GRP.timers.forEach(clearTimeout); GRP.timers=[];
+  GRP.unsub.forEach(u=>{try{u()}catch(e){}}); GRP.unsub=[];
+  const r=GRP.named; GRP.named=null; if(r) r.leave().catch(()=>{});
+  GRP.game=null; GRP.hg=null; GRP.lastKey=null; GRP.myAns=null; GRP.code=null; GRP.invited=new Set(); GRP.hist=[];
+}
+function leaveGroup(msg){
+  leaveGroupRoom(); GRP.host=false;
   if(synth) synth.cancel();
   renderLobby(msg);
 }
@@ -1743,6 +2048,7 @@ function renderOthersOnline(){
   box.querySelectorAll('[data-chp]').forEach(b=>b.onclick=()=>{ const p=lobbyPeers().find(x=>x.peer===b.dataset.chp); if(p) hostDuel(newCode(),p); });
 }
 function renderProfile(msg){
+  if(typeof GRP!=='undefined'&&GRP.named) leaveGroupRoom();
   if(!SOC.profile){ openProfile(); return; }
   stopRec(); S.phase='duel'; DUEL.view='profile'; setBack('Start',renderStart);
   const p=SOC.profile; const st=Object.assign(emptyStats(),p.stats||{});
