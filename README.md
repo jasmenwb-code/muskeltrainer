@@ -1,4 +1,4 @@
-# Muskeltrainer
+# Anatomy Duel
 
 Lern-App für 84 Muskeln (Ursprung, Ansatz, Funktion, Innervation) mit Abbildungen, Vorlesen, Spracheingabe und Live-Duell gegen Freunde.
 
