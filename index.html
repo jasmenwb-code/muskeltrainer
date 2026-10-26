@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Muskeltrainer</title>
+<meta name="description" content="Muskeln lernen: Ursprung, Ansatz, Funktion und Innervation. Mit Duell gegen Freunde.">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Muskeltrainer">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0} [hidden]{display:none!important} img{max-width:100%}
+/* Layout: eine ruhige Spalte im Stil gruppierter iOS-Listen; System-Schrift, viel Weißraum, ein Akzent */
+:root{
+  --bg:#F2F2F7; --surface:#FFFFFF; --fill:#F2F2F7; --fill-2:#E9E9EE; --ink:#1C1C1E; --muted:#6E6E73; --sep:#E3E3E8;
+  --accent:#D93A2B; --accent-ink:#FFFFFF; --accent-soft:#FBE7E4;
+  --ok:#1F8A3A; --ok-soft:#E3F4E7; --warn:#B25000; --warn-soft:#FDF0E0;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:16px; --r-sm:12px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#000000; --surface:#1C1C1E; --fill:#2C2C2E; --fill-2:#3A3A3C; --ink:#F5F5F7; --muted:#98989F; --sep:#38383A;
+  --accent:#FF6B5E; --accent-ink:#1A0806; --accent-soft:#3A1C18;
+  --ok:#3DD269; --ok-soft:#12301B; --warn:#FFA43A; --warn-soft:#33240E;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#1C1C1E; --fill:#2C2C2E; --fill-2:#3A3A3C; --ink:#F5F5F7; --muted:#98989F; --sep:#38383A;
+  --accent:#FF6B5E; --accent-ink:#1A0806; --accent-soft:#3A1C18;
+  --ok:#3DD269; --ok-soft:#12301B; --warn:#FFA43A; --warn-soft:#33240E;
+  --shadow:none; color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.45;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,textarea:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;padding-block:8px 48px;display:flex;flex-direction:column;gap:20px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.stack-sm{display:flex;flex-direction:column;gap:10px}
+
+/* Kopfzeile */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.navback{display:inline-flex;align-items:center;gap:2px;background:none;border:0;color:var(--accent);font-size:17px;padding:8px 4px;margin-left:-4px}
+.navback svg{width:20px;height:20px}
+.iconbtn{width:36px;height:36px;border-radius:50%;border:0;background:var(--fill);color:var(--muted);display:grid;place-items:center;flex:none}
+.iconbtn[aria-pressed="true"]{color:var(--accent);background:var(--accent-soft)}
+.iconbtn svg{width:19px;height:19px}
+.bar .right{display:flex;gap:8px;margin-left:auto}
+
+/* Typo */
+.large{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.03em;margin:4px 0 0;text-wrap:balance}
+.sub{margin:4px 0 0;color:var(--muted);font-size:15px}
+.title-xl{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.025em;margin:0;text-wrap:balance;overflow-wrap:anywhere}
+.title-xl small{font-size:.62em;font-weight:600;color:var(--muted);margin-right:.25em;letter-spacing:0}
+.question{font-size:20px;line-height:1.3;font-weight:600;letter-spacing:-.015em;margin:0;text-wrap:balance}
+.group-label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 -12px 16px}
+.footnote{font-size:13px;color:var(--muted);margin:0;text-align:center}
+.hint{font-size:14px;color:var(--muted);margin:0;min-height:1em}
+.hint:empty{display:none}
+.hint.warn{color:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:999px}
+.pill.neutral{color:var(--muted);background:var(--fill)}
+
+/* Gruppierte Listen */
+.group{background:var(--surface);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:10px 16px;background:none;border:0;text-align:left;position:relative}
+.row + .row,.row + .sublist,.sublist + .row{box-shadow:inset 0 .5px 0 var(--sep)}
+.row .label{flex:1;min-width:0;display:flex;flex-direction:column}
+.row .label small{font-size:13px;color:var(--muted)}
+.row .value{color:var(--muted);font-size:17px;white-space:nowrap}
+.chev{width:16px;height:16px;color:#C4C4C9;flex:none;transition:transform .2s ease}
+.row[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.sublist{background:var(--surface)}
+.sublist .row{padding-left:32px;min-height:46px}
+.check{width:20px;height:20px;color:var(--accent);flex:none;opacity:0}
+.row[aria-checked="true"] .check{opacity:1}
+.count{color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.sublist .tools{display:flex;gap:18px;padding:10px 16px 12px 32px;box-shadow:inset 0 .5px 0 var(--sep)}
+.link{background:none;border:0;color:var(--accent);padding:4px 0;font-size:15px}
+.tile{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--accent);color:#fff}
+.tile svg{width:18px;height:18px}
+
+/* Schalter */
+.switch{position:relative;width:51px;height:31px;border-radius:999px;background:var(--fill-2);flex:none;transition:background .2s}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .2s}
+.row[aria-checked="true"] .switch{background:var(--ok)}
+.row[aria-checked="true"] .switch::after{transform:translateX(20px)}
+
+/* Segmente */
+.seg{display:flex;background:var(--fill-2);border-radius:10px;padding:2px;gap:2px}
+.seg button{flex:1;border:0;background:none;border-radius:8px;padding:7px 8px;font-size:15px;font-weight:500;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+
+/* Knöpfe */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;min-height:50px;padding:12px 18px;font-size:17px;font-weight:600;width:100%}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.tinted{background:var(--accent-soft);color:var(--accent)}
+.btn.plain{background:var(--surface);color:var(--accent);box-shadow:var(--shadow)}
+.btn.small{min-height:36px;padding:6px 14px;font-size:15px;width:auto;border-radius:999px}
+.card > .btn.small{align-self:flex-start}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn svg{width:18px;height:18px}
+.btnrow{display:flex;gap:10px}
+.btnrow > *{flex:1}
+
+/* Karten */
+.card{background:var(--surface);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.progress{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.track{flex:1;height:4px;border-radius:4px;background:var(--fill-2);overflow:hidden}
+.track span{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .3s ease}
+.steps{display:flex;gap:6px}
+.step{flex:1;min-width:0;text-align:center;font-size:12px;font-weight:600;padding:6px 2px;border-radius:8px;background:var(--fill);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step.cur{background:var(--ink);color:var(--surface)}
+.step.good{background:var(--ok-soft);color:var(--ok)}
+.step.part{background:var(--warn-soft);color:var(--warn)}
+.step.bad{background:var(--accent-soft);color:var(--accent)}
+
+/* Eingabe */
+.answerbox{position:relative}
+textarea,.field{width:100%;border:0;border-radius:var(--r);background:var(--surface);color:var(--ink);font:inherit;box-shadow:var(--shadow)}
+textarea{min-height:130px;resize:vertical;padding:14px 66px 14px 16px;display:block}
+textarea:disabled{opacity:.6}
+.field{padding:13px 16px;min-height:50px}
+.field::placeholder,textarea::placeholder{color:#A1A1A6}
+.mic{position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:50%;border:0;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.mic svg{width:22px;height:22px}
+.mic.on{background:var(--accent);color:var(--accent-ink);animation:pulse 1.2s ease-in-out infinite}
+.mic:disabled{opacity:.4}
+@keyframes pulse{50%{box-shadow:0 0 0 8px var(--accent-soft)}}
+.srlabel{position:absolute;left:-9999px}
+
+/* Ergebnis */
+.verdict{display:flex;align-items:center;gap:12px}
+.vicon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.vicon svg{width:22px;height:22px}
+.v-good .vicon{background:var(--ok-soft);color:var(--ok)}
+.v-part .vicon{background:var(--warn-soft);color:var(--warn)}
+.v-bad .vicon{background:var(--accent-soft);color:var(--accent)}
+.verdict b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.verdict span{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.yours{margin:0;padding:12px 14px;background:var(--fill);border-radius:var(--r-sm);color:var(--muted);overflow-wrap:anywhere}
+.sol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sol li{padding-left:16px;position:relative}
+.sol li::before{content:"";position:absolute;left:2px;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.sol li.note{color:var(--muted);font-size:15px}
+.sol li.note::before{background:var(--sep)}
+.sol b{font-weight:600}
+.k{border-radius:4px;padding:0 2px}
+.k.hit{background:var(--ok-soft);color:var(--ok)}
+.k.miss{background:var(--warn-soft);color:var(--warn)}
+.legend{display:flex;gap:14px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:0;margin-right:5px}
+.explain{background:var(--fill);border-radius:var(--r-sm);padding:14px;white-space:pre-wrap;font-size:16px}
+.explain .t{display:block;font-weight:600;font-size:13px;color:var(--accent);margin-bottom:4px;white-space:normal}
+.sectionhead{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0}
+.fig{margin:0;display:flex;flex-direction:column;gap:6px}
+.figbtn{border:0;border-radius:var(--r-sm);background:#FFFFFF;padding:10px;display:flex;justify-content:center}
+.figbtn img{display:block;max-width:100%;max-height:340px;width:auto;height:auto;object-fit:contain}
+.fig.big .figbtn img{max-height:none;width:100%}
+.fig figcaption{font-size:13px;color:var(--muted)}
+
+/* Listen am Ende */
+.list .row{min-height:56px}
+.badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.badge{font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--fill);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.badge.good{background:var(--ok-soft);color:var(--ok)} .badge.part{background:var(--warn-soft);color:var(--warn)} .badge.bad{background:var(--accent-soft);color:var(--accent)}
+
+/* Muskelsuche */
+.search{padding:10px 12px 12px;box-shadow:inset 0 .5px 0 var(--sep)}
+.search .field{box-shadow:none;background:var(--fill);min-height:40px;padding:8px 12px;border-radius:10px;font-size:16px}
+.mgroup{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:12px 16px 4px 32px;box-shadow:inset 0 .5px 0 var(--sep)}
+.muscles{max-height:420px;overflow-y:auto}
+
+/* Duell */
+.online{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}
+.online.busy{background:var(--warn)}
+.score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:var(--surface);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow)}
+.sc{display:flex;flex-direction:column;min-width:0}
+.sc small{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc b{font-size:30px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sc.me b{color:var(--accent)}
+.sc.op{text-align:right}
+.sc.mid{font-size:13px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.tbar{height:6px;background:var(--fill-2);border-radius:6px;overflow:hidden}
+.tbar span{display:block;height:100%;width:100%;background:var(--ok);transition:width .2s linear}
+.tbar span.low{background:var(--accent)}
+.opp{margin:0;font-size:15px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.opp i{width:8px;height:8px;border-radius:50%;background:var(--warn);animation:blink 1.4s ease-in-out infinite}
+.opp i.done{background:var(--ok);animation:none}
+@keyframes blink{50%{opacity:.3}}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.duo{grid-template-columns:1fr}}
+.pv{border-radius:var(--r-sm);padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0;background:var(--fill)}
+.pv.ok{background:var(--ok-soft)} .pv.no{background:var(--accent-soft)}
+.pvh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pvh small{font-size:13px;color:var(--muted);flex-basis:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pvh b{font-size:20px;font-weight:700;line-height:1.1}
+.pv.ok b{color:var(--ok)} .pv.no b{color:var(--accent)}
+.pvh span{font-size:14px;font-variant-numeric:tabular-nums}
+.pv p{margin:0;font-size:15px;overflow-wrap:anywhere}
+.pv .tm{font-size:12px;color:var(--muted)}
+.codebig{font-size:56px;font-weight:700;letter-spacing:.14em;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;text-align:center}
+.center{text-align:center;align-items:center}
+.spinner{width:26px;height:26px;border-radius:50%;border:3px solid var(--fill-2);border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.coderow{display:flex;gap:10px}
+.coderow .field{flex:1;min-width:0;letter-spacing:.2em;font-variant-numeric:tabular-nums}
+.coderow .btn{width:auto;flex:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.18);
+  padding-top:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.sheet-in p{margin:0;font-size:17px}
+
+@media (prefers-reduced-motion: reduce){ .mic.on,.spinner,.opp i{animation:none} .chev,.switch,.switch::after,.track span{transition:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar"><button class="navback" id="navBack" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span>Zurück</span></button><div class="right"><button class="iconbtn" id="ttsToggle" aria-pressed="true" aria-label="Automatisches Vorlesen ist an" title="Automatisch vorlesen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div></header>
+  <main id="view"></main>
+</div>
+<div class="sheet" id="inviteBar" role="alertdialog" aria-live="polite" hidden></div>
+<script src="firebase-config.js"></script>
+<script>
+/* ---------- Daten aus dem Skript ---------- */
+const REG = {
+  rumpf:'Hals, Thorax & Bauch', ruecken:'Rücken', schulter:'Schultergürtel & Schulter', oberarm:'Oberarm',
+  unterarm:'Unterarm & Hand', huefte:'Hüfte & Gesäß', oberschenkel:'Oberschenkel', unterschenkel:'Unterschenkel & Fuß'
+};
+const FIELD = {
+  U:{label:'Ursprung', short:'Ursprung', q:'Wo entspringt der Muskel? Nenne alle Ursprünge, mit allen Anteilen.'},
+  A:{label:'Ansatz', short:'Ansatz', q:'Wo setzt der Muskel an? Nenne alle Ansätze.'},
+  UA:{label:'Ursprung & Ansatz', short:'Urspr./Ans.', q:'Zwischen welchen Strukturen verläuft der Muskel? Nenne Ursprung und Ansatz aller Anteile.'},
+  F:{label:'Funktion', short:'Funktion', q:'Welche Funktionen hat der Muskel?'},
+  I:{label:'Innervation', short:'Innervation', q:'Welche Nerven innervieren den Muskel, mit Segmenten?'}
+};
+const ORDER = ['U','A','UA','F','I'];
+const OSG_PF = 'oberes Sprunggelenk :: Plantarflexion', USG_INV = 'unteres Sprunggelenk :: Inversion (Supination)', USG_EV = 'unteres Sprunggelenk :: Eversion (Pronation)', OSG_DE = 'oberes Sprunggelenk :: Dorsalextension';
+const RAD68 = ['N. radialis (C6–8)'], SUP_HINT = '! hilft bei der Supination';
+const ADD_STAB = 'Stabilisierung des Beckens in der Frontal- und Sagittalebene';
+
+const M = [
+ // Hals, Thorax & Bauch
+ {n:'Mm. scaleni', r:'rumpf',
+  U:['M. scalenus anterior :: Tubercula anteriora der Querfortsätze des 3.–6. Halswirbels','M. scalenus medius :: Tubercula posteriora der Querfortsätze des 3.–7. Halswirbels','M. scalenus posterior :: Tubercula posteriora der Querfortsätze des 5.–7. Halswirbels'],
+  A:['M. scalenus anterior :: Tuberculum musculi scaleni anterioris der 1. Rippe','M. scalenus medius :: 1. Rippe (dorsal des Sulcus arteriae subclaviae)','M. scalenus posterior :: Außenfläche der 2. Rippe'],
+  F:['Punctum mobile an den Rippen :: Inspiration (Heben der oberen Rippen)','Punctum fixum an den Rippen :: Lateralflexion der HWS zur ipsilateralen Seite (bei einseitiger Kontraktion)','Ventralflexion des Halses (bei beidseitiger Kontraktion)'],
+  I:['direkte Äste aus dem Plexus cervicalis und dem Plexus brachialis (C3–6)']},
+ {n:'Mm. intercostales', r:'rumpf',
+  UA:['Mm. intercostales externi :: vom Tuberculum costae bis zur Knorpel-Knochen-Grenze; entspringen am Unterrand einer Rippe und inserieren am Oberrand der nächst tieferen Rippe (Verlauf: von hinten-oben nach vorne-unten)','Mm. intercostales interni :: vom Angulus costae bis zum Sternum; entspringen am Oberrand einer Rippe und inserieren am Unterrand der nächsthöheren Rippe (Verlauf: von hinten-unten nach vorne-oben)','Mm. intercostales intimi :: Abspaltung der Mm. intercostales interni (daher gleicher Verlauf und gleiche Funktion)'],
+  F:['Mm. intercostales externi :: Rippenheber (Inspiration); verspannen die Zwischenrippenräume; Stabilisation der Thoraxwand','Mm. intercostales interni und intimi :: Rippensenker (Exspiration); verspannen die Zwischenrippenräume; Stabilisation der Thoraxwand'],
+  I:['Nn. intercostales I–XI']},
+ {n:'M. transversus thoracis', r:'rumpf',
+  U:['Innenseite des Corpus sterni und des Proc. xiphoideus sterni'], A:['Innenseite der Rippenknorpel der 2.–6. Rippe'],
+  F:['Rippensenker (Exspiration)'], I:['Nn. intercostales II–VI']},
+ {n:'M. transversus abdominis', r:'rumpf',
+  U:['Innenflächen der 7.–10. Rippenknorpel (sowie 11. und 12. Rippe)','tiefes Blatt der Fascia thoracolumbalis','Labium internum der Crista iliaca, Spina iliaca anterior superior','lateraler Teil des Lig. inguinale'],
+  A:['hinteres Blatt der Rektusscheide, Linea alba'],
+  F:['einseitig :: Rotation des Rumpfes zur ipsilateralen Seite','beidseitig :: Bauchpresse und Ausatmung'],
+  I:['Nn. intercostales (Th5–12), Nn. iliohypogastricus und ilioinguinalis']},
+ {n:'M. obliquus externus abdominis', r:'rumpf',
+  U:['Außenfläche der 5.–12. Rippe'], A:['Labium externum der Crista iliaca','vorderes Blatt der Rektusscheide, Linea alba'],
+  F:['einseitig :: Lateralflexion des Rumpfes zur ipsilateralen Seite, Rotation des Rumpfes zur kontralateralen Seite','beidseitig :: Ventralflexion des Rumpfes, Aufrichtung des Beckens, Bauchpresse und Ausatmung'],
+  I:['Nn. intercostales (Th5–12)']},
+ {n:'M. sternocleidomastoideus', r:'rumpf',
+  U:['Caput sternale :: Manubrium sterni','Caput claviculare :: mediales Drittel der Clavicula'], A:['Proc. mastoideus und Linea nuchalis superior'],
+  F:['einseitig :: Lateralflexion des Kopfes zur ipsilateralen Seite, Rotation des Kopfes zur kontralateralen Seite','beidseitig :: Dorsalextension des Kopfes; Atemhilfsmuskel mit Punctum fixum am Kopf'],
+  I:['N. accessorius (XI. Hirnnerv) und direkte Äste aus dem Plexus cervicalis (C1–2)']},
+ // Rücken
+ {n:'Mm. rotatores breves und longi', r:'ruecken',
+  UA:['Mm. rotatores breves :: verlaufen zwischen Querfortsatz und nächsthöherem Dornfortsatz innerhalb der gesamten BWS','Mm. rotatores longi :: verlaufen zwischen Querfortsatz und übernächstem Dornfortsatz innerhalb der gesamten BWS'],
+  F:['beidseitige Kontraktion :: Dorsalextension der BWS','einseitige Kontraktion :: Rotation zur kontralateralen Seite'], I:['Rr. dorsales der Spinalnerven']},
+ {n:'M. multifidus', r:'ruecken',
+  UA:['verläuft zwischen Querfortsatz und Dornfortsatz, überspringt 2–4 Wirbel, innerhalb der gesamten Wirbelsäule (2. Halswirbel bis Os sacrum)','! am stärksten in der LWS ausgebildet'],
+  F:['beidseitige Kontraktion :: Dorsalextension','einseitige Kontraktion :: Lateralflexion zur ipsilateralen Seite und Rotation zur kontralateralen Seite'], I:['Rr. dorsales der Spinalnerven']},
+ {n:'M. semispinalis', r:'ruecken',
+  U:['M. semispinalis thoracis :: Querfortsätze des 6.–12. Brustwirbels','M. semispinalis cervicis :: Querfortsätze des 1.–6. Brustwirbels','M. semispinalis capitis :: Querfortsätze des 3. Hals- bis 6. Brustwirbels'],
+  A:['M. semispinalis thoracis :: Dornfortsätze des 6. Hals- bis 4. Brustwirbels','M. semispinalis cervicis :: Dornfortsätze des 2.–7. Halswirbels','M. semispinalis capitis :: Os occipitale zwischen Linea nuchalis superior und Linea nuchalis inferior'],
+  F:['beidseitige Kontraktion :: Dorsalextension der BWS, der HWS sowie des Kopfes (Stabilisierung der Kopfgelenke)','einseitige Kontraktion :: Lateralflexion zur ipsilateralen Seite und Rotation zur kontralateralen Seite (Kopf, HWS und BWS)'],
+  I:['Rr. dorsales der Spinalnerven']},
+ {n:'M. splenius', r:'ruecken',
+  U:['M. splenius cervicis :: Dornfortsätze des 3.–6. Brustwirbels','M. splenius capitis :: Dornfortsätze des 4. Hals- bis 3. Brustwirbels'],
+  A:['M. splenius cervicis :: Querfortsätze des 1. und 2. Halswirbels','M. splenius capitis :: laterale Linea nuchalis superior, Proc. mastoideus'],
+  F:['beidseitige Kontraktion :: Dorsalextension der HWS und des Kopfes','einseitige Kontraktion :: ipsilaterale Lateralflexion und Rotation'],
+  I:['laterale Äste der Rr. dorsales der Spinalnerven (C1–6)']},
+ {n:'Mm. intertransversarii', r:'ruecken',
+  UA:['Mm. intertransversarii mediales lumborum :: zwischen benachbarten Procc. mammillares aller Lendenwirbel','Mm. intertransversarii laterales lumborum :: zwischen benachbarten Procc. costales aller Lendenwirbel','Mm. intertransversarii posteriores cervicis :: zwischen benachbarten Tubercula posteriora des 2.–7. Halswirbels','Mm. intertransversarii anteriores cervicis :: zwischen benachbarten Tubercula anteriora des 2.–7. Halswirbels'],
+  F:['beidseitige Kontraktion :: Stabilisierung und Dorsalextension der HWS und LWS','einseitige Kontraktion :: Lateralflexion der HWS und LWS zur ipsilateralen Seite'],
+  I:['Rr. dorsales der Spinalnerven','Ausnahme laterales lumborum und anteriores cervicis :: Rr. ventrales der Spinalnerven']},
+ {n:'Mm. levatores costarum', r:'ruecken',
+  U:['Mm. levatores costarum breves :: Querfortsätze des 7. Hals- und 1.–11. Brustwirbels','Mm. levatores costarum longi :: Querfortsätze des 7. Hals- und 1.–10. Brustwirbels'],
+  A:['breves :: Angulus costae der nächsttieferen Rippe','longi :: Angulus costae der übernächsten Rippe'],
+  F:['beidseitige Kontraktion :: Dorsalextension der BWS','einseitige Kontraktion :: ipsilaterale Lateralflexion und kontralaterale Rotation'],
+  I:['sowohl Rr. dorsales als auch Rr. ventrales der Spinalnerven']},
+ // Schultergürtel & Schulter
+ {n:'M. trapezius', r:'schulter',
+  U:['Pars descendens :: Os occipitale: Linea nuchalis superior und Protuberantia occipitalis externa; über das Lig. nuchae an den Procc. spinosi aller Halswirbel','Pars transversa :: Sehnenspiegel auf Höhe der Procc. spinosi des 1.–4. Brustwirbels','Pars ascendens :: Procc. spinosi des 5.–12. Brustwirbels'],
+  A:['Pars descendens :: laterales Drittel der Clavicula','Pars transversa :: Acromion','Pars ascendens :: Spina scapulae'],
+  F:['Pars descendens :: zieht die Scapula schräg aufwärts und dreht sie nach außen (synergistisch mit der Pars inferior des M. serratus anterior); neigt den Kopf zur ipsilateralen Seite und dreht ihn zur kontralateralen Seite (Punctum fixum am Schultergürtel)','Pars transversa :: verlagert das Schulterblatt nach medial','Pars ascendens :: zieht die Scapula nach kaudal-medial (unterstützt die rotatorische Wirkung der Pars descendens)','gesamter Muskel :: Fixierung des Schulterblatts am Thorax'],
+  I:['N. accessorius (XI. Hirnnerv) und Plexus cervicalis (C2–4)']},
+ {n:'M. levator scapulae', r:'schulter',
+  U:['Procc. transversi des 1.–4. Halswirbels'], A:['Angulus superior der Scapula'],
+  F:['zieht die Scapula nach kranial-medial und schwenkt den Angulus inferior nach medial (Rückführung des elevierten Armes in die Neutral-Null-Stellung)','neigt den Hals zur ipsilateralen Seite (Punctum fixum an der Scapula)'],
+  I:['N. dorsalis scapulae (C4–5)']},
+ {n:'M. rhomboideus minor', r:'schulter',
+  U:['Procc. spinosi des 6. und 7. Halswirbels'], A:['Margo medialis der Scapula oberhalb der Spina scapulae'],
+  F:['Fixierung der Scapula','zieht die Scapula nach kranial-medial (Rückführung des elevierten Armes in die Neutral-Null-Stellung)'],
+  I:['N. dorsalis scapulae (C4–5)']},
+ {n:'M. rhomboideus major', r:'schulter',
+  U:['Procc. spinosi des 1.–4. Brustwirbels'], A:['Margo medialis der Scapula unterhalb der Spina scapulae'],
+  F:['Fixierung der Scapula','zieht die Scapula nach kranial-medial (Rückführung des elevierten Armes in die Neutral-Null-Stellung)'],
+  I:['N. dorsalis scapulae (C4–5)']},
+ {n:'M. serratus anterior', r:'schulter',
+  U:['1.–9. Rippe'],
+  A:['Pars superior :: Angulus superior der Scapula','Pars intermedia :: Margo medialis der Scapula','Pars inferior :: Angulus inferior und Margo medialis der Scapula'],
+  F:['gesamter Muskel :: Verschiebung der Scapula nach lateral-ventral, Rippenhebung bei fixiertem Schultergürtel (Atemhilfsmuskel)','Pars inferior :: Drehung der Scapula und Schwenken des Angulus inferior nach lateral-ventral (ermöglicht die Elevation des Armes über 90°)','Pars superior :: Rückführung des elevierten Armes (wirkt antagonistisch zur Pars inferior)'],
+  I:['N. thoracicus longus (C5–7)']},
+ {n:'M. subclavius', r:'schulter',
+  U:['1. Rippe (Knorpel-Knochen-Grenze)'], A:['Unterseite der Clavicula (laterales Drittel)'],
+  F:['Fixierung der Clavicula im Sternoklavikulargelenk'], I:['N. subclavius (C5, 6)']},
+ {n:'M. pectoralis minor', r:'schulter',
+  U:['3.–5. Rippe'], A:['Proc. coracoideus der Scapula'],
+  F:['Herabziehen der Scapula, dabei wandert der Angulus inferior nach dorsomedial (Rückführung des elevierten Armes)','Atemhilfsmuskel'],
+  I:['Nn. pectorales medialis und lateralis (C6–Th1)']},
+ {n:'M. pectoralis major', r:'schulter',
+  U:['Pars clavicularis :: mediale Hälfte der Clavicula','Pars sternocostalis :: Sternum und 2.–6. Rippenknorpel','Pars abdominalis :: Lamina anterior der Rektusscheide'],
+  A:['Crista tuberculi majoris des Humerus'],
+  F:['gesamter Muskel :: Adduktion und Innenrotation','Pars clavicularis und Pars sternocostalis :: Anteversion','Atemhilfsmuskel bei fixiertem Schultergürtel'],
+  I:['Nn. pectorales medialis und lateralis (C5–Th1)']},
+ {n:'M. deltoideus', r:'schulter',
+  U:['Pars clavicularis :: laterales Drittel der Clavicula','Pars acromialis :: Acromion','Pars spinalis :: Spina scapulae'],
+  A:['Tuberositas deltoidea am Humerus'],
+  F:['Pars clavicularis :: Anteversion, Innenrotation, Adduktion','Pars acromialis :: Abduktion','Pars spinalis :: Retroversion, Außenrotation, Adduktion','! Zwischen 60° und 90° Abduktion unterstützen der klavikuläre und spinale Teil die Pars acromialis bei der Abduktion.'],
+  I:['N. axillaris (C5, 6)']},
+ {n:'M. latissimus dorsi', r:'schulter',
+  U:['Pars vertebralis :: Procc. spinosi des 7.–12. Brustwirbels; über die Fascia thoracolumbalis von den Dornfortsätzen sämtlicher Lendenwirbel sowie vom Os sacrum (Facies dorsalis ossis sacri)','Pars iliaca :: hinteres Drittel der Crista iliaca','Pars costalis :: 9.–12. Rippe','Pars scapularis :: Angulus inferior'],
+  A:['Crista tuberculi minoris des Humerus'],
+  F:['Innenrotation, Adduktion, Retroversion','Atemhilfsmuskel (Ausatmung, „Hustenmuskel“)'],
+  I:['N. thoracodorsalis (C6–8)']},
+ {n:'M. teres major', r:'schulter',
+  U:['Angulus inferior der Scapula'], A:['Crista tuberculi minoris des Humerus'],
+  F:['Innenrotation, Adduktion, Retroversion'], I:['N. subscapularis (C5–8)']},
+ {n:'M. subscapularis', r:'schulter',
+  U:['Fossa subscapularis der Scapula'], A:['Tuberculum minus des Humerus'], F:['Innenrotation'], I:['N. subscapularis (C5–8)']},
+ {n:'M. supraspinatus', r:'schulter',
+  U:['Fossa supraspinata der Scapula'], A:['Tuberculum majus des Humerus'], F:['Abduktion'], I:['N. suprascapularis (C4–6)']},
+ {n:'M. infraspinatus', r:'schulter',
+  U:['Fossa infraspinata der Scapula'], A:['Tuberculum majus des Humerus'], F:['Außenrotation'], I:['N. suprascapularis (C4–6)']},
+ {n:'M. teres minor', r:'schulter',
+  U:['Margo lateralis der Scapula'], A:['Tuberculum majus des Humerus'], F:['Außenrotation, schwache Adduktion'], I:['N. axillaris (C5, 6)']},
+ {n:'M. coracobrachialis', r:'schulter',
+  U:['Proc. coracoideus der Scapula'], A:['Humerus (Verlängerung der Crista tuberculi minoris)'],
+  F:['Anteversion, Adduktion, Innenrotation'], I:['N. musculocutaneus (C5, 6)']},
+ // Oberarm
+ {n:'M. biceps brachii', r:'oberarm',
+  U:['Caput longum :: Tuberculum supraglenoidale der Scapula','Caput breve :: Proc. coracoideus der Scapula'],
+  A:['Tuberositas radii, Lacertus fibrosus'],
+  F:['Ellenbogengelenk :: Flexion, Supination (bei gebeugtem Ellenbogen)','Schultergelenk :: Abduktion und Innenrotation (Caput longum)','Schultergelenk :: Anteversion (Caput longum und Caput breve)'],
+  I:['N. musculocutaneus (C5–7)']},
+ {n:'M. brachialis', r:'oberarm',
+  U:['distale Hälfte der Vorderfläche des Humerus, Septa intermuscularia brachii mediale und laterale'], A:['Tuberositas ulnae'],
+  F:['Flexion im Ellenbogengelenk'],
+  I:['N. musculocutaneus (C5–7)','N. radialis (C5–6)','! variable Äste, die den N. radialis im Radialistunnel als Rr. musculares verlassen']},
+ {n:'M. triceps brachii', r:'oberarm',
+  U:['Caput longum :: Tuberculum infraglenoidale der Scapula','Caput mediale :: Hinterfläche des Humerus, distal vom Sulcus n. radialis, Septum intermusculare mediale','Caput laterale :: Hinterfläche des Humerus, proximal vom Sulcus n. radialis, Septum intermusculare laterale'],
+  A:['Olecranon der Ulna'],
+  F:['Ellenbogengelenk :: Extension','Schultergelenk (Caput longum) :: Retroversion und Adduktion des Oberarms'],
+  I:['N. radialis (C6–8)']},
+ {n:'M. anconeus', r:'oberarm',
+  U:['Epicondylus lateralis des Humerus (teilweise dorsale Gelenkkapsel)'], A:['Olecranon der Ulna (radiale Fläche)'],
+  F:['Extension, Kapselspanner'], I:['N. radialis (C6–8)']},
+ // Unterarm & Hand
+ {n:'M. brachioradialis', r:'unterarm',
+  U:['laterale Seite des distalen Humerus, Septum intermusculare laterale'], A:['Proc. styloideus radii'],
+  F:['Ellenbogengelenk :: Flexion','Unterarmgelenke :: Semipronationsstellung'], I:['N. radialis (C5–7)']},
+ {n:'M. extensor carpi radialis longus', r:'unterarm',
+  U:['laterale Seite des distalen Humerus (Crista supracondylaris lateralis), Septum intermusculare laterale'], A:['dorsale Basis des Os metacarpi II'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke :: Dorsalextension (Faustschlusshelfer), Radialabduktion'], I:['N. radialis (C5–7)']},
+ {n:'M. extensor carpi radialis brevis', r:'unterarm',
+  U:['Epicondylus lateralis des Humerus'], A:['dorsale Basis des Os metacarpi III'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke :: Dorsalextension (Faustschlusshelfer), Radialabduktion'], I:['N. radialis (C5–7)']},
+ {n:'M. extensor digitorum', r:'unterarm',
+  U:['Epicondylus lateralis des Humerus (Caput commune)'], A:['Dorsalaponeurose des 2.–5. Fingers'],
+  F:['Handgelenke :: Dorsalextension','Grund-, Mittel- und Endgelenke des 2.–5. Fingers :: Extension, Spreizen der Finger'], I:RAD68},
+ {n:'M. extensor digiti minimi', r:'unterarm',
+  U:['Epicondylus lateralis des Humerus (Caput commune)'], A:['Dorsalaponeurose des 5. Fingers'],
+  F:['Handgelenke :: Dorsalextension, Ulnarabduktion','Grund-, Mittel- und Endgelenk des 5. Fingers :: Extension, Abspreizen des 5. Fingers'], I:RAD68},
+ {n:'M. extensor carpi ulnaris', r:'unterarm',
+  U:['Caput commune :: Epicondylus lateralis des Humerus','Caput ulnare :: Dorsalseite der Ulna'], A:['Basis des Os metacarpi V'],
+  F:['Handgelenke :: Dorsalextension, Ulnarabduktion'], I:RAD68},
+ {n:'M. supinator', r:'unterarm',
+  U:['Olecranon der Ulna (Crista musculi supinatoris), Epicondylus lateralis, Lig. collaterale radiale, Lig. anulare radii'],
+  A:['Radius zwischen der Tuberositas radii und dem Ansatz des M. pronator teres'],
+  F:['Unterarmgelenke :: Supination'], I:['N. radialis (C5, 6)']},
+ {n:'M. abductor pollicis longus', r:'unterarm',
+  U:['Dorsalflächen von Radius und Ulna, Membrana interossea'], A:['Basis des Os metacarpi I'],
+  F:['proximales Handgelenk :: Radialabduktion','Daumensattelgelenk :: Abduktion',SUP_HINT], I:RAD68},
+ {n:'M. extensor pollicis brevis', r:'unterarm',
+  U:['Dorsalfläche des Radius und Membrana interossea (distal vom M. abductor pollicis longus)'], A:['Basis der Daumengrundphalanx'],
+  F:['proximales Handgelenk :: Radialabduktion','Daumensattel- und Grundgelenk :: Extension',SUP_HINT], I:RAD68},
+ {n:'M. extensor pollicis longus', r:'unterarm',
+  U:['Dorsalfläche der Ulna und Membrana interossea'], A:['Basis der Endphalanx des Daumens'],
+  F:['Handgelenke :: Dorsalextension und Radialabduktion','Daumensattelgelenk :: Adduktion','Grund- und Endgelenk des Daumens :: Extension',SUP_HINT], I:RAD68},
+ {n:'M. extensor indicis', r:'unterarm',
+  U:['Dorsalfläche der Ulna, Membrana interossea'], A:['Dorsalaponeurose des 2. Fingers'],
+  F:['Handgelenke :: Dorsalextension','Grund-, Mittel- und Endgelenke des 2. Fingers :: Dorsalextension',SUP_HINT], I:RAD68},
+ {n:'M. pronator teres', r:'unterarm',
+  U:['Caput humerale :: Epicondylus medialis des Humerus','Caput ulnare :: Proc. coronoideus der Ulna'], A:['Facies lateralis radii (distal vom Ansatz des M. supinator)'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Unterarmgelenke :: Pronation'], I:['N. medianus (C6)']},
+ {n:'M. flexor digitorum superficialis', r:'unterarm',
+  U:['Caput humerale :: Epicondylus medialis des Humerus (Caput commune)','Caput ulnare :: Proc. coronoideus der Ulna','Caput radiale :: distal der Tuberositas radii'],
+  A:['an den Seiten der Mittelphalangen des 2.–5. Fingers'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke, Grund- und Mittelgelenke der Finger II–V :: Flexion'], I:['N. medianus (C7–Th1)']},
+ {n:'M. flexor carpi radialis', r:'unterarm',
+  U:['Epicondylus medialis des Humerus (Caput commune)'], A:['Basis des Os metacarpi II (manchmal auch zusätzlich Os metacarpi III)'],
+  F:['Handgelenke :: Flexion, Radialabduktion','Ellenbogengelenk :: schwache Pronation'], I:['N. medianus (C6–8)']},
+ {n:'M. flexor carpi ulnaris', r:'unterarm',
+  U:['Caput humerale :: Epicondylus medialis des Humerus (Caput commune)','Caput ulnare :: Olecranon der Ulna'],
+  A:['Hamulus ossis hamati, Basis des Os metacarpi V, Os pisiforme (als Sesambein)'],
+  F:['Handgelenke :: Flexion, Ulnarabduktion'], I:['N. ulnaris (C8–Th1)']},
+ {n:'M. palmaris longus', r:'unterarm',
+  U:['Epicondylus medialis des Humerus (Caput commune)'], A:['Palmaraponeurose'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke :: Palmarflexion, Spannen der Palmaraponeurose'], I:['N. medianus (C8–Th1)']},
+ {n:'M. flexor digitorum profundus', r:'unterarm',
+  U:['proximale zwei Drittel der Beugeseite der Ulna sowie angrenzende Membrana interossea'], A:['Palmarseite der Endphalangen des 2.–5. Fingers'],
+  F:['Handgelenke, Grund-, Mittel- und Endgelenke der Finger II–V :: Flexion'],
+  I:['radialer Teil (2. und 3. Finger) :: N. medianus (C7–Th1)','ulnarer Teil (4. und 5. Finger) :: N. ulnaris (C8–Th1)']},
+ {n:'M. flexor pollicis longus', r:'unterarm',
+  U:['mittlere Vorderfläche des Radius, angrenzende Membrana interossea'], A:['Palmarseite der Endphalanx des Daumens'],
+  F:['Handgelenke :: Flexion und Radialabduktion','Daumensattelgelenk :: Opposition','Daumengrund- und Endgelenk :: Flexion'], I:['N. medianus (C6–8)']},
+ {n:'M. pronator quadratus', r:'unterarm',
+  U:['distales Viertel der Vorderfläche der Ulna'], A:['distales Viertel der Vorderfläche des Radius'],
+  F:['Pronation, sichert das distale Radioulnargelenk'], I:['N. medianus (C8–Th1)']},
+ // Hüfte & Gesäß
+ {n:'M. iliopsoas', r:'huefte',
+  U:['M. psoas major, oberflächliche Schicht :: Seitenflächen des 12. Brustwirbelkörpers, der 1.–4. Lendenwirbelkörper sowie der zugehörigen Disci intervertebrales','M. psoas major, tiefe Schicht :: Procc. costales des 1.–5. Lendenwirbels','M. iliacus :: Fossa iliaca'],
+  A:['gemeinsam als M. iliopsoas am Trochanter minor des Femurs'],
+  F:['Hüftgelenk :: Flexion und Außenrotation','Lendenwirbelsäule :: einseitig (Punctum fixum am Femur) Lateralflexion zur ipsilateralen Seite, beidseitig Aufrichten des Rumpfes aus der Rückenlage'],
+  I:['N. femoralis (L1–4) sowie direkte Äste aus dem Plexus lumbalis']},
+ {n:'M. gluteus maximus', r:'huefte',
+  U:['seitlicher Teil der Facies dorsalis des Os sacrum','hinterer Teil der Facies glutea des Os ilium (hinter der Linea glutea posterior)','Fascia thoracolumbalis','mit tiefen Fasern am Lig. sacrotuberale'],
+  A:['kraniale Fasern :: Tractus iliotibialis','kaudale Fasern :: Tuberositas glutea'],
+  F:['gesamter Muskel :: Extension und Außenrotation im Hüftgelenk; stabilisiert das Hüftgelenk in der Sagittal- und Frontalebene','kraniale Fasern :: Abduktion','kaudale Fasern :: Adduktion'],
+  I:['N. gluteus inferior (L5–S2)']},
+ {n:'M. gluteus medius', r:'huefte',
+  U:['Facies glutea des Os ilium (unterhalb der Crista iliaca zwischen den Lineae gluteae anterior und posterior)'], A:['seitliche Fläche des Trochanter major am Femur'],
+  F:['gesamter Muskel :: Abduktion, Stabilisierung des Beckens in der Frontalebene','vorderer Teil :: Flexion und Innenrotation','hinterer Teil :: Extension und Außenrotation'],
+  I:['N. gluteus superior (L4–S1)']},
+ {n:'M. gluteus minimus', r:'huefte',
+  U:['Facies glutea des Os ilium (unterhalb des Ursprungs vom M. gluteus medius)'], A:['mediale Fläche des Trochanter major am Femur'],
+  F:['gesamter Muskel :: Abduktion, Stabilisierung des Beckens in der Frontalebene','vorderer Teil :: Flexion und Innenrotation','hinterer Teil :: Extension und Außenrotation'],
+  I:['N. gluteus superior (L4–S1)']},
+ {n:'M. tensor fasciae latae', r:'huefte',
+  U:['Spina iliaca anterior superior'], A:['Tractus iliotibialis'],
+  F:['spannt die Fascia lata','Hüftgelenk :: Abduktion, Flexion und Innenrotation'], I:['N. gluteus superior (L4–S1)']},
+ {n:'M. piriformis', r:'huefte',
+  U:['Facies pelvica des Os sacrum'], A:['Spitze des Trochanter major am Femur'],
+  F:['Außenrotation, Abduktion und Extension im Hüftgelenk','Stabilisierung im Hüftgelenk'], I:['direkte Äste aus dem Plexus sacralis (L5–S2)']},
+ {n:'M. obturatorius internus', r:'huefte',
+  U:['Innenfläche der Membrana obturatoria und ihr knöcherner Rahmen'], A:['Fossa trochanterica am Femur'],
+  F:['Außenrotation, Adduktion und Extension im Hüftgelenk (in Abhängigkeit von der Stellung des Hüftgelenks Abduktion möglich)'],
+  I:['direkte Äste aus dem Plexus sacralis (L5–S2)']},
+ {n:'Mm. gemelli', r:'huefte',
+  U:['M. gemellus superior :: Spina ischiadica des Os ischii','M. gemellus inferior :: Tuber ischiadicum des Os ischii'],
+  A:['zusammen mit der Ansatzsehne des M. obturatorius internus in der Fossa trochanterica'],
+  F:['Außenrotation, Adduktion und Extension im Hüftgelenk (in Abhängigkeit von der Stellung des Hüftgelenks Abduktion möglich)'],
+  I:['direkte Äste aus dem Plexus sacralis (L5–S2)']},
+ {n:'M. quadratus femoris', r:'huefte',
+  U:['lateraler Rand des Tuber ischiadicum des Os ischii'], A:['Crista intertrochanterica des Femur'],
+  F:['Außenrotation und Adduktion im Hüftgelenk'], I:['direkte Äste aus dem Plexus sacralis (L5–S2) und/oder N. gluteus inferior']},
+ {n:'M. obturatorius externus', r:'huefte',
+  U:['Außenseite der Membrana obturatoria und angrenzender Knochen'], A:['Fossa trochanterica des Femur'],
+  F:['Adduktion und Außenrotation im Hüftgelenk','Stabilisierung des Beckens in der Sagittalebene'], I:['N. obturatorius (L2–4)']},
+ // Oberschenkel
+ {n:'M. sartorius', r:'oberschenkel',
+  U:['Spina iliaca anterior superior'], A:['medial der Tuberositas tibiae am Pes anserinus superficialis (zusammen mit den Mm. gracilis und semitendinosus)'],
+  F:['Hüftgelenk :: Flexion, Abduktion und Außenrotation','Kniegelenk :: Flexion und Innenrotation'], I:['N. femoralis (L1–4)']},
+ {n:'M. quadriceps femoris', r:'oberschenkel',
+  U:['M. rectus femoris :: Spina iliaca anterior inferior (Caput rectum), Pfannendach des Hüftgelenks (Caput reflexum)','M. vastus medialis :: Labium mediale der Linea aspera, distaler Teil der Linea intertrochanterica','M. vastus lateralis :: Labium laterale der Linea aspera, laterale Fläche des Trochanter major','M. vastus intermedius :: Vorderseite des Femurschaftes','M. articularis genus (distale Fasern des M. vastus intermedius) :: Vorderseite des Femurschaftes auf Höhe des Recessus suprapatellaris'],
+  A:['gesamter Muskel :: über das Lig. patellae an der Tuberositas tibiae','M. vastus medialis und lateralis :: über das Retinaculum patellae mediale und laterale beidseits der Tuberositas am Condylus medialis und lateralis','M. articularis genus :: am Recessus suprapatellaris der Kniegelenkkapsel'],
+  F:['Hüftgelenk (M. rectus femoris) :: Flexion','Kniegelenk (alle Anteile) :: Extension','M. articularis genus :: verhindert Einklemmung der Kapsel'],
+  I:['N. femoralis (L1–4)']},
+ {n:'M. pectineus', r:'oberschenkel',
+  U:['Pecten ossis pubis'], A:['Linea pectinea und proximale Linea aspera des Femur'],
+  F:['Adduktion, Außenrotation und leichte Flexion im Hüftgelenk',ADD_STAB], I:['N. femoralis (L1–4), N. obturatorius (L2–4)']},
+ {n:'M. adductor longus', r:'oberschenkel',
+  U:['R. superior des Os pubis und Vorderseite der Symphyse'], A:['Linea aspera: Labium mediale im mittleren Femurdrittel'],
+  F:['Adduktion und Flexion (bis 70°) im Hüftgelenk (Extension ab 80°-Beugung)',ADD_STAB], I:['N. obturatorius (L2–4)']},
+ {n:'M. adductor brevis', r:'oberschenkel',
+  U:['R. inferior des Os pubis'], A:['Linea aspera: Labium mediale im oberen Femurdrittel'],
+  F:['Adduktion und Flexion (bis 70°) im Hüftgelenk (Extension ab 80°-Beugung)',ADD_STAB], I:['N. obturatorius (L2–4)']},
+ {n:'M. adductor magnus', r:'oberschenkel',
+  U:['R. inferior des Os pubis, R. ossis ischii und Tuber ischiadicum'],
+  A:['tiefer Teil („fleischiger Ansatz“) :: Labium mediale der Linea aspera','oberflächlicher Teil („sehniger Ansatz“) :: Epicondylus medialis des Femur'],
+  F:['Adduktion, Außenrotation und Extension im Hüftgelenk','über den sehnigen Ansatz :: Innenrotation im Hüftgelenk',ADD_STAB],
+  I:['tiefer Teil :: N. obturatorius (L2–4)','oberflächlicher Teil :: N. tibialis (L4–5)']},
+ {n:'M. adductor minimus', r:'oberschenkel', h:'kraniale Abspaltung des M. adductor magnus',
+  U:['R. inferior des Os pubis'], A:['Labium mediale der Linea aspera'],
+  F:['Adduktion, Außenrotation und leichte Flexion im Hüftgelenk'], I:['N. obturatorius (L2–4)']},
+ {n:'M. gracilis', r:'oberschenkel',
+  U:['R. inferior des Os pubis unterhalb der Symphyse'], A:['medial der Tuberositas tibiae im Pes anserinus superficialis (zusammen mit den Endsehnen der Mm. sartorius und semitendinosus)'],
+  F:['Hüftgelenk :: Adduktion und Flexion','Kniegelenk :: Flexion und Innenrotation'], I:['N. obturatorius (L2–4)']},
+ {n:'M. biceps femoris', r:'oberschenkel',
+  U:['Caput longum :: Tuber ischiadicum, Lig. sacrotuberale (Caput commune mit dem M. semitendinosus)','Caput breve :: Labium laterale der Linea aspera im mittleren Drittel des Femur'],
+  A:['Caput fibulae'],
+  F:['Hüftgelenk (Caput longum) :: Adduktion, Extension, Stabilisierung des Beckens in der Sagittalebene','Kniegelenk (gesamter Muskel) :: Flexion und Außenrotation'],
+  I:['Caput longum :: N. tibialis (L5–S2)','Caput breve :: N. fibularis (peroneus) communis (L5–S2)']},
+ {n:'M. semimembranosus', r:'oberschenkel',
+  U:['Tuber ischiadicum'], A:['Pes anserinus profundus: Condylus medialis tibiae, Lig. popliteum obliquum, Faszie des M. popliteus'],
+  F:['Hüftgelenk :: Adduktion, Extension, Stabilisierung des Beckens in der Sagittalebene','Kniegelenk :: Flexion und Innenrotation'], I:['N. tibialis (L5–S2)']},
+ {n:'M. semitendinosus', r:'oberschenkel',
+  U:['Tuber ischiadicum und Lig. sacrotuberale (Caput commune mit dem Caput longum des M. biceps femoris)'],
+  A:['medial der Tuberositas tibiae im Pes anserinus superficialis (zusammen mit den Endsehnen der Mm. gracilis und sartorius)'],
+  F:['Hüftgelenk :: Adduktion, Extension, Stabilisierung des Beckens in der Sagittalebene','Kniegelenk :: Flexion und Innenrotation'], I:['N. tibialis (L5–S2)']},
+ // Unterschenkel & Fuß
+ {n:'M. popliteus', r:'unterschenkel',
+  U:['Condylus lateralis femoris, Hinterhorn des Außenmeniskus'], A:['Facies posterior tibiae (oberhalb des Ursprungs des M. soleus)'],
+  F:['Flexion und Innenrotation im Kniegelenk'], I:['N. tibialis (L5–S2)']},
+ {n:'M. tibialis anterior', r:'unterschenkel',
+  U:['obere zwei Drittel der Facies lateralis tibiae, Membrana interossea cruris und oberster Teil der Fascia cruris superficialis'],
+  A:['mediale und plantare Fläche des Os cuneiforme mediale, mediale Basis des Os metatarsi I'],
+  F:[OSG_DE,USG_INV], I:['N. fibularis profundus (L4, 5)']},
+ {n:'M. extensor digitorum longus', r:'unterschenkel',
+  U:['Condylus lateralis tibiae, Caput fibulae, Margo anterior fibulae und Membrana interossea cruris'],
+  A:['über vier Teilsehnen an den Dorsalaponeurosen der 2.–5. Zehe, Basen der Phalanges distales der 2.–5. Zehe'],
+  F:[OSG_DE,USG_EV,'Grund-, Mittel- und Endgelenke der 2.–5. Zehe :: Extension'], I:['N. fibularis profundus (L4–S1)']},
+ {n:'M. extensor hallucis longus', r:'unterschenkel',
+  U:['mittleres Drittel der Facies medialis fibulae, Membrana interossea cruris'], A:['Dorsalaponeurose der Großzehe sowie Basis ihrer Endphalanx'],
+  F:[OSG_DE,'unteres Sprunggelenk :: unterstützt Eversion und Inversion, abhängig von der Ausgangsstellung des Fußes','Grund- und Endgelenk der Großzehe :: Extension'], I:['N. fibularis profundus (L5–S1)']},
+ {n:'M. fibularis longus', r:'unterschenkel', h:'auch M. peroneus longus',
+  U:['Caput fibulae, proximale zwei Drittel der Facies lateralis fibulae (teilweise an den Septa intermuscularia)'],
+  A:['Plantarseite des Os cuneiforme mediale, Basis des Os metatarsi I'],
+  F:[OSG_PF,USG_EV,'Verspannung des Quergewölbes des Fußes'], I:['N. fibularis superficialis (L5–S1)']},
+ {n:'M. fibularis brevis', r:'unterschenkel', h:'auch M. peroneus brevis',
+  U:['distale Hälfte der Facies lateralis fibulae, teilweise an den Septa intermuscularia'],
+  A:['Tuberositas ossis metatarsi V (gelegentlich Abspaltung zur Dorsalaponeurose der 5. Zehe)'],
+  F:[OSG_PF,USG_EV], I:['N. fibularis superficialis (L5–S1)']},
+ {n:'M. fibularis tertius', r:'unterschenkel', h:'Abspaltung des M. extensor digitorum longus',
+  U:['Margo anterior der distalen Fibula'], A:['Basis des Os metatarsi V'],
+  F:[OSG_DE,USG_EV], I:['N. fibularis profundus (L4–S1)']},
+ {n:'M. triceps surae', r:'unterschenkel',
+  U:['M. soleus :: Dorsalseite des Caput und Collum fibulae, über den Arcus tendineus musculi solei an der Linea musculi solei der Tibia','M. gastrocnemius, Caput mediale :: Epicondylus medialis femoris','M. gastrocnemius, Caput laterale :: Epicondylus lateralis femoris'],
+  A:['über die Achillessehne (Tendo calcaneus) am Tuber calcanei'],
+  F:[OSG_PF,USG_INV,'Kniegelenk (M. gastrocnemius) :: Flexion'], I:['N. tibialis (S1, 2)']},
+ {n:'M. plantaris', r:'unterschenkel',
+  U:['proximal des Caput laterale des M. gastrocnemius'], A:['über die Achillessehne am Tuber calcanei'],
+  F:['aufgrund seines kleinen physiologischen Querschnitts zu vernachlässigen','! verhindert bei Knieflexion die Kompression der Vasa tibialia posteriora'], I:['N. tibialis (S1, 2)']},
+ {n:'M. tibialis posterior', r:'unterschenkel',
+  U:['Membrana interossea cruris, angrenzende Ränder von Tibia und Fibula'],
+  A:['Tuberositas ossis navicularis, Ossa cuneiformia mediale, intermedium und laterale, Basen der Ossa metatarsi II–IV'],
+  F:[OSG_PF,USG_INV,'Verspannung des Längs- und Quergewölbes des Fußes'], I:['N. tibialis (L4–S1)']},
+ {n:'M. flexor digitorum longus', r:'unterschenkel',
+  U:['mittleres Drittel der Facies posterior der Tibia'], A:['Basen der Endphalangen II–V'],
+  F:[OSG_PF,USG_INV,'Grund-, Mittel- und Endgelenke der Zehen II–V :: Plantarflexion'], I:['N. tibialis (L5–S2)']},
+ {n:'M. flexor hallucis longus', r:'unterschenkel',
+  U:['distale zwei Drittel der Facies posterior fibulae, angrenzende Membrana interossea cruris'], A:['Basis der Endphalanx der Großzehe'],
+  F:[OSG_PF,USG_INV,'Grund- und Endgelenk der Großzehe :: Plantarflexion','Verspannung des medialen Längsgewölbes des Fußes'], I:['N. tibialis (L5–S2)']}
+];
+M.forEach((m,i)=>m.id=i);
+
+
+/* ---------- Abbildungen aus dem Skript ---------- */
+const IMG={'Mm. scaleni':['p01a','①–③'],'Mm. intercostales':['p01b','④ externi, ⑤ interni'],'M. transversus thoracis':['p06',''],'M. transversus abdominis':['p02',''],
+'M. obliquus externus abdominis':['p03',''],'M. sternocleidomastoideus':['p24',''],'Mm. rotatores breves und longi':['p04a','⑤ breves, ⑥ longi'],'M. multifidus':['p04b','⑦'],
+'M. semispinalis':['p04c','⑧ thoracis, ⑨ cervicis, ⑩ capitis'],'M. splenius':['p05a','⑦ cervicis, ⑧ capitis'],'Mm. intertransversarii':['p05b','⑨–⑪'],'Mm. levatores costarum':['p05b','⑫ breves, ⑬ longi'],
+'M. trapezius':['p28','① descendens, ② transversa, ③ ascendens'],'M. levator scapulae':['p21','①'],'M. rhomboideus minor':['p21','②'],'M. rhomboideus major':['p21','③'],
+'M. serratus anterior':['p23','① superior, ② intermedia, ③ inferior'],'M. subclavius':['p25','①'],'M. pectoralis minor':['p25','②'],'M. pectoralis major':['p22','①'],
+'M. deltoideus':['p19','① clavicularis, ② acromialis, ③ spinalis'],'M. latissimus dorsi':['p20','①'],'M. teres major':['p20','②'],'M. subscapularis':['p26','①'],
+'M. supraspinatus':['p27','②'],'M. infraspinatus':['p27','③'],'M. teres minor':['p27','④'],'M. coracobrachialis':['p22','②'],
+'M. biceps brachii':['p18','①'],'M. brachialis':['p18','②'],'M. triceps brachii':['p29','①'],'M. anconeus':['p29','②'],
+'M. brachioradialis':['p34','①'],'M. extensor carpi radialis longus':['p34','②'],'M. extensor carpi radialis brevis':['p34','③'],
+'M. extensor digitorum':['p33','①'],'M. extensor digiti minimi':['p33','②'],'M. extensor carpi ulnaris':['p33','③'],
+'M. supinator':['p30','①'],'M. abductor pollicis longus':['p30','②'],'M. extensor pollicis brevis':['p30','③'],'M. extensor pollicis longus':['p30','④'],'M. extensor indicis':['p30','⑤'],
+'M. pronator teres':['p31','①'],'M. flexor digitorum superficialis':['p31','②'],'M. flexor carpi radialis':['p31','③'],'M. flexor carpi ulnaris':['p31','④'],'M. palmaris longus':['p31','⑤'],
+'M. flexor digitorum profundus':['p32','①'],'M. flexor pollicis longus':['p32','②'],'M. pronator quadratus':['p32','③'],
+'M. iliopsoas':['p11','① psoas major, ② iliacus, ③ iliopsoas'],'M. gluteus maximus':['p09','①'],'M. gluteus medius':['p09','②'],'M. gluteus minimus':['p09','③'],
+'M. tensor fasciae latae':['p09','④'],'M. piriformis':['p09','⑤'],'M. obturatorius internus':['p10','①'],'Mm. gemelli':['p10','②'],'M. quadratus femoris':['p10','③'],
+'M. obturatorius externus':['p07','①'],'M. sartorius':['p12','①'],'M. quadriceps femoris':['p12','②'],'M. pectineus':['p07','②'],'M. adductor longus':['p07','③'],
+'M. adductor brevis':['p07','④'],'M. adductor magnus':['p07','⑤'],'M. adductor minimus':['p07','⑥'],'M. gracilis':['p07','⑦'],
+'M. biceps femoris':['p08','①'],'M. semimembranosus':['p08','②'],'M. semitendinosus':['p08','③'],'M. popliteus':['p08','④'],
+'M. tibialis anterior':['p14','①'],'M. extensor digitorum longus':['p14','②'],'M. extensor hallucis longus':['p14','③'],
+'M. fibularis longus':['p13','①'],'M. fibularis brevis':['p13','②'],'M. fibularis tertius':['p13','③'],
+'M. triceps surae':['p16','①'],'M. plantaris':['p16','②'],'M. tibialis posterior':['p15','①'],'M. flexor digitorum longus':['p15','②'],'M. flexor hallucis longus':['p15','③']};
+function figHTML(m){ const f=IMG[m.n]; if(!f) return '';
+  return `<figure class="fig"><button class="figbtn" id="figbtn" aria-label="Abbildung vergrößern"><img src="img/${f[0]}.webp" alt="Abbildung ${esc(m.n)} aus dem Skript"></button><figcaption>${f[1]?'In der Abbildung: '+esc(f[1]):'Abbildung aus deinem Skript'} · zum Vergrößern antippen</figcaption></figure>`; }
+
+
+/* ---------- Begriffe vergleichen ---------- */
+const NUMW={eins:'1',zwei:'2',drei:'3',vier:'4',fuenf:'5',sechs:'6',sieben:'7',acht:'8',neun:'9',zehn:'10',elf:'11',zwoelf:'12'};
+const ORD={erst:'1',zweit:'2',dritt:'3',viert:'4',fuenft:'5',sechst:'6',siebent:'7',siebt:'7',acht:'8',neunt:'9',zehnt:'10',elft:'11',zwoelft:'12'};
+const ENDS=['','e','en','er','es','em','n','r','s'];
+const ROM={i:'1',ii:'2',iii:'3',iv:'4',v:'5',vi:'6',vii:'7',viii:'8',ix:'9',x:'10',xi:'11',xii:'12'};
+const STOP=new Set('der die das des dem den ein eine einer eines einem und oder sowie sowohl auch als am an im in ins von vom zur zum zu bei mit bis ueber auf aus nach dabei daher gleicher gleiche teilweise gelegentlich jeweils gesamter gesamte muskel alle aller saemtlicher teil entspringen inserieren verlaufen verlaeuft ausnahme proc procc lig musculus musculi nervus nervi processus ligamentum ramus rami ihr ihrer seines seiner sich ist wird the'.split(' '));
+function lowerDe(s){return s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').normalize('NFD').replace(/[̀-ͯ]/g,'')}
+function mapTok(t){
+  if(NUMW[t]) return NUMW[t];
+  for(const st in ORD){ if(t.startsWith(st) && ENDS.includes(t.slice(st.length))) return ORD[st]; }
+  if(ROM[t]) return ROM[t];
+  if(/^t\d/.test(t)) return 'th'+t.slice(1);
+  return t;
+}
+function toks(str){
+  const raw=lowerDe(str).split(/[^a-z0-9]+/).filter(Boolean).map(mapTok);
+  const out=[];
+  for(let i=0;i<raw.length;i++){
+    const t=raw[i];
+    if(['c','th','t','l','s'].includes(t) && /^\d+$/.test(raw[i+1]||'')){ out.push((t==='t'?'th':t)+raw[i+1]); i++; }
+    else out.push(t);
+  }
+  return out;
+}
+function keep(t){return !STOP.has(t) && (t.length>=3 || /\d/.test(t))}
+function parseItem(s){
+  const note=s.startsWith('!'); const body=note?s.slice(1).trim():s;
+  const k=body.indexOf(' :: ');
+  return {note, label:k>=0?body.slice(0,k):'', text:k>=0?body.slice(k+4):body};
+}
+function keyString(s){ // Klammern weglassen, außer reinen Segmentangaben wie (C5–7)
+  return s.replace(/\(([^()]*)\)/g,(m,inner)=>/^[\sCSLTh\d,–\-]+$/.test(inner)?' '+inner+' ':' ');
+}
+function keysFor(items){
+  const set=new Set();
+  items.forEach(raw=>{const it=parseItem(raw); if(it.note) return; toks(keyString(it.label+' '+it.text)).filter(keep).forEach(t=>set.add(t));});
+  return [...set];
+}
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+function close(k,a){
+  if(k===a) return true;
+  if(/\d/.test(k)||/\d/.test(a)) return false;
+  const m=Math.min(k.length,a.length); let p=0; while(p<m && k[p]===a[p]) p++;
+  if(p===m && m>=3 && Math.abs(k.length-a.length)<=(m>=5?3:1)) return true;
+  if(m>=5 && p>=Math.max(5,m-2)) return true;
+  if(m>=5 && k.slice(0,3)===a.slice(0,3) && lev(k,a)<=(m>=9?2:1)) return true;
+  return false;
+}
+const SYN=[['kopf',['caput']],['lang',['longum','longus','longi']],['kurz',['breve','brevis','breves']],['schulterblatt',['scapula']],
+ ['schluesselbein',['clavicula']],['brustbein',['sternum','sterni']],['oberarmknochen',['humerus']],['oberschenkelknochen',['femur']],
+ ['elle',['ulna','ulnae']],['speiche',['radius','radii']],['schienbein',['tibia','tibiae']],['wadenbein',['fibula','fibulae']],
+ ['kreuzbein',['sacrum','sacri']],['darmbein',['ilium','iliaca']],['sitzbein',['ischii','ischiadicum']],['schambein',['pubis']],
+ ['beug',['flexion']],['streck',['extension']],['hinterhaupt',['occipitale']],['brustwirbel',['bws']],['halswirbel',['hws']],['lendenwirbel',['lws']]];
+function grade(items,answer){
+  const keys=keysFor(items); const ans=[];
+  toks(answer).forEach(t=>{ ans.push(t); for(const [p,syn] of SYN) if(t.startsWith(p)) ans.push(...syn); });
+  const hits=new Set(keys.filter(k=>ans.some(a=>close(k,a))));
+  return {keys,hits,pct:keys.length?hits.size/keys.length:0};
+}
+
+
+/* ---------- Vorlesen ---------- */
+const synth=window.speechSynthesis||null; let deVoice=null, autoRead=true;
+function pickVoice(){ if(!synth) return; const v=synth.getVoices(); deVoice=v.find(x=>/^de(-|_)DE/i.test(x.lang))||v.find(x=>/^de/i.test(x.lang))||null; }
+if(synth){ pickVoice(); synth.onvoiceschanged=pickVoice; }
+function ttsText(s){
+  return s.replace(/^!\s*/,'').replace(/\bMm\./g,'Musculi').replace(/\bM\./g,'Musculus').replace(/\bNn\./g,'Nervi').replace(/\bN\./g,'Nervus')
+   .replace(/\bProcc\./g,'Processus').replace(/\bProc\./g,'Processus').replace(/\bLig\./g,'Ligamentum').replace(/\bRr\./g,'Rami').replace(/\bR\./g,'Ramus')
+   .replace(/\bn\. radialis/g,'nervi radialis').replace(/\bu\./g,'und').replace(/HWS/g,'Halswirbelsäule').replace(/BWS/g,'Brustwirbelsäule').replace(/LWS/g,'Lendenwirbelsäule')
+   .replace(/\bTh(\d)/g,'T $1').replace(/\b([CLS])(\d)/g,'$1 $2').replace(/–/g,' bis ').replace(/ :: /g,': ').replace(/[„“]/g,'');
+}
+function speak(text){
+  if(!synth) return; try{ synth.cancel(); const u=new SpeechSynthesisUtterance(ttsText(text)); u.lang='de-DE'; if(deVoice) u.voice=deVoice; u.rate=0.95; synth.speak(u);}catch(e){}
+}
+
+/* ---------- Spracheingabe ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null; let rec=null, recOn=false;
+function stopRec(){ if(rec){ try{rec.stop()}catch(e){} } recOn=false; const b=document.getElementById('mic'); if(b) b.classList.remove('on'); }
+function micHint(msg,warn){ const h=document.getElementById('micHint'); if(h){ h.textContent=msg; h.classList.toggle('warn',!!warn);} }
+function toggleMic(){
+  const ta=document.getElementById('answer');
+  if(recOn){ stopRec(); return; }
+  if(!SR){ micHint('Spracheingabe ist in dieser Ansicht nicht verfügbar. Tippe ins Antwortfeld und nutze das Mikrofon deiner Handy-Tastatur zum Diktieren.',true); ta.focus(); return; }
+  try{
+    if(synth) synth.cancel();
+    rec=new SR(); rec.lang='de-DE'; rec.interimResults=true; rec.continuous=true;
+    const base=ta.value?ta.value.trim()+' ':'';
+    rec.onresult=e=>{ let t=''; for(let i=0;i<e.results.length;i++) t+=e.results[i][0].transcript; ta.value=base+t; };
+    rec.onerror=e=>{ stopRec(); if(e.error==='not-allowed'||e.error==='service-not-allowed'||e.error==='audio-capture') micHint('Das Mikrofon ist hier blockiert. Tippe ins Antwortfeld und nutze das Mikrofon deiner Handy-Tastatur zum Diktieren.',true); else if(e.error!=='aborted' && e.error!=='no-speech') micHint('Spracheingabe abgebrochen. Tippe nochmal auf das Mikrofon.',true); };
+    rec.onend=()=>{ recOn=false; const b=document.getElementById('mic'); if(b) b.classList.remove('on'); };
+    rec.start(); recOn=true; document.getElementById('mic').classList.add('on'); micHint('Ich höre zu … tippe auf das Mikrofon, wenn du fertig bist.');
+  }catch(e){ stopRec(); micHint('Spracheingabe konnte nicht starten. Nutze das Mikrofon deiner Handy-Tastatur.',true); }
+}
+
+
+/* ---------- Plattform: Website (Firebase) ---------- */
+function explain(){}
+const FB_VER='10.12.2';
+const FB={app:null,auth:null,db:null,user:null,loading:null,authReady:null};
+function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=res; s.onerror=()=>rej(new Error('load')); document.head.appendChild(s); }); }
+function fbConfigured(){ const c=window.FIREBASE_CONFIG; return !!(c&&c.apiKey&&!/DEIN|YOUR/.test(c.apiKey)&&c.databaseURL); }
+async function loadFirebase(){
+  if(FB.loading) return FB.loading;
+  FB.loading=(async()=>{
+    const b='https://www.gstatic.com/firebasejs/'+FB_VER+'/';
+    await loadScript(b+'firebase-app-compat.js');
+    await Promise.all([loadScript(b+'firebase-auth-compat.js'),loadScript(b+'firebase-database-compat.js')]);
+    FB.app=firebase.initializeApp(window.FIREBASE_CONFIG);
+    FB.auth=firebase.auth(); FB.db=firebase.database();
+    FB.authReady=new Promise(res=>{ const off=FB.auth.onAuthStateChanged(u=>{ FB.user=u; res(u); }); });
+    FB.auth.onAuthStateChanged(u=>{ FB.user=u; });
+    await FB.authReady;
+  })();
+  FB.loading.catch(()=>{ FB.loading=null; });
+  return FB.loading;
+}
+
+/* Raum-Adapter: bildet die Lobby und Duell-Räume auf die Realtime Database ab */
+function fbRoom(path){
+  const uid=FB.user.uid; const ref=FB.db.ref(path); const mine=ref.child(uid);
+  let peers=Object.freeze([]); const hs=new Set(), es=new Set(); let cur={}, disc=false, alive=true;
+  const cb=s=>{ const v=s.val()||{}; peers=Object.freeze(Object.keys(v).map(k=>Object.freeze({peer:k,by:k,isMe:k===uid,sameTab:k===uid,kind:'viewer',guest:false,presence:v[k]||{},updatedAt:0}))); hs.forEach(h=>{ try{h({peers})}catch(e){console.error(e)} }); };
+  ref.on('value',cb,()=>{ es.forEach(e=>e({code:'upstream_error',message:'Verbindung verloren'})); });
+  return {
+    name:path,
+    peers:()=>peers,
+    onPeers(h,e){ hs.add(h); if(e) es.add(e); setTimeout(()=>{ if(alive&&hs.has(h)) h({peers}); },0); return ()=>{ hs.delete(h); if(e) es.delete(e); }; },
+    presence(patch){
+      if(!alive) return Promise.resolve();
+      const n={...cur}; for(const k in patch){ if(patch[k]===null||patch[k]===undefined) delete n[k]; else n[k]=JSON.parse(JSON.stringify(patch[k])); }
+      cur=n; if(!disc){ disc=true; mine.onDisconnect().remove(); }
+      return mine.set(cur);
+    },
+    leave(){ alive=false; ref.off('value',cb); hs.clear(); es.clear(); mine.onDisconnect().cancel(); return mine.remove(); },
+    join(name){ return Promise.resolve(fbRoom('rooms/'+name)); },
+    connected:()=>true
+  };
+}
+
+const AUTH_ERR={'auth/invalid-email':'Diese E-Mail-Adresse ist ungültig.','auth/user-not-found':'E-Mail oder Passwort stimmt nicht.','auth/wrong-password':'E-Mail oder Passwort stimmt nicht.',
+  'auth/invalid-credential':'E-Mail oder Passwort stimmt nicht.','auth/invalid-login-credentials':'E-Mail oder Passwort stimmt nicht.','auth/email-already-in-use':'Mit dieser E-Mail gibt es schon ein Konto. Melde dich an.',
+  'auth/weak-password':'Das Passwort braucht mindestens 6 Zeichen.','auth/too-many-requests':'Zu viele Versuche. Warte kurz und versuch es dann nochmal.','auth/network-request-failed':'Keine Internetverbindung.',
+  'auth/missing-password':'Bitte gib ein Passwort ein.','auth/operation-not-allowed':'Die Anmeldung mit E-Mail ist in Firebase noch nicht aktiviert.'};
+let authMode='login';
+function renderAuth(msg){
+  S.phase='auth'; DUEL.view='auth'; stopRec();
+  setBack('Lernen',renderStart);
+  const reg=authMode==='register';
+  view.innerHTML=`<div class="stack">
+    <div><h1 class="large">${reg?'Konto erstellen':'Anmelden'}</h1><p class="sub">Für Duelle brauchst du ein Konto. Zum Lernen nicht.</p></div>
+    <div class="seg" role="group" aria-label="Anmelden oder registrieren"><button data-m="login" aria-pressed="${!reg}">Anmelden</button><button data-m="register" aria-pressed="${reg}">Registrieren</button></div>
+    <form class="stack-sm" id="authForm" novalidate>
+      ${reg?'<label class="srlabel" for="aName">Name</label><input class="field" id="aName" autocomplete="nickname" maxlength="24" placeholder="Name (sehen deine Gegner)" required>':''}
+      <label class="srlabel" for="aMail">E-Mail</label><input class="field" id="aMail" type="email" autocomplete="email" inputmode="email" placeholder="E-Mail" required>
+      <label class="srlabel" for="aPass">Passwort</label><input class="field" id="aPass" type="password" autocomplete="${reg?'new-password':'current-password'}" placeholder="Passwort${reg?' (mind. 6 Zeichen)':''}" required>
+      <p class="hint" id="authHint" role="status"></p>
+      <button class="btn primary" id="aGo" type="submit">${reg?'Konto erstellen':'Anmelden'}</button>
+    </form>
+    ${reg?'':'<button class="link" id="aReset" style="align-self:center">Passwort vergessen?</button>'}
+  </div>`;
+  const hint=(t,w)=>{ const h=view.querySelector('#authHint'); h.textContent=t; h.classList.toggle('warn',!!w); };
+  if(msg) hint(msg,true);
+  view.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ authMode=b.dataset.m; renderAuth(); });
+  view.querySelector('#authForm').onsubmit=async e=>{
+    e.preventDefault();
+    const mail=view.querySelector('#aMail').value.trim(), pass=view.querySelector('#aPass').value;
+    const nm=reg?view.querySelector('#aName').value.trim():'';
+    if(reg&&!nm){ hint('Bitte gib einen Namen ein.',true); return; }
+    const btn=view.querySelector('#aGo'); btn.disabled=true; hint('');
+    try{
+      if(reg){ const c=await FB.auth.createUserWithEmailAndPassword(mail,pass); await c.user.updateProfile({displayName:nm}); lsSet('mt-nick',nm); }
+      else await FB.auth.signInWithEmailAndPassword(mail,pass);
+      FB.user=FB.auth.currentUser; resetLobby(); openDuel();
+    }catch(err){ btn.disabled=false; hint(AUTH_ERR[err&&err.code]||'Das hat nicht geklappt. Versuch es nochmal.',true); }
+  };
+  const rs=view.querySelector('#aReset');
+  if(rs) rs.onclick=async()=>{ const mail=view.querySelector('#aMail').value.trim(); if(!mail){ hint('Gib zuerst deine E-Mail-Adresse ein.',true); return; }
+    try{ await FB.auth.sendPasswordResetEmail(mail); hint('Wir haben dir eine E-Mail zum Zurücksetzen geschickt.'); }catch(err){ hint(AUTH_ERR[err&&err.code]||'Das hat nicht geklappt.',true); } };
+}
+
+const PLATFORM={name:'web',explain:false,
+  offlineText:'Für das Duell brauchst du eine Internetverbindung. Lernen geht auch offline.',
+  shareHint:'Schick deinen Freunden den Link zu dieser Seite. Sobald sie angemeldet sind, erscheinen sie hier.',
+  async ensureAuth(){
+    if(!fbConfigured()){ renderLobbyNote('Das Duell ist noch nicht eingerichtet. Es fehlt die Firebase-Konfiguration.'); return false; }
+    if(!navigator.onLine){ renderLobbyNote(this.offlineText); return false; }
+    renderLobbyNote(null,true);
+    try{ await loadFirebase(); }catch(e){ renderLobbyNote('Die Verbindung zum Duell-Server hat nicht geklappt. Prüfe dein Internet und versuch es nochmal.'); return false; }
+    if(!FB.user){ renderAuth(); return false; }
+    return true;
+  },
+  async connect(){
+    if(!FB.user) return null;
+    return {room:fbRoom('lobby'),name:FB.user.displayName||''};
+  },
+  accountRow(){ return FB.user?`<section class="group"><div class="row"><span class="label"><span>Angemeldet</span><small>${esc(FB.user.email||'')}</small></span><button class="btn tinted small" id="logout">Abmelden</button></div></section>`:''; },
+  bindAccount(){ const b=document.getElementById('logout'); if(b) b.onclick=async()=>{ try{ if(DUEL.room) await DUEL.room.leave(); }catch(e){} resetLobby(); await FB.auth.signOut(); lsSet('mt-nick',''); renderStart(); }; }
+};
+function renderLobbyNote(text,loading){
+  S.phase='duel'; DUEL.view='note'; setBack('Lernen',renderStart);
+  view.innerHTML=`<div class="stack"><div><h1 class="large">Duell</h1></div>${loading?'<section class="card center"><div class="spinner" aria-hidden="true"></div><p class="sub" style="margin:0">Verbinde …</p></section>':`<section class="card"><p style="margin:0">${esc(text)}</p><button class="btn tinted" id="retry">Erneut versuchen</button></section>`}</div>`;
+  const r=view.querySelector('#retry'); if(r) r.onclick=()=>openDuel();
+}
+if('serviceWorker' in navigator && location.protocol==='https:'){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+
+/* ---------- Icons ---------- */
+const IC={
+  chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>',
+  check:'<svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>',
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  part:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>',
+  bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'
+};
+
+/* ---------- Zustand ---------- */
+const S={ regions:new Set(Object.keys(REG)), cats:new Set(['U','A','F','I']), random:true,
+  queue:[], qi:0, fi:0, phase:'start', results:{}, ui:{regOpen:false,pickOpen:false,q:''} };
+function fieldsFor(m){ return ORDER.filter(k=>{ if(!m[k]) return false; if(k==='UA') return S.cats.has('U')||S.cats.has('A'); return S.cats.has(k); }); }
+function selected(){ return M.filter(m=>S.regions.has(m.r) && fieldsFor(m).length); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const view=document.getElementById('view');
+const cls=p=>p>=0.8?'good':p>=0.5?'part':'bad';
+function nameHTML(n){ const m=n.match(/^(Mm?\.)\s+(.*)$/); return m?`<small>${m[1]}</small>${esc(m[2])}`:esc(n); }
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+/* ---------- Kopfzeile ---------- */
+const barBack=document.getElementById('navBack');
+function setBack(label,fn){ if(!fn){ barBack.hidden=true; barBack.onclick=null; return; } barBack.hidden=false; barBack.querySelector('span').textContent=label; barBack.onclick=fn; }
+
+/* ---------- Startansicht ---------- */
+function regionValue(){ const n=S.regions.size, all=Object.keys(REG).length; return n===all?'Alle':n===0?'Keine':`${n} von ${all}`; }
+function renderStart(){
+  S.phase='start'; stopRec(); setBack(null);
+  if(typeof DUEL!=='undefined') DUEL.view='off';
+  const counts={}; M.forEach(m=>counts[m.r]=(counts[m.r]||0)+1);
+  const n=selected().length;
+  const regRows=Object.keys(REG).map(r=>`<button class="row" role="menuitemcheckbox" data-reg="${r}" aria-checked="${S.regions.has(r)}"><span class="label">${esc(REG[r])}</span><span class="count">${counts[r]}</span>${IC.check}</button>`).join('');
+  const catRows=['U','A','F','I'].map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k].label}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
+  view.innerHTML=`<div class="stack">
+    <div><h1 class="large">Muskeltrainer</h1><p class="sub">${M.length} Muskeln · Ursprung, Ansatz, Funktion, Innervation</p></div>
+
+    <section class="group">
+      <button class="row" id="regRow" aria-expanded="${S.ui.regOpen}" aria-controls="regList"><span class="label">Regionen</span><span class="value">${regionValue()}</span>${IC.chev}</button>
+      <div class="sublist" id="regList" ${S.ui.regOpen?'':'hidden'}>${regRows}
+        <div class="tools"><button class="link" id="regAll">Alle auswählen</button><button class="link" id="regNone">Keine</button></div></div>
+    </section>
+
+    <p class="group-label">Abfragen</p>
+    <section class="group">${catRows}</section>
+
+    <p class="group-label">Reihenfolge</p>
+    <div class="seg" role="group" aria-label="Reihenfolge"><button data-ord="1" aria-pressed="${S.random}">Zufällig</button><button data-ord="0" aria-pressed="${!S.random}">Wie im Skript</button></div>
+
+    <div class="stack-sm">
+      <button class="btn primary" id="go" ${n?'':'disabled'}>Abfrage starten</button>
+      <p class="footnote">${n} ${n===1?'Muskel':'Muskeln'} ausgewählt</p>
+    </div>
+
+    <section class="group">
+      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Duell gegen Freunde<small>10 Runden live · 30 Sekunden pro Frage</small></span>${IC.chev}</button>
+    </section>
+
+    <section class="group">
+      <button class="row" id="pickRow" aria-expanded="${S.ui.pickOpen}" aria-controls="pickList"><span class="label">Einzelnen Muskel üben</span>${IC.chev}</button>
+      <div class="sublist" id="pickList" ${S.ui.pickOpen?'':'hidden'}>
+        <div class="search"><label class="srlabel" for="mSearch">Muskel suchen</label><input id="mSearch" class="field" type="search" placeholder="Muskel suchen" autocomplete="off" value="${esc(S.ui.q)}"></div>
+        <div class="muscles" id="mList"></div>
+      </div>
+    </section>
+  </div>`;
+  const rerender=()=>{ const y=window.scrollY; renderStart(); window.scrollTo(0,y); };
+  view.querySelector('#regRow').onclick=()=>{ S.ui.regOpen=!S.ui.regOpen; rerender(); };
+  view.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{ const r=b.dataset.reg; S.regions.has(r)?S.regions.delete(r):S.regions.add(r); rerender(); });
+  view.querySelector('#regAll').onclick=()=>{ Object.keys(REG).forEach(r=>S.regions.add(r)); rerender(); };
+  view.querySelector('#regNone').onclick=()=>{ S.regions.clear(); rerender(); };
+  view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return; S.cats.has(k)?S.cats.delete(k):S.cats.add(k); rerender(); });
+  view.querySelectorAll('[data-ord]').forEach(b=>b.onclick=()=>{ S.random=b.dataset.ord==='1'; rerender(); });
+  view.querySelector('#go').onclick=()=>start(selected());
+  view.querySelector('#duel').onclick=()=>{ if(synth) synth.cancel(); openDuel(); };
+  view.querySelector('#pickRow').onclick=()=>{ S.ui.pickOpen=!S.ui.pickOpen; rerender(); };
+  const si=view.querySelector('#mSearch');
+  si.oninput=()=>{ S.ui.q=si.value; renderMuscleList(); };
+  renderMuscleList();
+}
+function renderMuscleList(){
+  const box=document.getElementById('mList'); if(!box) return;
+  const q=lowerDe(S.ui.q.trim());
+  const hit=m=>!q||lowerDe(m.n+' '+(m.h||'')).includes(q);
+  let html='';
+  Object.keys(REG).forEach(r=>{ const ms=M.filter(m=>m.r===r&&hit(m)); if(!ms.length) return;
+    html+=`<div class="mgroup">${esc(REG[r])}</div>`+ms.map(m=>`<button class="row" data-one="${m.id}"><span class="label">${esc(m.n)}</span>${IC.chev}</button>`).join(''); });
+  box.innerHTML=html||'<p class="hint" style="padding:12px 32px">Kein Muskel gefunden.</p>';
+  box.querySelectorAll('[data-one]').forEach(b=>b.onclick=()=>start([M[+b.dataset.one]],true));
+}
+function start(list,single){
+  S.queue=single?list.slice():(S.random?shuffle(list.slice()):list.slice());
+  S.qi=0; S.fi=0; S.results={}; S.queue.forEach(m=>S.results[m.id]={});
+  renderAsk(true);
+}
+
+/* ---------- Abfrage ---------- */
+function headHTML(m){
+  const fs=fieldsFor(m); const r=S.results[m.id];
+  const done=S.qi/S.queue.length*100;
+  return `
+  <div class="progress"><span>${S.qi+1} von ${S.queue.length}</span><div class="track"><span style="width:${done}%"></span></div></div>
+  <article class="card">
+    <span class="pill neutral">${esc(REG[m.r])}</span>
+    <h2 class="title-xl">${nameHTML(m.n)}</h2>
+    ${m.h?`<p class="sub" style="margin:0">${esc(m.h)}</p>`:''}
+    ${synth?`<button class="btn tinted small" id="sayName">${IC.speaker}Vorlesen</button>`:''}
+  </article>
+  ${fs.length>1?`<nav class="steps" aria-label="Fragen zu diesem Muskel">${fs.map((k,i)=>{const res=r[k]; const c=i===S.fi&&!res?'cur':res?cls(res.pct):''; return `<div class="step ${c}">${FIELD[k].short}</div>`}).join('')}</nav>`:''}`;
+}
+function bindHead(m){
+  setBack('Beenden',()=>{ if(synth) synth.cancel(); renderEnd(); });
+  const s=view.querySelector('#sayName'); if(s) s.onclick=()=>speak(m.n);
+}
+function renderAsk(newMuscle){
+  S.phase='ask'; stopRec();
+  const m=S.queue[S.qi]; const fk=fieldsFor(m)[S.fi];
+  view.innerHTML=`<div class="stack">${headHTML(m)}
+  <section class="stack-sm">
+    <p class="question">${esc(FIELD[fk].q)}</p>
+    <div class="answerbox">
+      <label for="answer" class="srlabel">Deine Antwort</label>
+      <textarea id="answer" placeholder="Sprich oder tippe deine Antwort"></textarea>
+      <button class="mic" id="mic" aria-label="Antwort einsprechen">${IC.mic}</button>
+    </div>
+    <p class="hint" id="micHint"></p>
+  </section>
+  <div class="stack-sm"><button class="btn primary" id="check">Prüfen</button><button class="btn plain" id="dunno">Weiß ich nicht</button></div>
+  </div>`;
+  bindHead(m);
+  view.querySelector('#mic').onclick=toggleMic;
+  view.querySelector('#check').onclick=()=>{ const a=view.querySelector('#answer').value.trim(); if(!a){ micHint('Sprich oder tippe zuerst eine Antwort, oder tippe auf „Weiß ich nicht“.',true); return; } showResult(a,false); };
+  view.querySelector('#dunno').onclick=()=>showResult(view.querySelector('#answer').value.trim(),true);
+  window.scrollTo({top:0});
+  if(autoRead) speak((newMuscle?m.n+'. ':'')+FIELD[fk].label+'?');
+}
+function highlight(text,keys,hits){
+  return text.split(/([0-9A-Za-zÀ-ÖØ-öø-ÿ]+)/).map((w,i)=>{
+    if(i%2===0) return esc(w);
+    const t=toks(w)[0]; if(t && keys.has(t)) return `<span class="k ${hits.has(t)?'hit':'miss'}">${esc(w)}</span>`;
+    return esc(w);
+  }).join('');
+}
+function solutionHTML(items,keys,hits){
+  return items.map(s=>{const it=parseItem(s); return it.note?`<li class="note">${esc(it.text)}</li>`:`<li>${it.label?`<b>${highlight(it.label,keys,hits)}:</b> `:''}${highlight(it.text,keys,hits)}</li>`}).join('');
+}
+function showResult(answer,dunno){
+  stopRec(); if(synth) synth.cancel(); S.phase='result';
+  const m=S.queue[S.qi]; const fs=fieldsFor(m); const fk=fs[S.fi];
+  const g=dunno?{...grade(m[fk],''),pct:0}:grade(m[fk],answer);
+  S.results[m.id][fk]=g;
+  const keys=new Set(g.keys);
+  const vc=dunno?'bad':cls(g.pct); const verdict=dunno?'Hier ist die Lösung':(g.pct>=0.8?'Stark!':g.pct>=0.5?'Teilweise richtig':g.pct>0?'Ausbaufähig':'Noch nicht');
+  const lastField=S.fi===fs.length-1, lastMuscle=S.qi===S.queue.length-1;
+  const nextLabel=!lastField?`Weiter: ${FIELD[fs[S.fi+1]].label}`:(lastMuscle?'Ergebnis ansehen':'Nächster Muskel');
+  view.innerHTML=`<div class="stack">${headHTML(m)}
+  <section class="card">
+    <div class="verdict v-${vc}"><span class="vicon">${IC[vc==='good'?'ok':vc]}</span><div><b>${verdict}</b><span>${dunno?esc(FIELD[fk].label):`${g.hits.size} von ${g.keys.length} Fachbegriffen genannt`}</span></div></div>
+    ${answer?`<p class="yours">${esc(answer)}</p>`:''}
+    <h3 class="sectionhead">Lösung · ${esc(FIELD[fk].label)}</h3>
+    <ul class="sol">${solutionHTML(m[fk],keys,g.hits)}</ul>
+    ${dunno?'':`<div class="legend"><span><i style="background:var(--ok)"></i>genannt</span><span><i style="background:var(--warn)"></i>gefehlt</span></div>`}
+    ${figHTML(m)}
+    <div class="explain" id="explain" hidden></div>
+    <div class="btnrow">${synth?'<button class="btn tinted small" id="readSol">'+IC.speaker+'Vorlesen</button>':''}${PLATFORM.explain?'<button class="btn tinted small" id="explainBtn">Erklär mir das</button>':''}</div>
+  </section>
+  <button class="btn primary" id="next">${nextLabel}</button>
+  </div>`;
+  bindHead(m);
+  const box=view.querySelector('#explain');
+  const fb=view.querySelector('#figbtn'); if(fb) fb.onclick=()=>fb.closest('.fig').classList.toggle('big');
+  const rs=view.querySelector('#readSol'); if(rs) rs.onclick=()=>speak(FIELD[fk].label+'. '+m[fk].map(s=>{const it=parseItem(s);return (it.label?it.label+': ':'')+it.text}).join('. '));
+  const eb=view.querySelector('#explainBtn'); if(eb) eb.onclick=()=>explain(m,fk,dunno?'':answer,box);
+  view.querySelector('#next').onclick=()=>{ if(synth) synth.cancel();
+    if(!lastField){ S.fi++; renderAsk(false); }
+    else if(!lastMuscle){ S.qi++; S.fi=0; renderAsk(true); }
+    else renderEnd();
+  };
+  if(dunno&&PLATFORM.explain) explain(m,fk,answer,box);
+  else if(!dunno&&autoRead) speak(verdict+'. '+g.hits.size+' von '+g.keys.length+' Begriffen.');
+}
+
+/* ---------- Ende ---------- */
+function renderEnd(){
+  stopRec(); S.phase='end'; setBack('Start',renderStart);
+  const done=S.queue.filter(m=>Object.keys(S.results[m.id]||{}).length);
+  const rows=done.map(m=>{const r=S.results[m.id]; return `<div class="row"><span class="label">${esc(m.n)}</span><span class="badges">${fieldsFor(m).map(k=>r[k]?`<span class="badge ${cls(r[k].pct)}">${FIELD[k].short} ${Math.round(r[k].pct*100)} %</span>`:'').join('')}</span></div>`}).join('');
+  let tot=0,cnt=0; done.forEach(m=>Object.values(S.results[m.id]).forEach(g=>{tot+=g.pct;cnt++;}));
+  view.innerHTML=`<div class="stack">
+    <div><h1 class="large">Durchgang beendet</h1><p class="sub">${done.length} ${done.length===1?'Muskel':'Muskeln'} abgefragt${cnt?` · im Schnitt ${Math.round(tot/cnt*100)} % der Fachbegriffe`:''}</p></div>
+    ${rows?`<section class="group list">${rows}</section>`:''}
+    <div class="stack-sm"><button class="btn primary" id="again">Nochmal mit gleicher Auswahl</button><button class="btn plain" id="back">Zur Auswahl</button></div>
+  </div>`;
+  view.querySelector('#again').onclick=()=>start(selected());
+  view.querySelector('#back').onclick=renderStart;
+  window.scrollTo({top:0});
+}
+
+/* ---------- Vorlese-Schalter ---------- */
+const tt=document.getElementById('ttsToggle');
+if(!synth){ tt.hidden=true; autoRead=false; }
+tt.onclick=()=>{ autoRead=!autoRead; tt.setAttribute('aria-pressed',autoRead); tt.setAttribute('aria-label',autoRead?'Automatisches Vorlesen ist an':'Automatisches Vorlesen ist aus'); if(!autoRead&&synth) synth.cancel(); };
+
+/* ---------- Duell ---------- */
+const ROUNDS=10, QTIME=30000, REVEAL=7000, PASS=0.4;
+const DUEL={room:null,user:null,ready:false,loading:false,myPeer:null,nick:'',view:'off',outInv:null,decline:null,seen:new Set(),
+  named:null,role:null,code:null,unsub:[],timers:[],game:null,hg:null,lastKey:null,myAns:null,roundStart:0,
+  tInt:null,deadline:null,rTimer:null,revInt:null,hist:[],oppNick:'',target:null};
+
+/* Bewertung: richtig, wenn genug Fachbegriffe stimmen (Tippfehler werden toleriert, Zahlen und Anteil-Namen zählen weniger) */
+function evalAns(items,tx,t){
+  const g=grade(items,tx||'');
+  const textKeys=new Set(keysFor(items.map(x=>{const it=parseItem(x); return it.note?x:it.text;})));
+  let tot=0,hit=0; g.keys.forEach(k=>{const w=(/\d/.test(k)?0.5:1)*(textKeys.has(k)?1:0.3); tot+=w; if(g.hits.has(k)) hit+=w;});
+  const ok=!!tx && tot>0 && hit/tot>=PASS;
+  const bonus=ok?(t<=10000?2:t<=20000?1:0):0;
+  return {tx:(tx||'').slice(0,200),ok,pt:ok?1+bonus:0,bonus,t:Math.min(t,QTIME)};
+}
+function pickQs(){
+  return shuffle(M.slice()).slice(0,ROUNDS).map(m=>{const ks=ORDER.filter(k=>m[k]); return [m.id,ks[Math.floor(Math.random()*ks.length)]];});
+}
+function newCode(){return String(Math.floor(1000+Math.random()*9000));}
+const isHost=()=>DUEL.role==='host';
+const curGame=()=>isHost()?DUEL.game:DUEL.hg;
+const myNick=()=>(DUEL.nick||'').trim()||'Spieler';
+const oppName=()=>DUEL.oppNick||'Gegner';
+
+/* ----- Einstieg ----- */
+async function openDuel(){
+  if(PLATFORM.ensureAuth && !(await PLATFORM.ensureAuth())) return;
+  initLobby();
+  renderLobby();
+}
+
+/* ----- Lobby ----- */
+async function initLobby(){
+  if(DUEL.ready||DUEL.loading) return;
+  DUEL.loading=true;
+  const conn=await PLATFORM.connect().catch(()=>null);
+  DUEL.loading=false;
+  if(!conn||!conn.room){ DUEL.failed=true; if(DUEL.view==='lobby') renderLobby(); return; }
+  DUEL.failed=false; DUEL.ready=true; DUEL.room=conn.room;
+  let nm=lsGet('mt-nick'); if(!nm) nm=conn.name||'';
+  DUEL.nick=(nm||'').slice(0,24);
+  DUEL.room.onPeers(ch=>{ const me=ch.peers.find(p=>p.sameTab); if(me) DUEL.myPeer=me.peer; onLobbyPeers(); },()=>{});
+  pushLobby();
+  if(DUEL.view==='lobby') renderLobby();
+}
+function resetLobby(){ DUEL.ready=false; DUEL.failed=false; DUEL.room=null; DUEL.myPeer=null; }
+function pushLobby(){
+  if(!DUEL.room) return;
+  DUEL.room.presence({app:'mt',nick:myNick(),busy:DUEL.view==='game'||DUEL.view==='wait',inv:DUEL.outInv||null,dec:DUEL.decline||null}).catch(()=>{});
+}
+function lobbyPeers(){ return DUEL.room?DUEL.room.peers().filter(p=>!p.isMe&&p.kind==='viewer'&&p.presence&&p.presence.app==='mt'):[]; }
+function onLobbyPeers(){
+  const ps=lobbyPeers();
+  if(DUEL.view==='wait'&&DUEL.outInv){
+    const d=ps.find(p=>p.presence.dec&&p.presence.dec.to===DUEL.myPeer&&p.presence.dec.code===DUEL.outInv.code);
+    if(d){ leaveDuel('Deine Herausforderung wurde abgelehnt.'); return; }
+  }
+  const inc=ps.find(p=>p.presence.inv&&p.presence.inv.to===DUEL.myPeer&&!DUEL.seen.has(p.presence.inv.code));
+  showInvite(inc||null);
+  if(DUEL.view==='lobby') renderOnline();
+}
+const inviteBar=document.getElementById('inviteBar');
+function showInvite(p){
+  if(!p||DUEL.view==='game'||DUEL.view==='wait'){ inviteBar.hidden=true; return; }
+  const code=p.presence.inv.code;
+  inviteBar.innerHTML=`<div class="sheet-in"><p><b>${esc(p.presence.nick||'Jemand')}</b> fordert dich zum Duell heraus.</p><div class="btnrow"><button class="btn plain" id="invNo">Ablehnen</button><button class="btn primary" id="invYes">Annehmen</button></div></div>`;
+  inviteBar.hidden=false;
+  inviteBar.querySelector('#invYes').onclick=()=>{ DUEL.seen.add(code); inviteBar.hidden=true; if(synth) synth.cancel(); joinDuel(code); };
+  inviteBar.querySelector('#invNo').onclick=()=>{ DUEL.seen.add(code); inviteBar.hidden=true; DUEL.decline={to:p.peer,code}; pushLobby();
+    setTimeout(()=>{ if(DUEL.decline&&DUEL.decline.code===code){ DUEL.decline=null; pushLobby(); } },15000); };
+}
+
+function renderLobby(msg){
+  stopRec(); clearRoundTimers(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
+  setBack('Lernen',()=>{ DUEL.view='off'; pushLobby(); renderStart(); });
+  const body=DUEL.room?`
+    <section class="stack-sm"><label class="group-label" style="margin:0 0 0 16px" for="nick">Dein Name im Duell</label><input id="nick" class="field" maxlength="24" autocomplete="nickname" placeholder="Name"></section>
+    <p class="group-label">Gerade online</p>
+    <section class="group list" id="onlineList"></section>
+    <p class="group-label">Mit Code spielen</p>
+    <section class="card">
+      <button class="btn primary" id="mkCode">Duell erstellen</button>
+      <div class="coderow"><input id="codeIn" class="field" style="background:var(--fill);box-shadow:none" inputmode="numeric" maxlength="4" placeholder="Code" aria-label="Duell-Code"><button class="btn tinted" id="joinCode">Beitreten</button></div>
+    </section>
+    ${PLATFORM.accountRow?PLATFORM.accountRow():''}`
+  :(DUEL.loading||(!DUEL.ready&&!DUEL.failed)?`<section class="card center"><div class="spinner" aria-hidden="true"></div><p class="sub" style="margin:0">Verbinde …</p></section>`
+  :`<section class="card"><p style="margin:0">${PLATFORM.offlineText}</p><button class="btn tinted" id="retry">Erneut versuchen</button></section>`);
+  view.innerHTML=`<div class="stack">
+    <div><h1 class="large">Duell</h1><p class="sub">10 Runden · gleiche Frage für beide · 30 Sekunden. Richtig gibt 1 Punkt, schnell einloggen bringt Bonus: unter 10 s +2, unter 20 s +1.</p></div>
+    ${body}
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`;
+  if(msg) setLobbyHint(msg,true);
+  const rt=view.querySelector('#retry'); if(rt) rt.onclick=()=>{ DUEL.failed=false; initLobby(); renderLobby(); };
+  if(PLATFORM.bindAccount) PLATFORM.bindAccount();
+  if(!DUEL.room) return;
+  const ni=view.querySelector('#nick'); ni.value=DUEL.nick;
+  let nt=null; ni.oninput=()=>{ DUEL.nick=ni.value.slice(0,24); lsSet('mt-nick',DUEL.nick); clearTimeout(nt); nt=setTimeout(pushLobby,500); };
+  view.querySelector('#mkCode').onclick=()=>hostDuel(newCode(),null);
+  const ci=view.querySelector('#codeIn');
+  const go=()=>{ const c=ci.value.replace(/\D/g,''); if(c.length!==4){ setLobbyHint('Der Code hat 4 Ziffern.',true); return; } joinDuel(c); };
+  view.querySelector('#joinCode').onclick=go; ci.onkeydown=e=>{ if(e.key==='Enter') go(); };
+  renderOnline();
+  onLobbyPeers();
+}
+function setLobbyHint(t,warn){ const h=document.getElementById('lobbyHint'); if(h){ h.textContent=t; h.classList.toggle('warn',!!warn);} }
+function renderOnline(){
+  const box=document.getElementById('onlineList'); if(!box) return;
+  const ps=lobbyPeers();
+  if(!ps.length){ box.innerHTML=`<div class="row"><span class="label"><span>Gerade ist niemand außer dir online.</span><small>${PLATFORM.shareHint}</small></span></div>`; return; }
+  const seen=new Set();
+  box.innerHTML=ps.filter(p=>{ const k=p.by||p.peer; if(seen.has(k)) return false; seen.add(k); return true; }).map(p=>`<div class="row"><i class="online${p.presence.busy?' busy':''}"></i><span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'im Duell':'bereit'}</small></span><button class="btn tinted small" data-ch="${esc(p.peer)}" ${p.presence.busy?'disabled':''}>Herausfordern</button></div>`).join('');
+  box.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{ const p=lobbyPeers().find(x=>x.peer===b.dataset.ch); if(p) hostDuel(newCode(),p); });
+}
+
+/* ----- Duell-Raum ----- */
+async function hostDuel(code,target){
+  DUEL.role='host'; DUEL.code=code; DUEL.view='wait';
+  DUEL.outInv=target?{to:target.peer,code}:null; DUEL.target=target?(target.presence.nick||'Spieler'):null;
+  pushLobby(); renderWait(); await enterRoom(code);
+}
+async function joinDuel(code){
+  DUEL.role='guest'; DUEL.code=code; DUEL.view='wait'; DUEL.outInv=null; DUEL.target=null;
+  pushLobby(); renderWait(); await enterRoom(code);
+}
+async function enterRoom(code){
+  let r;
+  try{ r=await DUEL.room.join('duel-'+code); }
+  catch(e){ leaveDuel('Dem Duell konnte nicht beigetreten werden. Versuch es gleich nochmal.'); return; }
+  if(DUEL.view!=='wait'||DUEL.code!==code){ r.leave().catch(()=>{}); return; }
+  DUEL.named=r;
+  DUEL.unsub.push(r.onPeers(()=>onDuelPeers(),()=>{ if(DUEL.named===r) leaveDuel('Die Verbindung zum Duell ist abgebrochen.'); }));
+  r.presence({role:DUEL.role,nick:myNick()}).catch(()=>{});
+  if(DUEL.role==='guest') DUEL.timers.push(setTimeout(()=>{ if(DUEL.named===r&&!hostPeer()) leaveDuel('Kein offenes Duell mit diesem Code gefunden.'); },9000));
+}
+function roomPeers(){ return DUEL.named?DUEL.named.peers():[]; }
+function hostPeer(){ return roomPeers().find(p=>!p.isMe&&p.presence&&p.presence.role==='host'); }
+function oppPeer(){ if(isHost()){ const g=DUEL.game; return g?roomPeers().find(p=>p.peer===g.op):null; } return hostPeer(); }
+function myRoomPeer(){ const me=roomPeers().find(p=>p.sameTab); return me?me.peer:DUEL.myPeer; }
+
+function onDuelPeers(){
+  if(!DUEL.named) return;
+  if(isHost()){
+    const g=DUEL.game;
+    if(!g){ const gp=roomPeers().find(p=>!p.isMe&&p.presence&&p.presence.role==='guest'); if(gp) startGame(gp.peer); return; }
+    const opp=oppPeer();
+    if(!opp){ if(g.ph!=='end') leaveDuel('Dein Gegner hat das Duell verlassen.'); return; }
+    DUEL.oppNick=opp.presence.nick||'Gegner';
+    hostCheck(); renderOppStatus();
+  } else {
+    const h=hostPeer();
+    if(!h){ if(DUEL.hg&&DUEL.hg.ph!=='end') leaveDuel('Dein Gegner hat das Duell verlassen.'); return; }
+    DUEL.oppNick=h.presence.nick||'Gegner';
+    const g=h.presence.g;
+    if(!g){ const s=document.getElementById('waitSub'); if(s) s.textContent='Verbunden. Gleich geht es los …'; return; }
+    if(g.op!==myRoomPeer()){ leaveDuel('Dieses Duell läuft schon mit jemand anderem.'); return; }
+    guestState(g);
+  }
+}
+
+/* Host steuert den Ablauf */
+function startGame(op){
+  DUEL.outInv=null;
+  DUEL.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  DUEL.hist=[]; DUEL.view='game'; pushLobby();
+  const opp=oppPeer(); DUEL.oppNick=(opp&&opp.presence.nick)||'Gegner';
+  pushHost(); beginRound();
+}
+function pushHost(){ if(DUEL.named) DUEL.named.presence({role:'host',nick:myNick(),g:DUEL.game}).catch(()=>{}); }
+function beginRound(){ startRoundUI(DUEL.game); DUEL.deadline=setTimeout(hostReveal,QTIME+3000); }
+function hostCheck(){
+  const g=DUEL.game; if(!g||g.ph!=='q') return;
+  const opp=oppPeer(); const oa=opp&&opp.presence.a;
+  const oLocked=oa&&oa.g===g.id&&oa.r===g.r&&oa.lk;
+  if(DUEL.myAns&&oLocked) hostReveal();
+}
+function hostReveal(){
+  const g=DUEL.game; if(!g||g.ph!=='q') return;
+  clearRoundTimers(); stopRec();
+  if(!DUEL.myAns){ const ta=document.getElementById('answer'); DUEL.myAns={g:g.id,r:g.r,tx:(ta?ta.value:'').trim().slice(0,300),t:QTIME,lk:true}; }
+  const opp=oppPeer(); let oa=opp&&opp.presence.a;
+  if(!(oa&&oa.g===g.id&&oa.r===g.r)) oa={tx:'',t:QTIME};
+  const [mid,fk]=g.qs[g.r]; const items=M[mid][fk];
+  const h=evalAns(items,DUEL.myAns.tx,DUEL.myAns.t), o=evalAns(items,String(oa.tx||'').slice(0,300),Number(oa.t)||QTIME);
+  g.sc=[g.sc[0]+h.pt,g.sc[1]+o.pt]; g.ph='rev'; g.res={h,o};
+  pushHost(); showReveal(g);
+  DUEL.rTimer=setTimeout(()=>{
+    if(DUEL.game!==g) return;
+    delete g.res;
+    if(g.r+1>=ROUNDS){ g.ph='end'; pushHost(); showEnd(g); }
+    else { g.r++; g.ph='q'; pushHost(); beginRound(); }
+  },REVEAL);
+}
+
+/* Gast folgt dem Host */
+function guestState(g){
+  const prev=DUEL.hg; DUEL.hg=g;
+  const key=g.id+':'+g.r+':'+g.ph;
+  if(key===DUEL.lastKey){ renderOppStatus(); return; }
+  DUEL.lastKey=key;
+  if(!prev||prev.id!==g.id) DUEL.hist=[];
+  if(g.ph==='q'){ DUEL.view='game'; pushLobby(); startRoundUI(g); }
+  else if(g.ph==='rev'&&g.res){ clearRoundTimers(); stopRec(); showReveal(g); }
+  else if(g.ph==='end'){ clearRoundTimers(); showEnd(g); }
+}
+
+/* ----- Anzeige ----- */
+function scores(g){ return isHost()?[g.sc[0],g.sc[1]]:[g.sc[1],g.sc[0]]; }
+function scoreHTML(g){
+  const [a,b]=scores(g);
+  return `<div class="score"><div class="sc me"><small>Du</small><b>${a}</b></div><div class="sc mid">Runde ${Math.min(g.r+1,ROUNDS)} von ${ROUNDS}</div><div class="sc op"><small>${esc(oppName())}</small><b>${b}</b></div></div>`;
+}
+function renderWait(){
+  stopRec(); clearRoundTimers(); inviteBar.hidden=true;
+  setBack('Abbrechen',()=>leaveDuel());
+  const host=isHost();
+  view.innerHTML=`<div class="stack">
+    <section class="card center" style="padding-block:28px">
+      ${host&&!DUEL.target?`<p class="sectionhead">Dein Duell-Code</p><div class="codebig">${esc(DUEL.code)}</div><p class="sub" style="margin:0">Schick den Code deinem Freund. Er tippt im Duell auf „Beitreten“ und gibt ihn ein.</p>`:''}
+      ${host&&DUEL.target?`<p class="sectionhead">Herausforderung gesendet</p><p style="margin:0">Warte, bis <b>${esc(DUEL.target)}</b> annimmt …</p>`:''}
+      ${!host?`<p class="sectionhead">Duell ${esc(DUEL.code)}</p><p style="margin:0" id="waitSub">Verbinde …</p>`:''}
+      <div class="spinner" aria-hidden="true"></div>
+    </section>
+    <button class="btn plain" id="cancel">Abbrechen</button>
+  </div>`;
+  view.querySelector('#cancel').onclick=()=>leaveDuel();
+}
+function startRoundUI(g){
+  clearRoundTimers(); stopRec();
+  setBack('Aufgeben',()=>leaveDuel());
+  const [mid,fk]=g.qs[g.r]; const m=M[mid];
+  DUEL.myAns=null; DUEL.roundStart=performance.now();
+  view.innerHTML=`<div class="stack">${scoreHTML(g)}
+    <div class="tbar" aria-hidden="true"><span id="tfill"></span></div>
+    <article class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="pill">${esc(FIELD[fk].label)}</span><span class="count"><span id="tleft">30</span> s</span></div>
+      <h2 class="title-xl">${nameHTML(m.n)}</h2>${m.h?`<p class="sub" style="margin:0">${esc(m.h)}</p>`:''}
+    </article>
+    <section class="stack-sm">
+      <p class="question">${esc(FIELD[fk].q)}</p>
+      <div class="answerbox">
+        <label for="answer" class="srlabel">Deine Antwort</label>
+        <textarea id="answer" maxlength="300" placeholder="Sprich oder tippe deine Antwort"></textarea>
+        <button class="mic" id="mic" aria-label="Antwort einsprechen">${IC.mic}</button>
+      </div>
+      <p class="hint" id="micHint"></p>
+    </section>
+    <button class="btn primary" id="lock">Antwort einloggen</button>
+    <p class="opp" id="oppStat"><i></i>${esc(oppName())} denkt nach …</p>
+  </div>`;
+  view.querySelector('#mic').onclick=toggleMic;
+  view.querySelector('#lock').onclick=()=>lockAnswer();
+  window.scrollTo({top:0});
+  if(autoRead) speak(m.n+'. '+FIELD[fk].label+'?');
+  const fill=document.getElementById('tfill'), left=document.getElementById('tleft');
+  DUEL.tInt=setInterval(()=>{
+    const el=performance.now()-DUEL.roundStart, rest=Math.max(0,QTIME-el);
+    if(fill){ fill.style.width=(rest/QTIME*100)+'%'; fill.classList.toggle('low',rest<8000); }
+    if(left) left.textContent=Math.ceil(rest/1000);
+    if(rest<=0){ clearInterval(DUEL.tInt); DUEL.tInt=null; if(!DUEL.myAns) lockAnswer(); }
+  },200);
+  renderOppStatus();
+}
+function lockAnswer(){
+  const g=curGame(); if(!g||g.ph!=='q'||DUEL.myAns) return;
+  stopRec();
+  const ta=document.getElementById('answer');
+  const tx=(ta?ta.value:'').trim().slice(0,300);
+  const t=Math.min(Math.round(performance.now()-DUEL.roundStart),QTIME);
+  DUEL.myAns={g:g.id,r:g.r,tx,t,lk:true};
+  if(DUEL.named) DUEL.named.presence({a:DUEL.myAns}).catch(()=>{});
+  if(ta) ta.disabled=true;
+  const mic=document.getElementById('mic'); if(mic) mic.disabled=true;
+  const b=document.getElementById('lock'); if(b){ b.disabled=true; b.textContent=`Eingeloggt nach ${(t/1000).toFixed(1).replace('.',',')} s`; }
+  const h=document.getElementById('micHint'); if(h){ h.classList.remove('warn'); h.textContent=tx?'':'Keine Antwort abgegeben.'; }
+  if(isHost()) hostCheck();
+}
+function renderOppStatus(){
+  const el=document.getElementById('oppStat'); const g=curGame(); if(!el||!g||g.ph!=='q') return;
+  const o=oppPeer(); const a=o&&o.presence.a;
+  const locked=a&&a.g===g.id&&a.r===g.r&&a.lk;
+  el.innerHTML=locked?`<i class="done"></i>${esc(oppName())} hat eingeloggt`:`<i></i>${esc(oppName())} denkt nach …`;
+}
+function verdictHTML(label,r){
+  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':'Falsch'}</b><span>${r.ok?`+${r.pt}${r.bonus?` (inkl. ${r.bonus} Bonus)`:''}`:'+0'}</span></div><p>${r.tx?esc(r.tx):'<em>keine Antwort</em>'}</p><small class="tm">${(r.t/1000).toFixed(1).replace('.',',')} s</small></div>`;
+}
+function showReveal(g){
+  const [mid,fk]=g.qs[g.r]; const m=M[mid];
+  const mine=isHost()?g.res.h:g.res.o, theirs=isHost()?g.res.o:g.res.h;
+  if(!DUEL.hist.some(h=>h.r===g.r)) DUEL.hist.push({r:g.r,mid,fk,me:mine,op:theirs});
+  const gr=grade(m[fk],mine.tx); const keys=new Set(gr.keys);
+  const last=g.r+1>=ROUNDS;
+  view.innerHTML=`<div class="stack">${scoreHTML(g)}
+    <section class="card">
+      <span class="pill">${esc(FIELD[fk].label)}</span>
+      <h2 class="title-xl">${nameHTML(m.n)}</h2>
+      <div class="duo">${verdictHTML('Du',mine)}${verdictHTML(oppName(),theirs)}</div>
+      <h3 class="sectionhead">Lösung</h3>
+      <ul class="sol">${solutionHTML(m[fk],keys,gr.hits)}</ul>
+      ${figHTML(m)}
+    </section>
+    <p class="footnote" id="nextIn">${last?'Gleich kommt die Auswertung …':'Nächste Runde gleich …'}</p>
+  </div>`;
+  const fb=view.querySelector('#figbtn'); if(fb) fb.onclick=()=>fb.closest('.fig').classList.toggle('big');
+  window.scrollTo({top:0});
+  const t0=performance.now(); const ni=document.getElementById('nextIn');
+  DUEL.revInt=setInterval(()=>{ const s=Math.max(0,Math.ceil((REVEAL-(performance.now()-t0))/1000)); if(ni) ni.textContent=(last?'Auswertung in ':'Nächste Runde in ')+s+' s'; },250);
+  if(autoRead) speak((mine.ok?'Richtig':'Falsch')+'. '+oppName()+(theirs.ok?' richtig':' falsch')+'.');
+}
+function showEnd(g){
+  clearRoundTimers(); stopRec(); DUEL.view='game';
+  setBack('Lobby',()=>leaveDuel());
+  const [a,b]=scores(g);
+  const head=a>b?'Gewonnen!':a<b?'Verloren':'Unentschieden';
+  const rows=DUEL.hist.sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(FIELD[h.fk].label)}</small></span><span class="badges"><span class="badge ${h.me.ok?'good':'bad'}">Du +${h.me.pt}</span><span class="badge ${h.op.ok?'good':'bad'}">${esc(oppName())} +${h.op.pt}</span></span></div>`).join('');
+  view.innerHTML=`<div class="stack">
+    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h1 class="large" style="${a>b?'color:var(--accent)':''}">${head}</h1><p class="sub" style="font-size:20px;font-variant-numeric:tabular-nums">Du ${a} : ${b} ${esc(oppName())}</p></div>
+    <section class="group list">${rows}</section>
+    <div class="stack-sm">${isHost()?'<button class="btn primary" id="again">Revanche</button>':'<p class="footnote">Revanche? Dein Gegner kann eine neue Runde starten. Bleib einfach hier.</p>'}<button class="btn plain" id="leave">Duell verlassen</button></div>
+  </div>`;
+  const ag=view.querySelector('#again'); if(ag) ag.onclick=()=>{ const opp=oppPeer(); if(opp) startGame(opp.peer); else leaveDuel('Dein Gegner ist nicht mehr da.'); };
+  view.querySelector('#leave').onclick=()=>leaveDuel();
+  window.scrollTo({top:0});
+  if(autoRead) speak(head+'. '+a+' zu '+b+'.');
+}
+function clearRoundTimers(){
+  clearInterval(DUEL.tInt); DUEL.tInt=null; clearTimeout(DUEL.deadline); DUEL.deadline=null; clearInterval(DUEL.revInt); DUEL.revInt=null;
+}
+function leaveDuel(msg){
+  clearRoundTimers(); clearTimeout(DUEL.rTimer); DUEL.rTimer=null;
+  DUEL.timers.forEach(clearTimeout); DUEL.timers=[];
+  DUEL.unsub.forEach(u=>{try{u()}catch(e){}}); DUEL.unsub=[];
+  const r=DUEL.named; DUEL.named=null; if(r) r.leave().catch(()=>{});
+  DUEL.game=null; DUEL.hg=null; DUEL.lastKey=null; DUEL.myAns=null; DUEL.outInv=null; DUEL.role=null; DUEL.code=null; DUEL.target=null;
+  if(synth) synth.cancel();
+  renderLobby(msg);
+}
+
+renderStart();
+</script>
+</body>
+</html>

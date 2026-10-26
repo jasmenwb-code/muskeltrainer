@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "lobby": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.val() === null || newData.child('nick').isString()"
+      }
+    },
+    "rooms": {
+      "$room": {
+        ".read": "auth != null",
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      }
+    }
+  }
+}
