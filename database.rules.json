@@ -15,8 +15,11 @@
     },
     "users": {
       ".read": "auth != null",
-      ".indexOn": ["score"],
-      "$uid": { ".write": "auth != null && auth.uid === $uid" }
+      ".indexOn": ["score", "nameLower"],
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        "photo": { ".validate": "newData.isString() && newData.val().length < 60000" }
+      }
     },
     "codes": {
       ".read": "auth != null",

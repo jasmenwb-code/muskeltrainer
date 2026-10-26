@@ -273,11 +273,26 @@ details.more > *:not(summary){margin:0 18px 14px}
 .rank{width:28px;flex:none;text-align:center;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .me-row{background:var(--accent-soft)}
 .value b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Profilbilder */
+.avatar{position:relative;flex:none;width:36px;height:36px;border-radius:50%;display:inline-block}
+.avatar img,.avatar span{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;object-fit:cover;color:#fff;font-weight:700;font-size:14px;letter-spacing:.02em}
+.avatar.xl{width:96px;height:96px}
+.avatar.xl span{font-size:34px}
+.avatar .st{position:absolute;right:-1px;bottom:-1px;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);background:var(--fill-2)}
+.avatar .st.on{background:var(--ok)} .avatar .st.busy{background:var(--warn)}
+.avatarbtn{padding:0;overflow:hidden}
+.avatarbtn img{width:100%;height:100%;object-fit:cover;display:block}
+label.btn{cursor:pointer}
+.btn.plain.small{box-shadow:none;background:var(--fill)}
+
+#fResults:empty{display:none}
+.fcode{display:block;margin-top:2px}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="bar"><div class="left"><button class="navback" id="navBack" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span>Zurück</span></button></div><h1 class="brand" id="barTitle">Anatomy Duel</h1><div class="right"><button class="iconbtn" id="settingsBtn" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></header>
+  <header class="bar"><div class="left"><button class="navback" id="navBack" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span>Zurück</span></button></div><h1 class="brand" id="barTitle">Anatomy Duel</h1><div class="right"><button class="iconbtn avatarbtn" id="profileBtn" aria-label="Profil" title="Profil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button><button class="iconbtn" id="settingsBtn" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></header>
   <main id="view"></main>
 </div>
 <div class="sheet" id="inviteBar" role="alertdialog" aria-live="polite" hidden></div>
@@ -820,7 +835,7 @@ function renderAuth(msg){
     try{
       if(reg){ const c=await FB.auth.createUserWithEmailAndPassword(mail,pass); await c.user.updateProfile({displayName:nm}); lsSet('mt-nick',nm); }
       else await FB.auth.signInWithEmailAndPassword(mail,pass);
-      FB.user=FB.auth.currentUser; resetLobby(); openDuel();
+      FB.user=FB.auth.currentUser; lsSet('ad-auth','1'); resetLobby(); if(PLATFORM.afterAuth==='profile') openProfile(); else openDuel();
     }catch(err){ btn.disabled=false; hint(AUTH_ERR[err&&err.code]||'Das hat nicht geklappt. Versuch es nochmal.',true); }
   };
   const rs=view.querySelector('#aReset');
@@ -851,8 +866,10 @@ const PLATFORM={name:'web',title:'Anatomy Duel',explain:false,
   addFriendUid:uid=>addFriendUid(uid),
   onGameEnd:r=>saveGameResult(r),
   onNick:n=>syncName(n),
+  openProfile:()=>openProfile(),
+  avatarFor:(uid,name,busy)=>avatarFor(uid,name,busy),
   accountRow(){ return FB.user?`<section class="group"><div class="row"><span class="label"><span>Angemeldet</span><small>${esc(FB.user.email||'')}</small></span><button class="btn tinted small" id="logout">Abmelden</button></div></section>`:''; },
-  bindAccount(){ const b=document.getElementById('logout'); if(b) b.onclick=async()=>{ try{ if(DUEL.room) await DUEL.room.leave(); }catch(e){} resetLobby(); try{ FB.db.ref('friends/'+FB.user.uid).off(); }catch(e){} Object.assign(SOC,{profile:null,friends:{},info:{},h2h:{},ready:false,listening:false}); await FB.auth.signOut(); lsSet('mt-nick',''); renderStart(); }; }
+  bindAccount(){ const b=document.getElementById('logout'); if(b) b.onclick=async()=>{ try{ if(DUEL.room) await DUEL.room.leave(); }catch(e){} resetLobby(); try{ FB.db.ref('friends/'+FB.user.uid).off(); }catch(e){} Object.assign(SOC,{profile:null,friends:{},info:{},h2h:{},ready:false,listening:false}); await FB.auth.signOut(); lsSet('mt-nick',''); lsSet('ad-auth',''); setProfileIcon(null); renderStart(); }; }
 };
 function renderLobbyNote(text,loading){
   S.phase='duel'; DUEL.view='note'; setBack('Lernen',renderStart);
@@ -860,6 +877,11 @@ function renderLobbyNote(text,loading){
   const r=view.querySelector('#retry'); if(r) r.onclick=()=>openDuel();
 }
 if('serviceWorker' in navigator && location.protocol==='https:'){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+
+/* Wer schon angemeldet war, ist beim Öffnen der Seite direkt online (für Einladungen und Freundesliste) */
+if(lsGet('ad-auth')==='1'&&fbConfigured()&&navigator.onLine){
+  setTimeout(async()=>{ try{ await loadFirebase(); if(FB.user){ await ensureProfile(); initLobby(); } }catch(e){} },300);
+}
 
 /* ---------- Icons ---------- */
 const IC={
@@ -916,10 +938,15 @@ function renderSettings(){
 }
 
 /* ---------- Kopfzeile ---------- */
+const PROFILE_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 const barBack=document.getElementById('navBack');
 function setBack(label,fn){ if(!fn){ barBack.hidden=true; barBack.onclick=null; return; } barBack.hidden=false; barBack.setAttribute('aria-label',label); barBack.title=label; barBack.onclick=fn; }
 document.getElementById('barTitle').textContent=PLATFORM.title||'Muskeltrainer';
 document.getElementById('barTitle').onclick=()=>{ if(S.phase==='start') return; if(typeof DUEL!=='undefined'&&(DUEL.view==='game'||DUEL.view==='wait')) return; renderStart(); };
+const profileBtn=document.getElementById('profileBtn');
+if(!PLATFORM.openProfile) profileBtn.hidden=true;
+else profileBtn.onclick=()=>{ if(typeof DUEL!=='undefined'&&(DUEL.view==='game'||DUEL.view==='wait')) return; if(synth) synth.cancel(); PLATFORM.openProfile(); };
+function setProfileIcon(photo){ profileBtn.innerHTML=photo?`<img src="${photo}" alt="">`:PROFILE_SVG; profileBtn.classList.toggle('has-photo',!!photo); }
 document.getElementById('settingsBtn').onclick=()=>{ if(typeof DUEL!=='undefined'&&(DUEL.view==='game'||DUEL.view==='wait')) return; if(synth) synth.cancel(); renderSettings(); };
 
 /* ---------- Startansicht ---------- */
@@ -950,14 +977,6 @@ function renderStart(){
       <button class="btn primary" id="go" ${n?'':'disabled'}>Abfrage starten</button>
       <p class="footnote">${n} ${n===1?'Muskel':'Muskeln'} ausgewählt · ${ROUND_LEN} Fragen pro Runde</p>
     </div>
-
-    <section class="group">
-      <button class="row" id="pickRow" aria-expanded="${S.ui.pickOpen}" aria-controls="pickList"><span class="label">Einzelnen Muskel üben</span>${IC.chev}</button>
-      <div class="sublist" id="pickList" ${S.ui.pickOpen?'':'hidden'}>
-        <div class="search"><label class="srlabel" for="mSearch">Muskel suchen</label><input id="mSearch" class="field" type="search" placeholder="Muskel suchen" autocomplete="off" value="${esc(S.ui.q)}"></div>
-        <div class="muscles" id="mList"></div>
-      </div>
-    </section>
   </div>`;
   const rerender=()=>{ const y=window.scrollY; renderStart(); window.scrollTo(0,y); };
   view.querySelector('#regRow').onclick=()=>{ S.ui.regOpen=!S.ui.regOpen; rerender(); };
@@ -967,10 +986,6 @@ function renderStart(){
   view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return; S.cats.has(k)?S.cats.delete(k):S.cats.add(k); rerender(); });
   view.querySelector('#go').onclick=()=>start(selected());
   view.querySelector('#duel').onclick=()=>{ if(synth) synth.cancel(); openDuel(); };
-  view.querySelector('#pickRow').onclick=()=>{ S.ui.pickOpen=!S.ui.pickOpen; rerender(); };
-  const si=view.querySelector('#mSearch');
-  si.oninput=()=>{ S.ui.q=si.value; renderMuscleList(); };
-  renderMuscleList();
 }
 function renderMuscleList(){
   const box=document.getElementById('mList'); if(!box) return;
@@ -1275,7 +1290,7 @@ function renderOnline(){
   const ps=lobbyPeers().filter(p=>!(PLATFORM.isFriend&&PLATFORM.isFriend(p.by)));
   if(!ps.length){ box.innerHTML=`<div class="row"><span class="label"><span>${PLATFORM.lobbyExtra?'Gerade ist sonst niemand online.':'Gerade ist niemand außer dir online.'}</span><small>${PLATFORM.shareHint}</small></span></div>`; return; }
   const seen=new Set();
-  box.innerHTML=ps.filter(p=>{ const k=p.by||p.peer; if(seen.has(k)) return false; seen.add(k); return true; }).map(p=>`<div class="row"><i class="online${p.presence.busy?' busy':''}"></i><span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'im Duell':'bereit'}</small></span>${PLATFORM.addFriendUid&&p.by?`<button class="iconbtn addf" data-addf="${esc(p.by)}" aria-label="Als Freund hinzufügen" title="Als Freund hinzufügen">+</button>`:''}<button class="btn tinted small" data-ch="${esc(p.peer)}" ${p.presence.busy?'disabled':''}>Herausfordern</button></div>`).join('');
+  box.innerHTML=ps.filter(p=>{ const k=p.by||p.peer; if(seen.has(k)) return false; seen.add(k); return true; }).map(p=>`<div class="row">${PLATFORM.avatarFor?PLATFORM.avatarFor(p.by,p.presence.nick,p.presence.busy):`<i class="online${p.presence.busy?' busy':''}"></i>`}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'im Duell':'bereit'}</small></span>${PLATFORM.addFriendUid&&p.by?`<button class="iconbtn addf" data-addf="${esc(p.by)}" aria-label="Als Freund hinzufügen" title="Als Freund hinzufügen">+</button>`:''}<button class="btn tinted small" data-ch="${esc(p.peer)}" ${p.presence.busy?'disabled':''}>Herausfordern</button></div>`).join('');
   box.querySelectorAll('[data-addf]').forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await PLATFORM.addFriendUid(b.dataset.addf); setLobbyHint('Freund hinzugefügt.'); }catch(e){ b.disabled=false; setLobbyHint('Das hat nicht geklappt.',true); } });
   box.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{ const p=lobbyPeers().find(x=>x.peer===b.dataset.ch); if(p) hostDuel(newCode(),p); });
 }
@@ -1504,10 +1519,11 @@ async function ensureProfile(){
     }
   }
   p.name=p.name||u.displayName||lsGet('mt-nick')||'Spieler';
+  p.nameLower=lowerDe(p.name).trim();
   p.stats=Object.assign(emptyStats(),p.stats||{});
   p.score=p.stats.wins*3+p.stats.draws;
   await ref.set(p);
-  SOC.profile=p; SOC.ready=true;
+  SOC.profile=p; SOC.ready=true; SOC.info[u.uid]=p; setProfileIcon(p.photo);
   if(!SOC.listening){
     SOC.listening=true;
     FB.db.ref('friends/'+u.uid).on('value',s=>{ SOC.friends=s.val()||{}; loadFriendData(); });
@@ -1521,7 +1537,7 @@ async function loadFriendData(){
     try{ SOC.info[fid]=(await FB.db.ref('users/'+fid).once('value')).val()||{name:'Spieler'}; }catch(e){ SOC.info[fid]=SOC.info[fid]||{name:'Spieler'}; }
     try{ SOC.h2h[fid]=(await FB.db.ref('h2h/'+pairKey(me,fid)).once('value')).val(); }catch(e){}
   }));
-  if(DUEL.view==='lobby') renderFriendList();
+  renderFriendList(); renderOthersOnline();
 }
 function isFriend(uid){ return !!(uid&&SOC.friends[uid]); }
 function record(fid){
@@ -1550,7 +1566,7 @@ async function removeFriend(fid){
   await FB.db.ref('friends/'+me+'/'+fid).remove();
   try{ await FB.db.ref('friends/'+fid+'/'+me).remove(); }catch(e){}
 }
-async function syncName(n){ if(!FB.user||!SOC.ready||!n) return; try{ await FB.db.ref('users/'+FB.user.uid+'/name').set(n.slice(0,24)); SOC.profile.name=n; }catch(e){} }
+async function syncName(n){ n=(n||'').trim().slice(0,24); if(!FB.user||!SOC.ready||!n) return; try{ await FB.db.ref('users/'+FB.user.uid+'/name').set(n); await FB.db.ref('users/'+FB.user.uid+'/nameLower').set(lowerDe(n)); SOC.profile.name=n; }catch(e){} }
 
 /* Ergebnis eines Duells speichern: jeder seine eigene Statistik, der Gastgeber die gemeinsame Bilanz */
 async function saveGameResult(r){
@@ -1588,30 +1604,22 @@ function lobbyExtraHTML(){
   if(!SOC.profile) return '';
   return `<p class="group-label">Freunde</p>
     <section class="group list" id="friendList"></section>
-    <section class="card">
-      <div class="coderow" style="align-items:center"><span class="label" style="flex:1"><small class="sub" style="display:block;margin:0">Dein Freundescode</small><b class="fcode">${esc(SOC.profile.code||'…')}</b></span><button class="btn tinted small" id="copyCode">Kopieren</button></div>
-      <div class="coderow"><input id="fcodeIn" class="field" style="background:var(--fill);box-shadow:none;text-transform:uppercase" maxlength="6" placeholder="Code eines Freundes" aria-label="Freundescode"><button class="btn tinted" id="addFriend">Hinzufügen</button></div>
-      <p class="hint" id="friendHint" role="status"></p>
-    </section>
+    <section class="group"><button class="row" id="toProfile"><span class="tile" style="background:var(--ok)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span class="label">Freunde hinzufügen<small>per Name oder Freundescode</small></span>${IC.chev}</button></section>
     <section class="group"><button class="row" id="lbRow"><span class="tile" style="background:var(--warn)"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3v3a5 5 0 0 1-4.6 5A5 5 0 0 1 13 15.9V18h3v3H8v-3h3v-2.1A5 5 0 0 1 8.6 13 5 5 0 0 1 4 8V5h3zm0 4H6v1a3 3 0 0 0 1 2.2zm10 0v3.2A3 3 0 0 0 18 8V7z"/></svg></span><span class="label">Rangliste</span>${IC.chev}</button></section>`;
 }
 function bindLobbyExtra(){
-  const cc=document.getElementById('copyCode');
-  if(cc) cc.onclick=async()=>{ const h=document.getElementById('friendHint'); try{ await navigator.clipboard.writeText(SOC.profile.code); h.textContent='Code kopiert. Schick ihn deinen Freunden.'; h.classList.remove('warn'); }catch(e){ h.textContent='Dein Code: '+SOC.profile.code; } };
-  const fi=document.getElementById('fcodeIn'), fb=document.getElementById('addFriend');
-  if(fb) fb.onclick=async()=>{ const h=document.getElementById('friendHint'); fb.disabled=true; try{ const err=await addFriendCode(fi.value); h.textContent=err||'Freund hinzugefügt.'; h.classList.toggle('warn',!!err); if(!err) fi.value=''; }catch(e){ h.textContent='Das hat nicht geklappt. Versuch es nochmal.'; h.classList.add('warn'); } fb.disabled=false; };
-  if(fi) fi.onkeydown=e=>{ if(e.key==='Enter') fb.click(); };
+  const tp=document.getElementById('toProfile'); if(tp) tp.onclick=()=>renderProfile();
   const lb=document.getElementById('lbRow'); if(lb) lb.onclick=()=>renderLeaderboard('all');
   renderFriendList();
 }
 function renderFriendList(){
   const box=document.getElementById('friendList'); if(!box) return;
   const ids=Object.keys(SOC.friends);
-  if(!ids.length){ box.innerHTML=`<div class="row"><span class="label"><span>Noch keine Freunde</span><small>Tausch Freundescodes aus oder tippe bei einem Spieler online auf „+“.</small></span></div>`; return; }
+  if(!ids.length){ box.innerHTML=`<div class="row"><span class="label"><span>Noch keine Freunde</span><small>Füge Freunde per Name oder Freundescode hinzu.</small></span></div>`; return; }
   const online=new Map(lobbyPeers().map(p=>[p.by,p]));
   const sorted=ids.sort((a,b)=>(online.has(b)-online.has(a))||((SOC.info[a]||{}).name||'').localeCompare((SOC.info[b]||{}).name||''));
   box.innerHTML=sorted.map(fid=>{ const p=online.get(fid); const rc=record(fid); const nm=(p&&p.presence.nick)||(SOC.info[fid]||{}).name||'Spieler';
-    return `<div class="row"><i class="online${p?(p.presence.busy?' busy':''):' off'}"></i><button class="label rowlink" data-fr="${esc(fid)}"><span>${esc(nm)}</span><small>${p?(p.presence.busy?'im Duell':'online'):'offline'}${rc.games?` · Bilanz ${rc.w} : ${rc.l}`:''}</small></button>${p&&!p.presence.busy?`<button class="btn tinted small" data-chf="${esc(p.peer)}">Herausfordern</button>`:''}</div>`; }).join('');
+    return `<div class="row">${avatarHTML(fid,nm,p?(p.presence.busy?'busy':'on'):'off')}<button class="label rowlink" data-fr="${esc(fid)}"><span>${esc(nm)}</span><small>${p?(p.presence.busy?'im Duell':'online'):'offline'}${rc.games?` · Bilanz ${rc.w} : ${rc.l}`:''}</small></button>${p&&!p.presence.busy?`<button class="btn tinted small" data-chf="${esc(p.peer)}">Herausfordern</button>`:''}</div>`; }).join('');
   box.querySelectorAll('[data-fr]').forEach(b=>b.onclick=()=>renderFriend(b.dataset.fr));
   box.querySelectorAll('[data-chf]').forEach(b=>b.onclick=()=>{ const p=lobbyPeers().find(x=>x.peer===b.dataset.chf); if(p) hostDuel(newCode(),p); });
 }
@@ -1622,7 +1630,7 @@ function renderFriend(fid){
   const nm=(p&&p.presence.nick)||info.name||'Spieler';
   const st=Object.assign(emptyStats(),info.stats||{});
   view.innerHTML=`<div class="stack">
-    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h2 class="pagetitle">${esc(nm)}</h2><p class="sub" style="margin:0">${p?(p.presence.busy?'gerade im Duell':'online'):'offline'}</p></div>
+    <div class="center" style="display:flex;flex-direction:column;gap:6px;align-items:center">${avatarHTML(fid,nm,null,'xl')}<h2 class="pagetitle">${esc(nm)}</h2><p class="sub" style="margin:0">${p?(p.presence.busy?'gerade im Duell':'online'):'offline'}</p></div>
     <div class="score"><div class="sc me"><small>Du</small><b>${rc.w}</b></div><div class="sc mid">Siege<br>${rc.games} ${rc.games===1?'Duell':'Duelle'}</div><div class="sc op"><small>${esc(nm)}</small><b>${rc.l}</b></div></div>
     <p class="group-label">Eure Bilanz</p>
     <section class="group list">
@@ -1671,7 +1679,125 @@ async function renderLeaderboard(mode){
   rows.sort((a,b)=>(b.score||0)-(a.score||0)||((b.stats||{}).wins||0)-((a.stats||{}).wins||0));
   const l=document.getElementById('lbList'); if(!l||DUEL.view!=='board') return;
   if(!rows.length){ l.innerHTML='<div class="row"><span class="label">Noch keine Duelle gespielt.</span></div>'; return; }
-  l.innerHTML=rows.map((r,i)=>{ const st=Object.assign(emptyStats(),r.stats||{}); return `<div class="row${r.id===me?' me-row':''}"><span class="rank">${i+1}</span><span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${st.games} Duelle · ${st.wins} Siege</small></span><span class="value"><b>${r.score||0}</b></span></div>`; }).join('');
+  l.innerHTML=rows.map((r,i)=>{ const st=Object.assign(emptyStats(),r.stats||{}); return `<div class="row${r.id===me?' me-row':''}"><span class="rank">${i+1}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${st.games} Duelle · ${st.wins} Siege</small></span><span class="value"><b>${r.score||0}</b></span></div>`; }).join('');
+}
+
+/* ----- Profilbilder ----- */
+const AV_COL=['#E0453A','#F08A24','#2F9E5B','#1F8FBF','#5B5BD6','#B24FC9','#D94C86','#7A8B99'];
+function avColor(uid){ let h=0; for(const c of String(uid||'x')) h=(h*31+c.charCodeAt(0))>>>0; return AV_COL[h%AV_COL.length]; }
+function initials(n){ const p=String(n||'?').trim().split(/\s+/); return ((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase(); }
+function safePhoto(ph){ return typeof ph==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(ph)?ph:null; }
+function avatarHTML(uid,name,status,size,photo){
+  const ph=safePhoto(photo!==undefined?photo:(SOC.info[uid]||{}).photo);
+  const inner=ph?`<img src="${ph}" alt="">`:`<span style="background:${avColor(uid)}">${esc(initials(name))}</span>`;
+  return `<span class="avatar${size?' '+size:''}">${inner}${status?`<i class="st ${status}"></i>`:''}</span>`;
+}
+const infoLoading=new Set();
+function ensureInfo(uid){
+  if(!uid||SOC.info[uid]||infoLoading.has(uid)||!FB.db) return;
+  infoLoading.add(uid);
+  FB.db.ref('users/'+uid).once('value').then(s=>{ SOC.info[uid]=s.val()||{name:'Spieler'}; infoLoading.delete(uid); if(DUEL.view==='lobby') renderOnline(); renderOthersOnline(); }).catch(()=>infoLoading.delete(uid));
+}
+function avatarFor(uid,name,busy){ ensureInfo(uid); return avatarHTML(uid,name,busy?'busy':'on'); }
+function resizePhoto(file){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{ const img=new Image(); img.onload=()=>{ const S2=160; const c=document.createElement('canvas'); c.width=c.height=S2; const x=c.getContext('2d');
+      const m=Math.min(img.width,img.height); x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S2,S2); res(c.toDataURL('image/jpeg',0.82)); };
+      img.onerror=()=>rej(new Error('bild')); img.src=fr.result; };
+    fr.onerror=()=>rej(new Error('datei')); fr.readAsDataURL(file);
+  });
+}
+async function savePhoto(dataUrl){
+  await FB.db.ref('users/'+FB.user.uid+'/photo').set(dataUrl||null);
+  SOC.profile.photo=dataUrl||null; SOC.info[FB.user.uid]=SOC.profile; setProfileIcon(safePhoto(dataUrl));
+}
+
+/* ----- Suche nach Namen oder Code ----- */
+async function searchUsers(q){
+  q=(q||'').trim(); if(q.length<2) return [];
+  const out=new Map();
+  const code=q.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length===6){ try{ const id=(await FB.db.ref('codes/'+code).once('value')).val(); if(id){ const u=(await FB.db.ref('users/'+id).once('value')).val(); if(u) out.set(id,u); } }catch(e){} }
+  const lq=lowerDe(q);
+  try{ const snap=await FB.db.ref('users').orderByChild('nameLower').startAt(lq).endAt(lq+'').limitToFirst(15).once('value'); const v=snap.val()||{}; Object.keys(v).forEach(id=>out.set(id,v[id])); }catch(e){}
+  out.delete(FB.user.uid);
+  return [...out.entries()].map(([id,u])=>{ SOC.info[id]=u; return {id,u}; });
+}
+
+/* ----- Profilseite ----- */
+async function openProfile(){
+  PLATFORM.afterAuth='profile';
+  if(!(await PLATFORM.ensureAuth())) return;
+  PLATFORM.afterAuth=null;
+  initLobby();
+  renderProfile();
+}
+function renderOthersOnline(){
+  const box=document.getElementById('othersOnline'); if(!box) return;
+  const ps=lobbyPeers().filter(p=>!isFriend(p.by)); const seen=new Set();
+  const list=ps.filter(p=>{ if(seen.has(p.by)) return false; seen.add(p.by); return true; });
+  if(!list.length){ box.innerHTML='<div class="row"><span class="label"><span>Gerade ist sonst niemand online.</span></span></div>'; return; }
+  box.innerHTML=list.map(p=>`<div class="row">${avatarFor(p.by,p.presence.nick,p.presence.busy)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'im Duell':'online'}</small></span><button class="iconbtn addf" data-addp="${esc(p.by)}" aria-label="Als Freund hinzufügen" title="Als Freund hinzufügen">+</button>${p.presence.busy?'':`<button class="btn tinted small" data-chp="${esc(p.peer)}">Herausfordern</button>`}</div>`).join('');
+  box.querySelectorAll('[data-addp]').forEach(b=>b.onclick=async()=>{ b.disabled=true; await addFriendUid(b.dataset.addp); });
+  box.querySelectorAll('[data-chp]').forEach(b=>b.onclick=()=>{ const p=lobbyPeers().find(x=>x.peer===b.dataset.chp); if(p) hostDuel(newCode(),p); });
+}
+function renderProfile(msg){
+  if(!SOC.profile){ openProfile(); return; }
+  stopRec(); S.phase='duel'; DUEL.view='profile'; setBack('Start',renderStart);
+  const p=SOC.profile; const st=Object.assign(emptyStats(),p.stats||{});
+  view.innerHTML=`<div class="stack">
+    <section class="center" style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      ${avatarHTML(FB.user.uid,p.name,null,'xl',p.photo||null)}
+      <div class="btnrow" style="justify-content:center;flex-wrap:wrap">
+        <label class="btn tinted small" for="photoIn">${p.photo?'Foto ändern':'Profilbild hinzufügen'}</label>
+        ${p.photo?'<button class="btn plain small" id="photoRm">Entfernen</button>':''}
+      </div>
+      <input type="file" id="photoIn" accept="image/*" hidden>
+      <p class="hint" id="photoHint" role="status"></p>
+    </section>
+    <section class="stack-sm"><label class="group-label" style="margin:0 0 0 16px" for="pName">Dein Name</label><input id="pName" class="field" maxlength="24" value="${esc(p.name)}" autocomplete="nickname"></section>
+    <section class="group list">
+      <div class="row"><span class="label"><small>Dein Freundescode</small><b class="fcode">${esc(p.code||'…')}</b></span><button class="btn tinted small" id="copyCode">Kopieren</button></div>
+      <div class="row"><span class="label">Ranglistenpunkte</span><span class="value"><b>${st.wins*3+st.draws}</b></span></div>
+      <div class="row"><span class="label">Duelle · Siege</span><span class="value">${st.games} · ${st.wins}</span></div>
+    </section>
+
+    <p class="group-label">Freunde finden</p>
+    <section class="card">
+      <input id="fSearch" class="field" style="background:var(--fill);box-shadow:none" type="search" placeholder="Name oder Freundescode" aria-label="Freunde suchen" autocomplete="off">
+      <div class="list" id="fResults"></div>
+    </section>
+
+    <p class="group-label">Deine Freunde</p>
+    <section class="group list" id="friendList"></section>
+
+    <p class="group-label">Gerade online</p>
+    <section class="group list" id="othersOnline"></section>
+
+    <section class="group"><button class="row" id="lbRow2"><span class="label">Rangliste</span>${IC.chev}</button></section>
+    ${PLATFORM.accountRow()}
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`;
+  if(msg){ const h=document.getElementById('lobbyHint'); h.textContent=msg; }
+  const pi=document.getElementById('photoIn'), ph=document.getElementById('photoHint');
+  pi.onchange=async()=>{ const f=pi.files&&pi.files[0]; if(!f) return; ph.textContent='Wird gespeichert …'; ph.classList.remove('warn');
+    try{ const d=await resizePhoto(f); await savePhoto(d); renderProfile('Profilbild gespeichert.'); }catch(e){ ph.textContent='Dieses Bild konnte nicht gelesen werden. Versuch ein JPG oder PNG.'; ph.classList.add('warn'); } };
+  const rm=document.getElementById('photoRm'); if(rm) rm.onclick=async()=>{ await savePhoto(null); renderProfile('Profilbild entfernt.'); };
+  const pn=document.getElementById('pName'); let t=null;
+  pn.oninput=()=>{ clearTimeout(t); t=setTimeout(async()=>{ const n=pn.value.trim(); if(!n) return; DUEL.nick=n; lsSet('mt-nick',n); pushLobby(); await syncName(n); },600); };
+  document.getElementById('copyCode').onclick=async()=>{ const h=document.getElementById('lobbyHint'); try{ await navigator.clipboard.writeText(p.code); h.textContent='Freundescode kopiert.'; }catch(e){ h.textContent='Dein Code: '+p.code; } };
+  const fs=document.getElementById('fSearch'), fr=document.getElementById('fResults'); let st2=null, seq=0;
+  fs.oninput=()=>{ clearTimeout(st2); const q=fs.value; if(q.trim().length<2){ fr.innerHTML=''; return; }
+    st2=setTimeout(async()=>{ const my=++seq; fr.innerHTML='<div class="row"><span class="label"><small>Suche …</small></span></div>'; const res=await searchUsers(q); if(my!==seq) return;
+      if(!res.length){ fr.innerHTML='<div class="row"><span class="label"><small>Niemand gefunden. Prüf die Schreibweise oder frag nach dem Freundescode.</small></span></div>'; return; }
+      fr.innerHTML=res.map(({id,u})=>`<div class="row">${avatarHTML(id,u.name,null,'',u.photo||null)}<span class="label"><span>${esc(u.name||'Spieler')}</span><small>${(u.stats&&u.stats.games)||0} Duelle</small></span>${isFriend(id)?'<span class="value">Freund</span>':`<button class="btn tinted small" data-addr="${esc(id)}">Hinzufügen</button>`}</div>`).join('');
+      fr.querySelectorAll('[data-addr]').forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await addFriendUid(b.dataset.addr); b.outerHTML='<span class="value">Freund</span>'; }catch(e){ b.disabled=false; } });
+    },350); };
+  document.getElementById('lbRow2').onclick=()=>renderLeaderboard('all');
+  PLATFORM.bindAccount();
+  renderFriendList(); renderOthersOnline();
+  window.scrollTo({top:0});
 }
 renderStart();
 </script>
