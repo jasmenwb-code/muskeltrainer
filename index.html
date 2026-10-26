@@ -56,16 +56,20 @@ button:focus-visible,textarea:focus-visible,input:focus-visible,summary:focus-vi
 .stack{display:flex;flex-direction:column;gap:20px}
 .stack-sm{display:flex;flex-direction:column;gap:10px}
 
-/* Kopfzeile */
-.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
-.navback{display:inline-flex;align-items:center;gap:2px;background:none;border:0;color:var(--accent);font-size:17px;padding:8px 4px;margin-left:-4px}
+/* Kopfzeile: Zurück links, Name mittig, Einstellungen rechts */
+.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:52px}
+.bar .left{justify-self:start;min-width:0}
+.bar .right{justify-self:end;display:flex;gap:8px}
+.brand{font-size:22px;font-weight:800;letter-spacing:-.025em;margin:0;white-space:nowrap;background:none;border:0;padding:4px 2px;color:var(--ink);cursor:pointer}
+.navback{width:36px;height:36px;border-radius:50%;border:0;background:var(--fill);color:var(--accent);display:grid;place-items:center}
+.navback span{display:none}
 .navback svg{width:20px;height:20px}
 .iconbtn{width:36px;height:36px;border-radius:50%;border:0;background:var(--fill);color:var(--muted);display:grid;place-items:center;flex:none}
-.iconbtn[aria-pressed="true"]{color:var(--accent);background:var(--accent-soft)}
-.iconbtn svg{width:19px;height:19px}
-.bar .right{display:flex;gap:8px;margin-left:auto}
+.iconbtn svg{width:20px;height:20px}
+@media (max-width:360px){ .brand{font-size:19px} }
 
 /* Typo */
+.pagetitle{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.025em;margin:4px 0 0;text-align:center;text-wrap:balance}
 .large{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.03em;margin:4px 0 0;text-wrap:balance}
 .sub{margin:4px 0 0;color:var(--muted);font-size:15px}
 .title-xl{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.025em;margin:0;text-wrap:balance;overflow-wrap:anywhere}
@@ -177,6 +181,25 @@ textarea:disabled{opacity:.6}
 .fig.big .figbtn img{max-height:none;width:100%}
 .fig figcaption{font-size:13px;color:var(--muted)}
 
+/* Multiple Choice */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;border:1.5px solid transparent;border-radius:14px;background:var(--surface);box-shadow:var(--shadow);padding:12px 14px;font-size:15px;line-height:1.35;color:var(--ink);transition:transform .08s ease,background .15s}
+.card .opt{background:var(--fill);box-shadow:none}
+.opt:not(:disabled):active{transform:scale(.985)}
+.opt:not(:disabled):hover{border-color:var(--sep)}
+.optl{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--fill-2);color:var(--muted)}
+.card .opt .optl{background:var(--surface)}
+.optt{flex:1;min-width:0;overflow-wrap:anywhere}
+.opttag{flex:none;align-self:center;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface);color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.picked{border-color:var(--accent);background:var(--accent-soft)}
+.opt.picked .optl{background:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .optl{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.wrong .optl{background:var(--accent);color:var(--accent-ink)}
+.opt.dim{opacity:.55}
+
 /* Listen am Ende */
 .list .row{min-height:56px}
 .badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
@@ -234,7 +257,7 @@ textarea:disabled{opacity:.6}
 </head>
 <body>
 <div class="app">
-  <header class="bar"><button class="navback" id="navBack" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span>Zurück</span></button><div class="right"><button class="iconbtn" id="ttsToggle" aria-pressed="true" aria-label="Automatisches Vorlesen ist an" title="Automatisch vorlesen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div></header>
+  <header class="bar"><div class="left"><button class="navback" id="navBack" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span>Zurück</span></button></div><h1 class="brand" id="barTitle">Anatomy Duel</h1><div class="right"><button class="iconbtn" id="settingsBtn" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></header>
   <main id="view"></main>
 </div>
 <div class="sheet" id="inviteBar" role="alertdialog" aria-live="polite" hidden></div>
@@ -667,7 +690,7 @@ function grade(items,answer){
 
 
 /* ---------- Vorlesen ---------- */
-const synth=window.speechSynthesis||null; let deVoice=null, autoRead=true;
+const synth=window.speechSynthesis||null; let deVoice=null, autoRead=false;
 function pickVoice(){ if(!synth) return; const v=synth.getVoices(); deVoice=v.find(x=>/^de(-|_)DE/i.test(x.lang))||v.find(x=>/^de/i.test(x.lang))||null; }
 if(synth){ pickVoice(); synth.onvoiceschanged=pickVoice; }
 function ttsText(s){
@@ -754,7 +777,7 @@ function renderAuth(msg){
   setBack('Lernen',renderStart);
   const reg=authMode==='register';
   view.innerHTML=`<div class="stack">
-    <div><h1 class="large">${reg?'Konto erstellen':'Anmelden'}</h1><p class="sub">Für Duelle brauchst du ein Konto. Zum Lernen nicht.</p></div>
+    <div><h2 class="pagetitle">${reg?'Konto erstellen':'Anmelden'}</h2><p class="sub" style="text-align:center">Für Duelle brauchst du ein Konto. Zum Lernen nicht.</p></div>
     <div class="seg" role="group" aria-label="Anmelden oder registrieren"><button data-m="login" aria-pressed="${!reg}">Anmelden</button><button data-m="register" aria-pressed="${reg}">Registrieren</button></div>
     <form class="stack-sm" id="authForm" novalidate>
       ${reg?'<label class="srlabel" for="aName">Name</label><input class="field" id="aName" autocomplete="nickname" maxlength="24" placeholder="Name (sehen deine Gegner)" required>':''}
@@ -805,7 +828,7 @@ const PLATFORM={name:'web',title:'Anatomy Duel',explain:false,
 };
 function renderLobbyNote(text,loading){
   S.phase='duel'; DUEL.view='note'; setBack('Lernen',renderStart);
-  view.innerHTML=`<div class="stack"><div><h1 class="large">Duell</h1></div>${loading?'<section class="card center"><div class="spinner" aria-hidden="true"></div><p class="sub" style="margin:0">Verbinde …</p></section>':`<section class="card"><p style="margin:0">${esc(text)}</p><button class="btn tinted" id="retry">Erneut versuchen</button></section>`}</div>`;
+  view.innerHTML=`<div class="stack"><div><h2 class="pagetitle">Duell</h2></div>${loading?'<section class="card center"><div class="spinner" aria-hidden="true"></div><p class="sub" style="margin:0">Verbinde …</p></section>':`<section class="card"><p style="margin:0">${esc(text)}</p><button class="btn tinted" id="retry">Erneut versuchen</button></section>`}</div>`;
   const r=view.querySelector('#retry'); if(r) r.onclick=()=>openDuel();
 }
 if('serviceWorker' in navigator && location.protocol==='https:'){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
@@ -813,20 +836,17 @@ if('serviceWorker' in navigator && location.protocol==='https:'){ window.addEven
 /* ---------- Icons ---------- */
 const IC={
   chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>',
-  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>',
   check:'<svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
   speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
-  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>',
   ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
   part:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>',
   bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>',
-  bolt:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
-  person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'
+  bolt:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>'
 };
 
 /* ---------- Zustand ---------- */
-const S={ regions:new Set(Object.keys(REG)), cats:new Set(['U','A','F','I']), random:true,
-  queue:[], qi:0, fi:0, phase:'start', results:{}, ui:{regOpen:false,pickOpen:false,q:''} };
+const S={ regions:new Set(Object.keys(REG)), cats:new Set(['U','A','F','I']),
+  queue:[], qi:0, fi:0, phase:'start', results:{}, ui:{regOpen:false,pickOpen:false,q:''}, cur:null };
 function fieldsFor(m){ return ORDER.filter(k=>{ if(!m[k]) return false; if(k==='UA') return S.cats.has('U')||S.cats.has('A'); return S.cats.has(k); }); }
 function selected(){ return M.filter(m=>S.regions.has(m.r) && fieldsFor(m).length); }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -837,22 +857,86 @@ function nameHTML(n){ const m=n.match(/^(Mm?\.)\s+(.*)$/); return m?`<small>${m[
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 
+/* ---------- Multiple Choice ---------- */
+const NOPTS=8;
+function fmtItems(items){ return items.filter(s=>!s.startsWith('!')).map(s=>{const it=parseItem(s);return (it.label?it.label+': ':'')+it.text}).join(' · '); }
+function answerText(mid,fk){ const m=M[mid]; if(fk==='UA'){ if(m.UA) return fmtItems(m.UA); return 'Ursprung: '+fmtItems(m.U)+' · Ansatz: '+fmtItems(m.A); } return fmtItems(m[fk]); }
+function hasField(m,fk){ return fk==='UA'?!!(m.UA||(m.U&&m.A)):!!m[fk]; }
+const normA=s=>lowerDe(s).replace(/[^a-z0-9]/g,'');
+/* 8 Antworten: die richtige plus 7 andere Muskeln derselben Kategorie, bevorzugt aus derselben Region */
+function makeOptions(mid,fk){
+  const m=M[mid]; const seen=new Set([normA(answerText(mid,fk))]); const picks=[];
+  const same=shuffle(M.filter(x=>x.id!==mid&&x.r===m.r&&hasField(x,fk)));
+  const other=shuffle(M.filter(x=>x.id!==mid&&x.r!==m.r&&hasField(x,fk)));
+  const pool=[...same.slice(0,4),...other,...same.slice(4)];
+  for(const x of pool){ if(picks.length>=NOPTS-1) break; const t=normA(answerText(x.id,fk)); if(seen.has(t)) continue; seen.add(t); picks.push(x.id); }
+  return shuffle([mid,...picks]);
+}
+function optionsHTML(opts,fk,state){
+  /* state: {correct, mine, theirs, theirName, locked} */
+  const st=state||{};
+  return `<div class="opts" role="list">${opts.map((o,i)=>{
+    let c='opt'; const tags=[];
+    if(st.correct!=null){ if(o===st.correct) c+=' right'; else if(o===st.mine) c+=' wrong'; else c+=' dim'; }
+    else if(st.mine!=null){ c+= o===st.mine?' picked':' dim'; }
+    if(st.correct!=null&&o===st.mine) tags.push('Du');
+    if(st.correct!=null&&st.theirs!=null&&o===st.theirs) tags.push(esc(st.theirName||'Gegner'));
+    return `<button class="${c}" role="listitem" data-opt="${o}" ${st.locked?'disabled':''}><span class="optl">${'ABCDEFGH'[i]}</span><span class="optt">${esc(answerText(o,fk))}</span>${tags.length?`<span class="opttag">${tags.join(' · ')}</span>`:''}</button>`;
+  }).join('')}</div>`;
+}
+
+/* ---------- Einstellungen ---------- */
+let theme=lsGet('ad-theme')||'auto';
+autoRead=lsGet('ad-read')==='1'&&!!synth;
+function applyTheme(){
+  const r=document.documentElement;
+  if(theme==='auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme',theme);
+  const dark=theme==='dark'||(theme==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelectorAll('meta[name="theme-color"]').forEach(mt=>mt.setAttribute('content',dark?'#000000':'#F2F2F7'));
+}
+applyTheme();
+if(window.matchMedia) try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme); }catch(e){}
+function renderSettings(){
+  const back=S.phase; stopRec(); S.phase='settings';
+  setBack('Zurück',()=>{ if(back==='duel'&&typeof openDuel==='function') openDuel(); else renderStart(); });
+  view.innerHTML=`<div class="stack">
+    <h2 class="pagetitle">Einstellungen</h2>
+    <p class="group-label">Darstellung</p>
+    <div class="seg" role="group" aria-label="Darstellung">
+      <button data-th="auto" aria-pressed="${theme==='auto'}">Automatisch</button><button data-th="light" aria-pressed="${theme==='light'}">Hell</button><button data-th="dark" aria-pressed="${theme==='dark'}">Dunkel</button>
+    </div>
+    ${synth?`<p class="group-label">Vorlesen</p>
+    <section class="group"><button class="row" role="switch" id="readSw" aria-checked="${autoRead}"><span class="label">Fragen vorlesen<small>Liest Muskel und Frage automatisch vor</small></span><span class="switch" aria-hidden="true"></span></button></section>`:''}
+    ${PLATFORM.settingsExtra?PLATFORM.settingsExtra():''}
+  </div>`;
+  view.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{ theme=b.dataset.th; lsSet('ad-theme',theme); applyTheme(); renderSettings(); });
+  const rs=view.querySelector('#readSw'); if(rs) rs.onclick=()=>{ autoRead=!autoRead; lsSet('ad-read',autoRead?'1':'0'); if(!autoRead&&synth) synth.cancel(); else speak('Vorlesen ist an.'); rs.setAttribute('aria-checked',autoRead); };
+  if(PLATFORM.bindSettingsExtra) PLATFORM.bindSettingsExtra();
+  window.scrollTo({top:0});
+}
+
 /* ---------- Kopfzeile ---------- */
 const barBack=document.getElementById('navBack');
-function setBack(label,fn){ if(!fn){ barBack.hidden=true; barBack.onclick=null; return; } barBack.hidden=false; barBack.querySelector('span').textContent=label; barBack.onclick=fn; }
+function setBack(label,fn){ if(!fn){ barBack.hidden=true; barBack.onclick=null; return; } barBack.hidden=false; barBack.setAttribute('aria-label',label); barBack.title=label; barBack.onclick=fn; }
+document.getElementById('barTitle').textContent=PLATFORM.title||'Muskeltrainer';
+document.getElementById('barTitle').onclick=()=>{ if(S.phase==='start') return; if(typeof DUEL!=='undefined'&&(DUEL.view==='game'||DUEL.view==='wait')) return; renderStart(); };
+document.getElementById('settingsBtn').onclick=()=>{ if(typeof DUEL!=='undefined'&&(DUEL.view==='game'||DUEL.view==='wait')) return; if(synth) synth.cancel(); renderSettings(); };
 
 /* ---------- Startansicht ---------- */
 function regionValue(){ const n=S.regions.size, all=Object.keys(REG).length; return n===all?'Alle':n===0?'Keine':`${n} von ${all}`; }
 function renderStart(){
   S.phase='start'; stopRec(); setBack(null);
-  if(typeof DUEL!=='undefined') DUEL.view='off';
+  if(typeof DUEL!=='undefined'){ DUEL.view='off'; if(DUEL.room) pushLobby(); }
   const counts={}; M.forEach(m=>counts[m.r]=(counts[m.r]||0)+1);
   const n=selected().length;
   const regRows=Object.keys(REG).map(r=>`<button class="row" role="menuitemcheckbox" data-reg="${r}" aria-checked="${S.regions.has(r)}"><span class="label">${esc(REG[r])}</span><span class="count">${counts[r]}</span>${IC.check}</button>`).join('');
   const catRows=['U','A','F','I'].map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k].label}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
   view.innerHTML=`<div class="stack">
-    <div><h1 class="large">${PLATFORM.title||"Muskeltrainer"}</h1><p class="sub">${M.length} Muskeln · Ursprung, Ansatz, Funktion, Innervation</p></div>
+    <section class="group">
+      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Duell gegen Freunde<small>10 Runden live · 30 Sekunden pro Frage</small></span>${IC.chev}</button>
+    </section>
 
+    <p class="group-label">Lernen</p>
     <section class="group">
       <button class="row" id="regRow" aria-expanded="${S.ui.regOpen}" aria-controls="regList"><span class="label">Regionen</span><span class="value">${regionValue()}</span>${IC.chev}</button>
       <div class="sublist" id="regList" ${S.ui.regOpen?'':'hidden'}>${regRows}
@@ -862,17 +946,10 @@ function renderStart(){
     <p class="group-label">Abfragen</p>
     <section class="group">${catRows}</section>
 
-    <p class="group-label">Reihenfolge</p>
-    <div class="seg" role="group" aria-label="Reihenfolge"><button data-ord="1" aria-pressed="${S.random}">Zufällig</button><button data-ord="0" aria-pressed="${!S.random}">Wie im Skript</button></div>
-
     <div class="stack-sm">
       <button class="btn primary" id="go" ${n?'':'disabled'}>Abfrage starten</button>
       <p class="footnote">${n} ${n===1?'Muskel':'Muskeln'} ausgewählt</p>
     </div>
-
-    <section class="group">
-      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Duell gegen Freunde<small>10 Runden live · 30 Sekunden pro Frage</small></span>${IC.chev}</button>
-    </section>
 
     <section class="group">
       <button class="row" id="pickRow" aria-expanded="${S.ui.pickOpen}" aria-controls="pickList"><span class="label">Einzelnen Muskel üben</span>${IC.chev}</button>
@@ -888,7 +965,6 @@ function renderStart(){
   view.querySelector('#regAll').onclick=()=>{ Object.keys(REG).forEach(r=>S.regions.add(r)); rerender(); };
   view.querySelector('#regNone').onclick=()=>{ S.regions.clear(); rerender(); };
   view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return; S.cats.has(k)?S.cats.delete(k):S.cats.add(k); rerender(); });
-  view.querySelectorAll('[data-ord]').forEach(b=>b.onclick=()=>{ S.random=b.dataset.ord==='1'; rerender(); });
   view.querySelector('#go').onclick=()=>start(selected());
   view.querySelector('#duel').onclick=()=>{ if(synth) synth.cancel(); openDuel(); };
   view.querySelector('#pickRow').onclick=()=>{ S.ui.pickOpen=!S.ui.pickOpen; rerender(); };
@@ -906,8 +982,8 @@ function renderMuscleList(){
   box.innerHTML=html||'<p class="hint" style="padding:12px 32px">Kein Muskel gefunden.</p>';
   box.querySelectorAll('[data-one]').forEach(b=>b.onclick=()=>start([M[+b.dataset.one]],true));
 }
-function start(list,single){
-  S.queue=single?list.slice():(S.random?shuffle(list.slice()):list.slice());
+function start(list){
+  S.queue=shuffle(list.slice());
   S.qi=0; S.fi=0; S.results={}; S.queue.forEach(m=>S.results[m.id]={});
   renderAsk(true);
 }
@@ -922,7 +998,7 @@ function headHTML(m){
     <span class="pill neutral">${esc(REG[m.r])}</span>
     <h2 class="title-xl">${nameHTML(m.n)}</h2>
     ${m.h?`<p class="sub" style="margin:0">${esc(m.h)}</p>`:''}
-    ${synth?`<button class="btn tinted small" id="sayName">${IC.speaker}Vorlesen</button>`:''}
+    ${autoRead?`<button class="btn tinted small" id="sayName">${IC.speaker}Vorlesen</button>`:''}
   </article>
   ${fs.length>1?`<nav class="steps" aria-label="Fragen zu diesem Muskel">${fs.map((k,i)=>{const res=r[k]; const c=i===S.fi&&!res?'cur':res?cls(res.pct):''; return `<div class="step ${c}">${FIELD[k].short}</div>`}).join('')}</nav>`:''}`;
 }
@@ -930,27 +1006,23 @@ function bindHead(m){
   setBack('Beenden',()=>{ if(synth) synth.cancel(); renderEnd(); });
   const s=view.querySelector('#sayName'); if(s) s.onclick=()=>speak(m.n);
 }
+const MCQ={U:'Wo entspringt der Muskel?',A:'Wo setzt der Muskel an?',UA:'Zwischen welchen Strukturen verläuft der Muskel?',F:'Welche Funktionen hat der Muskel?',I:'Wie wird der Muskel innerviert?'};
 function renderAsk(newMuscle){
   S.phase='ask'; stopRec();
   const m=S.queue[S.qi]; const fk=fieldsFor(m)[S.fi];
+  const opts=makeOptions(m.id,fk); S.cur={opts,fk};
   view.innerHTML=`<div class="stack">${headHTML(m)}
   <section class="stack-sm">
-    <p class="question">${esc(FIELD[fk].q)}</p>
-    <div class="answerbox">
-      <label for="answer" class="srlabel">Deine Antwort</label>
-      <textarea id="answer" placeholder="Sprich oder tippe deine Antwort"></textarea>
-      <button class="mic" id="mic" aria-label="Antwort einsprechen">${IC.mic}</button>
-    </div>
-    <p class="hint" id="micHint"></p>
+    <p class="question">${esc(MCQ[fk])}</p>
+    ${optionsHTML(opts,fk)}
   </section>
-  <div class="stack-sm"><button class="btn primary" id="check">Prüfen</button><button class="btn plain" id="dunno">Weiß ich nicht</button></div>
+  <button class="btn plain" id="dunno">Weiß ich nicht</button>
   </div>`;
   bindHead(m);
-  view.querySelector('#mic').onclick=toggleMic;
-  view.querySelector('#check').onclick=()=>{ const a=view.querySelector('#answer').value.trim(); if(!a){ micHint('Sprich oder tippe zuerst eine Antwort, oder tippe auf „Weiß ich nicht“.',true); return; } showResult(a,false); };
-  view.querySelector('#dunno').onclick=()=>showResult(view.querySelector('#answer').value.trim(),true);
+  view.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>showResult(+b.dataset.opt));
+  view.querySelector('#dunno').onclick=()=>showResult(null);
   window.scrollTo({top:0});
-  if(autoRead) speak((newMuscle?m.n+'. ':'')+FIELD[fk].label+'?');
+  if(autoRead) speak((newMuscle?m.n+'. ':'')+MCQ[fk]);
 }
 function highlight(text,keys,hits){
   return text.split(/([0-9A-Za-zÀ-ÖØ-öø-ÿ]+)/).map((w,i)=>{
@@ -959,53 +1031,53 @@ function highlight(text,keys,hits){
     return esc(w);
   }).join('');
 }
-function solutionHTML(items,keys,hits){
-  return items.map(s=>{const it=parseItem(s); return it.note?`<li class="note">${esc(it.text)}</li>`:`<li>${it.label?`<b>${highlight(it.label,keys,hits)}:</b> `:''}${highlight(it.text,keys,hits)}</li>`}).join('');
+function solutionHTML(items){
+  return items.map(s=>{const it=parseItem(s); return it.note?`<li class="note">${esc(it.text)}</li>`:`<li>${it.label?`<b>${esc(it.label)}:</b> `:''}${esc(it.text)}</li>`}).join('');
 }
-function showResult(answer,dunno){
+function showResult(choice){
   stopRec(); if(synth) synth.cancel(); S.phase='result';
   const m=S.queue[S.qi]; const fs=fieldsFor(m); const fk=fs[S.fi];
-  const g=dunno?{...grade(m[fk],''),pct:0}:grade(m[fk],answer);
-  S.results[m.id][fk]=g;
-  const keys=new Set(g.keys);
-  const vc=dunno?'bad':cls(g.pct); const verdict=dunno?'Hier ist die Lösung':(g.pct>=0.8?'Stark!':g.pct>=0.5?'Teilweise richtig':g.pct>0?'Ausbaufähig':'Noch nicht');
+  const ok=choice===m.id;
+  S.results[m.id][fk]={pct:ok?1:0};
+  const vc=ok?'good':'bad'; const verdict=choice==null?'Hier ist die Lösung':ok?'Richtig!':'Leider falsch';
   const lastField=S.fi===fs.length-1, lastMuscle=S.qi===S.queue.length-1;
   const nextLabel=!lastField?`Weiter: ${FIELD[fs[S.fi+1]].label}`:(lastMuscle?'Ergebnis ansehen':'Nächster Muskel');
+  const items=fk==='UA'&&!m.UA?[...m.U.map(s=>{const it=parseItem(s);return 'Ursprung'+(it.label?' ('+it.label+')':'')+' :: '+it.text}),...m.A.map(s=>{const it=parseItem(s);return 'Ansatz'+(it.label?' ('+it.label+')':'')+' :: '+it.text})]:m[fk];
   view.innerHTML=`<div class="stack">${headHTML(m)}
   <section class="card">
-    <div class="verdict v-${vc}"><span class="vicon">${IC[vc==='good'?'ok':vc]}</span><div><b>${verdict}</b><span>${dunno?esc(FIELD[fk].label):`${g.hits.size} von ${g.keys.length} Fachbegriffen genannt`}</span></div></div>
-    ${answer?`<p class="yours">${esc(answer)}</p>`:''}
+    <div class="verdict v-${vc}"><span class="vicon">${IC[ok?'ok':'bad']}</span><div><b>${verdict}</b><span>${esc(FIELD[fk].label)}</span></div></div>
+    ${optionsHTML(S.cur.opts,fk,{correct:m.id,mine:choice,locked:true})}
+  </section>
+  <section class="card">
     <h3 class="sectionhead">Lösung · ${esc(FIELD[fk].label)}</h3>
-    <ul class="sol">${solutionHTML(m[fk],keys,g.hits)}</ul>
-    ${dunno?'':`<div class="legend"><span><i style="background:var(--ok)"></i>genannt</span><span><i style="background:var(--warn)"></i>gefehlt</span></div>`}
+    <ul class="sol">${solutionHTML(items)}</ul>
     ${figHTML(m)}
     <div class="explain" id="explain" hidden></div>
-    <div class="btnrow">${synth?'<button class="btn tinted small" id="readSol">'+IC.speaker+'Vorlesen</button>':''}${PLATFORM.explain?'<button class="btn tinted small" id="explainBtn">Erklär mir das</button>':''}</div>
+    ${(autoRead||PLATFORM.explain)?`<div class="btnrow">${autoRead?'<button class="btn tinted small" id="readSol">'+IC.speaker+'Vorlesen</button>':''}${PLATFORM.explain?'<button class="btn tinted small" id="explainBtn">Erklär mir das</button>':''}</div>`:''}
   </section>
   <button class="btn primary" id="next">${nextLabel}</button>
   </div>`;
   bindHead(m);
   const box=view.querySelector('#explain');
   const fb=view.querySelector('#figbtn'); if(fb) fb.onclick=()=>fb.closest('.fig').classList.toggle('big');
-  const rs=view.querySelector('#readSol'); if(rs) rs.onclick=()=>speak(FIELD[fk].label+'. '+m[fk].map(s=>{const it=parseItem(s);return (it.label?it.label+': ':'')+it.text}).join('. '));
-  const eb=view.querySelector('#explainBtn'); if(eb) eb.onclick=()=>explain(m,fk,dunno?'':answer,box);
+  const rs=view.querySelector('#readSol'); if(rs) rs.onclick=()=>speak(FIELD[fk].label+'. '+answerText(m.id,fk));
+  const eb=view.querySelector('#explainBtn'); if(eb) eb.onclick=()=>explain(m,fk,choice!=null&&!ok?answerText(choice,fk):'',box);
   view.querySelector('#next').onclick=()=>{ if(synth) synth.cancel();
     if(!lastField){ S.fi++; renderAsk(false); }
     else if(!lastMuscle){ S.qi++; S.fi=0; renderAsk(true); }
     else renderEnd();
   };
-  if(dunno&&PLATFORM.explain) explain(m,fk,answer,box);
-  else if(!dunno&&autoRead) speak(verdict+'. '+g.hits.size+' von '+g.keys.length+' Begriffen.');
+  if(autoRead) speak(verdict);
 }
 
 /* ---------- Ende ---------- */
 function renderEnd(){
   stopRec(); S.phase='end'; setBack('Start',renderStart);
   const done=S.queue.filter(m=>Object.keys(S.results[m.id]||{}).length);
-  const rows=done.map(m=>{const r=S.results[m.id]; return `<div class="row"><span class="label">${esc(m.n)}</span><span class="badges">${fieldsFor(m).map(k=>r[k]?`<span class="badge ${cls(r[k].pct)}">${FIELD[k].short} ${Math.round(r[k].pct*100)} %</span>`:'').join('')}</span></div>`}).join('');
+  const rows=done.map(m=>{const r=S.results[m.id]; return `<div class="row"><span class="label">${esc(m.n)}</span><span class="badges">${fieldsFor(m).map(k=>r[k]?`<span class="badge ${cls(r[k].pct)}">${FIELD[k].short} ${r[k].pct?'✓':'✗'}</span>`:'').join('')}</span></div>`}).join('');
   let tot=0,cnt=0; done.forEach(m=>Object.values(S.results[m.id]).forEach(g=>{tot+=g.pct;cnt++;}));
   view.innerHTML=`<div class="stack">
-    <div><h1 class="large">Durchgang beendet</h1><p class="sub">${done.length} ${done.length===1?'Muskel':'Muskeln'} abgefragt${cnt?` · im Schnitt ${Math.round(tot/cnt*100)} % der Fachbegriffe`:''}</p></div>
+    <div class="center" style="display:flex;flex-direction:column;gap:4px"><h2 class="pagetitle">Durchgang beendet</h2><p class="sub" style="margin:0">${cnt?`${Math.round(tot)} von ${cnt} Fragen richtig`:'Keine Fragen beantwortet'}</p></div>
     ${rows?`<section class="group list">${rows}</section>`:''}
     <div class="stack-sm"><button class="btn primary" id="again">Nochmal mit gleicher Auswahl</button><button class="btn plain" id="back">Zur Auswahl</button></div>
   </div>`;
@@ -1014,28 +1086,20 @@ function renderEnd(){
   window.scrollTo({top:0});
 }
 
-/* ---------- Vorlese-Schalter ---------- */
-const tt=document.getElementById('ttsToggle');
-if(!synth){ tt.hidden=true; autoRead=false; }
-tt.onclick=()=>{ autoRead=!autoRead; tt.setAttribute('aria-pressed',autoRead); tt.setAttribute('aria-label',autoRead?'Automatisches Vorlesen ist an':'Automatisches Vorlesen ist aus'); if(!autoRead&&synth) synth.cancel(); };
-
 /* ---------- Duell ---------- */
-const ROUNDS=10, QTIME=30000, REVEAL=7000, PASS=0.4;
+const ROUNDS=10, QTIME=30000, REVEAL=8000, PASS=0.4;
 const DUEL={room:null,user:null,ready:false,loading:false,myPeer:null,nick:'',view:'off',outInv:null,decline:null,seen:new Set(),
   named:null,role:null,code:null,unsub:[],timers:[],game:null,hg:null,lastKey:null,myAns:null,roundStart:0,
   tInt:null,deadline:null,rTimer:null,revInt:null,hist:[],oppNick:'',target:null};
 
-/* Bewertung: richtig, wenn genug Fachbegriffe stimmen (Tippfehler werden toleriert, Zahlen und Anteil-Namen zählen weniger) */
-function evalAns(items,tx,t){
-  const g=grade(items,tx||'');
-  const textKeys=new Set(keysFor(items.map(x=>{const it=parseItem(x); return it.note?x:it.text;})));
-  let tot=0,hit=0; g.keys.forEach(k=>{const w=(/\d/.test(k)?0.5:1)*(textKeys.has(k)?1:0.3); tot+=w; if(g.hits.has(k)) hit+=w;});
-  const ok=!!tx && tot>0 && hit/tot>=PASS;
+/* Bewertung: richtig, wenn die richtige Antwort angetippt wurde; schnelle richtige Antworten bringen Bonus */
+function evalChoice(c,mid,t){
+  const ok=c===mid; t=Math.min(Number(t)||QTIME,QTIME);
   const bonus=ok?(t<=10000?2:t<=20000?1:0):0;
-  return {tx:(tx||'').slice(0,200),ok,pt:ok?1+bonus:0,bonus,t:Math.min(t,QTIME)};
+  return {c:(c==null?-1:c),ok,pt:ok?1+bonus:0,bonus,t};
 }
 function pickQs(){
-  return shuffle(M.slice()).slice(0,ROUNDS).map(m=>{const ks=ORDER.filter(k=>m[k]); return [m.id,ks[Math.floor(Math.random()*ks.length)]];});
+  return shuffle(M.slice()).slice(0,ROUNDS).map(m=>{const ks=ORDER.filter(k=>m[k]); const fk=ks[Math.floor(Math.random()*ks.length)]; return [m.id,fk,makeOptions(m.id,fk)];});
 }
 function newCode(){return String(Math.floor(1000+Math.random()*9000));}
 const isHost=()=>DUEL.role==='host';
@@ -1107,7 +1171,7 @@ function renderLobby(msg){
   :(DUEL.loading||(!DUEL.ready&&!DUEL.failed)?`<section class="card center"><div class="spinner" aria-hidden="true"></div><p class="sub" style="margin:0">Verbinde …</p></section>`
   :`<section class="card"><p style="margin:0">${PLATFORM.offlineText}</p><button class="btn tinted" id="retry">Erneut versuchen</button></section>`);
   view.innerHTML=`<div class="stack">
-    <div><h1 class="large">Duell</h1><p class="sub">10 Runden · gleiche Frage für beide · 30 Sekunden. Richtig gibt 1 Punkt, schnell einloggen bringt Bonus: unter 10 s +2, unter 20 s +1.</p></div>
+    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h2 class="pagetitle">Duell</h2><p class="sub" style="margin:0">10 Runden · gleiche Frage für beide · 30 Sekunden · 8 Antworten, eine ist richtig. Richtig gibt 1 Punkt, wer schnell antwortet bekommt Bonus: unter 10 s +2, unter 20 s +1.</p></div>
     ${body}
     <p class="hint" id="lobbyHint" role="status"></p>
   </div>`;
@@ -1198,11 +1262,11 @@ function hostCheck(){
 function hostReveal(){
   const g=DUEL.game; if(!g||g.ph!=='q') return;
   clearRoundTimers(); stopRec();
-  if(!DUEL.myAns){ const ta=document.getElementById('answer'); DUEL.myAns={g:g.id,r:g.r,tx:(ta?ta.value:'').trim().slice(0,300),t:QTIME,lk:true}; }
+  if(!DUEL.myAns){ DUEL.myAns={g:g.id,r:g.r,c:-1,t:QTIME,lk:true}; }
   const opp=oppPeer(); let oa=opp&&opp.presence.a;
-  if(!(oa&&oa.g===g.id&&oa.r===g.r)) oa={tx:'',t:QTIME};
-  const [mid,fk]=g.qs[g.r]; const items=M[mid][fk];
-  const h=evalAns(items,DUEL.myAns.tx,DUEL.myAns.t), o=evalAns(items,String(oa.tx||'').slice(0,300),Number(oa.t)||QTIME);
+  if(!(oa&&oa.g===g.id&&oa.r===g.r)) oa={c:-1,t:QTIME};
+  const [mid]=g.qs[g.r];
+  const h=evalChoice(DUEL.myAns.c,mid,DUEL.myAns.t), o=evalChoice(typeof oa.c==='number'?oa.c:-1,mid,oa.t);
   g.sc=[g.sc[0]+h.pt,g.sc[1]+o.pt]; g.ph='rev'; g.res={h,o};
   pushHost(); showReveal(g);
   DUEL.rTimer=setTimeout(()=>{
@@ -1249,7 +1313,7 @@ function renderWait(){
 function startRoundUI(g){
   clearRoundTimers(); stopRec();
   setBack('Aufgeben',()=>leaveDuel());
-  const [mid,fk]=g.qs[g.r]; const m=M[mid];
+  const [mid,fk,opts]=g.qs[g.r]; const m=M[mid];
   DUEL.myAns=null; DUEL.roundStart=performance.now();
   view.innerHTML=`<div class="stack">${scoreHTML(g)}
     <div class="tbar" aria-hidden="true"><span id="tfill"></span></div>
@@ -1258,42 +1322,32 @@ function startRoundUI(g){
       <h2 class="title-xl">${nameHTML(m.n)}</h2>${m.h?`<p class="sub" style="margin:0">${esc(m.h)}</p>`:''}
     </article>
     <section class="stack-sm">
-      <p class="question">${esc(FIELD[fk].q)}</p>
-      <div class="answerbox">
-        <label for="answer" class="srlabel">Deine Antwort</label>
-        <textarea id="answer" maxlength="300" placeholder="Sprich oder tippe deine Antwort"></textarea>
-        <button class="mic" id="mic" aria-label="Antwort einsprechen">${IC.mic}</button>
-      </div>
-      <p class="hint" id="micHint"></p>
+      <p class="question">${esc(MCQ[fk])}</p>
+      <div id="optBox">${optionsHTML(opts,fk)}</div>
     </section>
-    <button class="btn primary" id="lock">Antwort einloggen</button>
     <p class="opp" id="oppStat"><i></i>${esc(oppName())} denkt nach …</p>
   </div>`;
-  view.querySelector('#mic').onclick=toggleMic;
-  view.querySelector('#lock').onclick=()=>lockAnswer();
+  view.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>lockAnswer(+b.dataset.opt));
   window.scrollTo({top:0});
-  if(autoRead) speak(m.n+'. '+FIELD[fk].label+'?');
+  if(autoRead) speak(m.n+'. '+MCQ[fk]);
   const fill=document.getElementById('tfill'), left=document.getElementById('tleft');
   DUEL.tInt=setInterval(()=>{
     const el=performance.now()-DUEL.roundStart, rest=Math.max(0,QTIME-el);
     if(fill){ fill.style.width=(rest/QTIME*100)+'%'; fill.classList.toggle('low',rest<8000); }
     if(left) left.textContent=Math.ceil(rest/1000);
-    if(rest<=0){ clearInterval(DUEL.tInt); DUEL.tInt=null; if(!DUEL.myAns) lockAnswer(); }
+    if(rest<=0){ clearInterval(DUEL.tInt); DUEL.tInt=null; if(!DUEL.myAns) lockAnswer(-1); }
   },200);
   renderOppStatus();
 }
-function lockAnswer(){
+function lockAnswer(choice){
   const g=curGame(); if(!g||g.ph!=='q'||DUEL.myAns) return;
-  stopRec();
-  const ta=document.getElementById('answer');
-  const tx=(ta?ta.value:'').trim().slice(0,300);
   const t=Math.min(Math.round(performance.now()-DUEL.roundStart),QTIME);
-  DUEL.myAns={g:g.id,r:g.r,tx,t,lk:true};
+  DUEL.myAns={g:g.id,r:g.r,c:choice,t,lk:true};
   if(DUEL.named) DUEL.named.presence({a:DUEL.myAns}).catch(()=>{});
-  if(ta) ta.disabled=true;
-  const mic=document.getElementById('mic'); if(mic) mic.disabled=true;
-  const b=document.getElementById('lock'); if(b){ b.disabled=true; b.textContent=`Eingeloggt nach ${(t/1000).toFixed(1).replace('.',',')} s`; }
-  const h=document.getElementById('micHint'); if(h){ h.classList.remove('warn'); h.textContent=tx?'':'Keine Antwort abgegeben.'; }
+  const [,fk,opts]=g.qs[g.r];
+  const box=document.getElementById('optBox'); if(box) box.innerHTML=optionsHTML(opts,fk,{mine:choice,locked:true});
+  const st=document.getElementById('oppStat');
+  if(st&&!st.dataset.me){ st.dataset.me='1'; st.insertAdjacentHTML('beforebegin',`<p class="footnote">${choice>=0?`Eingeloggt nach ${(t/1000).toFixed(1).replace('.',',')} s`:'Zeit abgelaufen'}</p>`); }
   if(isHost()) hostCheck();
 }
 function renderOppStatus(){
@@ -1303,21 +1357,19 @@ function renderOppStatus(){
   el.innerHTML=locked?`<i class="done"></i>${esc(oppName())} hat eingeloggt`:`<i></i>${esc(oppName())} denkt nach …`;
 }
 function verdictHTML(label,r){
-  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':'Falsch'}</b><span>${r.ok?`+${r.pt}${r.bonus?` (inkl. ${r.bonus} Bonus)`:''}`:'+0'}</span></div><p>${r.tx?esc(r.tx):'<em>keine Antwort</em>'}</p><small class="tm">${(r.t/1000).toFixed(1).replace('.',',')} s</small></div>`;
+  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':r.c<0?'Keine Antwort':'Falsch'}</b><span>${r.ok?`+${r.pt}${r.bonus?` (inkl. ${r.bonus} Bonus)`:''}`:'+0'}</span></div><small class="tm">${r.c<0?'—':(r.t/1000).toFixed(1).replace('.',',')+' s'}</small></div>`;
 }
 function showReveal(g){
-  const [mid,fk]=g.qs[g.r]; const m=M[mid];
+  const [mid,fk,opts]=g.qs[g.r]; const m=M[mid];
   const mine=isHost()?g.res.h:g.res.o, theirs=isHost()?g.res.o:g.res.h;
   if(!DUEL.hist.some(h=>h.r===g.r)) DUEL.hist.push({r:g.r,mid,fk,me:mine,op:theirs});
-  const gr=grade(m[fk],mine.tx); const keys=new Set(gr.keys);
   const last=g.r+1>=ROUNDS;
   view.innerHTML=`<div class="stack">${scoreHTML(g)}
     <section class="card">
       <span class="pill">${esc(FIELD[fk].label)}</span>
       <h2 class="title-xl">${nameHTML(m.n)}</h2>
       <div class="duo">${verdictHTML('Du',mine)}${verdictHTML(oppName(),theirs)}</div>
-      <h3 class="sectionhead">Lösung</h3>
-      <ul class="sol">${solutionHTML(m[fk],keys,gr.hits)}</ul>
+      ${optionsHTML(opts,fk,{correct:mid,mine:mine.c,theirs:theirs.c,theirName:oppName(),locked:true})}
       ${figHTML(m)}
     </section>
     <p class="footnote" id="nextIn">${last?'Gleich kommt die Auswertung …':'Nächste Runde gleich …'}</p>
@@ -1335,7 +1387,7 @@ function showEnd(g){
   const head=a>b?'Gewonnen!':a<b?'Verloren':'Unentschieden';
   const rows=DUEL.hist.sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(FIELD[h.fk].label)}</small></span><span class="badges"><span class="badge ${h.me.ok?'good':'bad'}">Du +${h.me.pt}</span><span class="badge ${h.op.ok?'good':'bad'}">${esc(oppName())} +${h.op.pt}</span></span></div>`).join('');
   view.innerHTML=`<div class="stack">
-    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h1 class="large" style="${a>b?'color:var(--accent)':''}">${head}</h1><p class="sub" style="font-size:20px;font-variant-numeric:tabular-nums">Du ${a} : ${b} ${esc(oppName())}</p></div>
+    <div class="center" style="display:flex;flex-direction:column;gap:6px"><h2 class="pagetitle" style="font-size:34px;${a>b?'color:var(--accent)':''}">${head}</h2><p class="sub" style="font-size:20px;font-variant-numeric:tabular-nums">Du ${a} : ${b} ${esc(oppName())}</p></div>
     <section class="group list">${rows}</section>
     <div class="stack-sm">${isHost()?'<button class="btn primary" id="again">Revanche</button>':'<p class="footnote">Revanche? Dein Gegner kann eine neue Runde starten. Bleib einfach hier.</p>'}<button class="btn plain" id="leave">Duell verlassen</button></div>
   </div>`;
