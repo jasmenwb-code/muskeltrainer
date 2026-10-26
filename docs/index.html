@@ -1,0 +1,2049 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Anatomy Duel – Muskeln lernen und gegen Freunde spielen</title>
+<meta name="description" content="Anatomy Duel: Lerne 84 Muskeln mit Ursprung, Ansatz, Funktion und Innervation. Kurze Multiple-Choice-Fragen mit Abbildungen, Live-Duell und Lobby mit bis zu 8 Freunden. Kostenlos im Browser.">
+<link rel="canonical" href="https://anatomyduel.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Anatomy Duel">
+<meta property="og:title" content="Anatomy Duel – Muskeln lernen und gegen Freunde spielen">
+<meta property="og:description" content="84 Muskeln mit Ursprung, Ansatz, Funktion und Innervation lernen und live gegen Freunde antreten.">
+<meta property="og:url" content="https://anatomyduel.com/">
+<meta property="og:image" content="https://anatomyduel.com/icons/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Anatomy Duel">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Anatomy Duel","alternateName":["AnatomyDuel","Anatomy Duel Muskeltrainer"],"url":"https://anatomyduel.com/","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"de","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"description":"Muskeln lernen mit Ursprung, Ansatz, Funktion und Innervation. Multiple-Choice-Fragen mit Abbildungen, Live-Duell und Lobby mit Freunden."}</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+/* Anatomy Duel – eine ruhige Spalte im Stil gruppierter iOS-Listen; System-Schrift, viel Weißraum, ein Akzent */
+
+/* ---------- Farben (hell / dunkel) ---------- */
+:root{
+  --bg:#F2F2F7; --surface:#FFFFFF; --fill:#F2F2F7; --fill-2:#E9E9EE; --ink:#1C1C1E; --muted:#6E6E73; --sep:#E3E3E8;
+  --accent:#D93A2B; --accent-ink:#FFFFFF; --accent-soft:#FBE7E4;
+  --ok:#1F8A3A; --ok-soft:#E3F4E7; --warn:#B25000;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:16px; --r-sm:12px;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#000000; --surface:#1C1C1E; --fill:#2C2C2E; --fill-2:#3A3A3C; --ink:#F5F5F7; --muted:#98989F; --sep:#38383A;
+  --accent:#FF6B5E; --accent-ink:#1A0806; --accent-soft:#3A1C18; --ok:#3DD269; --ok-soft:#12301B; --warn:#FFA43A;
+  --shadow:none; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#1C1C1E; --fill:#2C2C2E; --fill-2:#3A3A3C; --ink:#F5F5F7; --muted:#98989F; --sep:#38383A;
+  --accent:#FF6B5E; --accent-ink:#1A0806; --accent-soft:#3A1C18; --ok:#3DD269; --ok-soft:#12301B; --warn:#FFA43A;
+  --shadow:none; color-scheme:dark }
+
+/* ---------- Grundlagen ---------- */
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.45;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+p{margin:0}
+img{max-width:100%}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;padding-block:8px 48px;display:flex;flex-direction:column;gap:20px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.stack-sm{display:flex;flex-direction:column;gap:10px}
+.center{text-align:center;align-items:center}
+.center-self{align-self:center}
+.srlabel{position:absolute;left:-9999px}
+
+/* ---------- Kopfzeile: Zurück links, Titel mittig, Profil und Einstellungen rechts ---------- */
+.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:52px}
+.bar .left{justify-self:start;min-width:0}
+.bar .right{justify-self:end;display:flex;gap:8px}
+.brand{font-size:22px;font-weight:800;letter-spacing:-.025em;margin:0;white-space:nowrap;padding:4px 2px;cursor:pointer}
+.navback,.iconbtn{width:36px;height:36px;border-radius:50%;border:0;background:var(--fill);display:grid;place-items:center;flex:none}
+.navback{color:var(--accent)}
+.iconbtn{color:var(--muted)}
+.navback svg,.iconbtn svg{width:20px;height:20px}
+.avatarbtn{padding:0;overflow:hidden}
+.avatarbtn img{width:100%;height:100%;object-fit:cover;display:block}
+@media (max-width:360px){ .brand{font-size:19px} }
+
+/* ---------- Schrift ---------- */
+.pagehead{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.pagetitle{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.025em;margin:4px 0 0;text-align:center;text-wrap:balance}
+.pagetitle.big{font-size:34px}
+.pagetitle.win{color:var(--accent)}
+.sub{color:var(--muted);font-size:15px}
+.score-line{font-size:20px;font-variant-numeric:tabular-nums}
+.title-xl{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.025em;margin:0;text-wrap:balance;overflow-wrap:anywhere}
+.title-xl small{font-size:.62em;font-weight:600;color:var(--muted);margin-right:.25em;letter-spacing:0}
+.question{font-size:20px;line-height:1.3;font-weight:600;letter-spacing:-.015em;text-wrap:balance}
+.group-label,.sectionhead{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.group-label{margin:0 0 -12px 16px}
+.stack-sm > .group-label{margin:0 0 0 16px}
+.footnote{font-size:13px;color:var(--muted);text-align:center}
+.hint{font-size:14px;color:var(--muted);min-height:1em}
+.hint:empty{display:none}
+.hint.warn{color:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:999px}
+.pill.neutral{color:var(--muted);background:var(--fill)}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ---------- Gruppierte Listen ---------- */
+.group{background:var(--surface);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:10px 16px;background:none;border:0;text-align:left;position:relative}
+.row + .row,.row + .sublist,.sublist + .row{box-shadow:inset 0 .5px 0 var(--sep)}
+.row .label{flex:1;min-width:0;display:flex;flex-direction:column}
+.row .label small{font-size:13px;color:var(--muted)}
+.row .value{color:var(--muted);font-size:17px;white-space:nowrap}
+.value b{color:var(--ink);font-variant-numeric:tabular-nums}
+.list .row{min-height:56px}
+.rowlink{background:none;border:0;padding:0;text-align:left;color:inherit}
+.me-row{background:var(--accent-soft)}
+.rank{width:28px;flex:none;text-align:center;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.chev{width:16px;height:16px;color:#C4C4C9;flex:none;transition:transform .2s ease}
+.row[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.sublist{background:var(--surface)}
+.sublist .row{padding-left:32px;min-height:46px}
+.sublist .tools{display:flex;gap:18px;padding:10px 16px 12px 32px;box-shadow:inset 0 .5px 0 var(--sep)}
+.check{width:20px;height:20px;color:var(--accent);flex:none;opacity:0}
+.row[aria-checked="true"] .check{opacity:1}
+.count{color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.link{background:none;border:0;color:var(--accent);padding:4px 0;font-size:15px}
+.tile{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--accent);color:#fff}
+.tile.tile-ok{background:var(--ok)}
+.tile.tile-warn{background:var(--warn)}
+.tile svg{width:18px;height:18px}
+.badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.badge{font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--fill);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.badge.good{background:var(--ok-soft);color:var(--ok)}
+.badge.bad{background:var(--accent-soft);color:var(--accent)}
+
+/* ---------- Schalter und Segmente ---------- */
+.switch{position:relative;width:51px;height:31px;border-radius:999px;background:var(--fill-2);flex:none;transition:background .2s}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .2s}
+.row[aria-checked="true"] .switch{background:var(--ok)}
+.row[aria-checked="true"] .switch::after{transform:translateX(20px)}
+.seg{display:flex;background:var(--fill-2);border-radius:10px;padding:2px;gap:2px}
+.seg button{flex:1;border:0;background:none;border-radius:8px;padding:7px 8px;font-size:15px;font-weight:500;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+
+/* ---------- Knöpfe ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;min-height:50px;padding:12px 18px;font-size:17px;font-weight:600;width:100%}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.tinted{background:var(--accent-soft);color:var(--accent)}
+.btn.plain{background:var(--surface);color:var(--accent);box-shadow:var(--shadow)}
+.btn.plain.muted{color:var(--muted)}
+.card .btn.plain,.btn.plain.small{box-shadow:none;background:var(--fill)}
+.btn.small{min-height:36px;padding:6px 14px;font-size:15px;width:auto;border-radius:999px}
+label.btn{cursor:pointer}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn svg{width:18px;height:18px}
+.btnrow{display:flex;gap:10px}
+.btnrow > *{flex:1}
+.btnrow.center-row{justify-content:center;flex-wrap:wrap}
+.btnrow.center-row > *{flex:none}
+.addf{font-size:20px;font-weight:600;color:var(--accent);background:var(--accent-soft)}
+
+/* ---------- Karten und Eingabefelder ---------- */
+.card{background:var(--surface);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.card.tall{padding-block:28px}
+.field{width:100%;border:0;border-radius:var(--r);background:var(--surface);color:var(--ink);font:inherit;box-shadow:var(--shadow);padding:13px 16px;min-height:50px}
+.card .field{background:var(--fill);box-shadow:none}
+.field::placeholder{color:#A1A1A6}
+.coderow{display:flex;gap:10px}
+.coderow .field{flex:1;min-width:0;letter-spacing:.2em;font-variant-numeric:tabular-nums}
+.coderow .btn{width:auto;flex:none}
+.codebig{font-size:56px;font-weight:700;letter-spacing:.14em;line-height:1;font-variant-numeric:tabular-nums;text-align:center}
+.fcode{display:block;margin-top:2px;font-size:22px;letter-spacing:.14em;font-variant-numeric:tabular-nums}
+#fResults:empty{display:none}
+.spinner{width:26px;height:26px;border-radius:50%;border:3px solid var(--fill-2);border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Lernmodus: Fortschritt, Frage, Lösung ---------- */
+.progress{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.track{flex:1;height:4px;border-radius:4px;background:var(--fill-2);overflow:hidden}
+.track span{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .3s ease}
+.qcard{gap:10px}
+.fact{font-size:22px;line-height:1.3;font-weight:650;letter-spacing:-.015em;text-wrap:balance;overflow-wrap:anywhere}
+.verdict{display:flex;align-items:center;gap:12px}
+.vicon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.vicon svg{width:22px;height:22px}
+.v-good .vicon{background:var(--ok-soft);color:var(--ok)}
+.v-bad .vicon{background:var(--accent-soft);color:var(--accent)}
+.verdict b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.verdict span{font-size:14px;color:var(--muted)}
+details.more{padding:0;gap:0}
+details.more > summary{list-style:none;cursor:pointer;padding:14px 18px;font-weight:600;color:var(--accent);display:flex;justify-content:space-between;align-items:center}
+details.more > summary::-webkit-details-marker{display:none}
+details.more > summary::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin-left:12px;transition:transform .2s}
+details.more[open] > summary::after{transform:rotate(-135deg)}
+details.more > *:not(summary){margin:0 18px 14px}
+.sol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sol li{padding-left:16px;position:relative}
+.sol li::before{content:"";position:absolute;left:2px;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.sol li.note{color:var(--muted);font-size:15px}
+.sol li.note::before{background:var(--sep)}
+.sol b{font-weight:600}
+.fig{margin:0;display:flex;flex-direction:column;gap:6px}
+.figbtn{border:0;border-radius:var(--r-sm);background:#FFFFFF;padding:10px;display:flex;justify-content:center}
+.figbtn img{display:block;max-width:100%;max-height:340px;width:auto;height:auto;object-fit:contain}
+.fig.big .figbtn img{max-height:none;width:100%}
+.fig figcaption{font-size:13px;color:var(--muted)}
+
+/* ---------- Antworten (Multiple Choice) ---------- */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;border:1.5px solid transparent;border-radius:14px;background:var(--surface);box-shadow:var(--shadow);padding:12px 14px;font-size:15px;line-height:1.35;color:var(--ink);transition:transform .08s ease,background .15s}
+.opt:not(:disabled):active{transform:scale(.985)}
+.opt:not(:disabled):hover{border-color:var(--sep)}
+.opt:disabled{cursor:default}
+.optl{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--fill-2);color:var(--muted)}
+.optt{flex:1;min-width:0;overflow-wrap:anywhere}
+.opttag{flex:none;align-self:center;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface);color:var(--ink)}
+.opt.picked,.opt.wrong{border-color:var(--accent);background:var(--accent-soft)}
+.opt.picked .optl,.opt.wrong .optl{background:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .optl{background:var(--ok);color:#fff}
+.opt.dim{opacity:.55}
+
+/* ---------- Online-Spiel: Punktestand, Zeit, Auflösung ---------- */
+.score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:var(--surface);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow)}
+.sc{display:flex;flex-direction:column;min-width:0}
+.sc small{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc b{font-size:30px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sc .of{font-size:15px;font-weight:500;color:var(--muted)}
+.sc.me b{color:var(--accent)}
+.sc.op{text-align:right}
+.sc.mid{font-size:13px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.tbar{height:6px;background:var(--fill-2);border-radius:6px;overflow:hidden}
+.tbar span{display:block;height:100%;width:100%;background:var(--ok);transition:width .2s linear}
+.tbar span.low{background:var(--accent)}
+.tleft{margin-top:-12px}
+.opp{font-size:15px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.opp i{width:8px;height:8px;border-radius:50%;background:var(--warn);animation:blink 1.4s ease-in-out infinite}
+.opp i.done{background:var(--ok);animation:none}
+@keyframes blink{50%{opacity:.3}}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){ .duo{grid-template-columns:1fr} }
+.pv{border-radius:var(--r-sm);padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0;background:var(--fill)}
+.pv.ok{background:var(--ok-soft)} .pv.no{background:var(--accent-soft)}
+.pvh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pvh small{font-size:13px;color:var(--muted);flex-basis:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pvh b{font-size:20px;font-weight:700;line-height:1.1}
+.pv.ok b{color:var(--ok)} .pv.no b{color:var(--accent)}
+.pvh span{font-size:14px;font-variant-numeric:tabular-nums}
+.pv .tm{font-size:12px;color:var(--muted)}
+
+/* ---------- Einladung (Sheet von unten) ---------- */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.18);
+  padding-top:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.sheet-in p{font-size:17px}
+
+/* ---------- Profilbilder ---------- */
+.avatar{position:relative;flex:none;width:36px;height:36px;border-radius:50%;display:inline-block}
+.avatar img,.avatar span{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;object-fit:cover;color:#fff;font-weight:700;font-size:14px;letter-spacing:.02em}
+.avatar.xl{width:96px;height:96px}
+.avatar.xl span{font-size:34px}
+.avatar .st{position:absolute;right:-1px;bottom:-1px;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);background:var(--fill-2)}
+.avatar .st.on{background:var(--ok)}
+.avatar .st.busy{background:var(--warn)}
+
+@media (prefers-reduced-motion: reduce){ .spinner,.opp i{animation:none} .chev,.switch,.switch::after,.track span,.tbar span{transition:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="left"><button class="navback" id="navBack" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button></div>
+    <h1 class="brand" id="barTitle">Anatomy Duel</h1>
+    <div class="right">
+      <button class="iconbtn avatarbtn" id="profileBtn" aria-label="Profil" title="Profil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
+      <button class="iconbtn" id="settingsBtn" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+<div class="sheet" id="inviteBar" role="alertdialog" aria-live="polite" hidden></div>
+<noscript><p style="padding:16px">Anatomy Duel braucht JavaScript. Bitte aktiviere es in deinem Browser.</p></noscript>
+<script src="firebase-config.js"></script>
+<script>
+/* Muskeldaten aus dem Lernskript.
+   Jeder Muskel: n = Name, h = Zusatz, r = Region (Schlüssel aus REG),
+   U/A/UA/F/I = Ursprung, Ansatz, Ursprung+Ansatz, Funktion, Innervation.
+   Einträge mit "Anteil :: Text" nennen den Anteil; Einträge mit "!" sind Hinweise, keine Lernfakten. */
+const REG = {
+  rumpf:'Hals, Thorax & Bauch', ruecken:'Rücken', schulter:'Schultergürtel & Schulter', oberarm:'Oberarm',
+  unterarm:'Unterarm & Hand', huefte:'Hüfte & Gesäß', oberschenkel:'Oberschenkel', unterschenkel:'Unterschenkel & Fuß'
+};
+/* Abgefragte Kategorien */
+const FIELD = {U:'Ursprung', A:'Ansatz', F:'Funktion', I:'Innervation'};
+
+const OSG_PF = 'oberes Sprunggelenk :: Plantarflexion', USG_INV = 'unteres Sprunggelenk :: Inversion (Supination)', USG_EV = 'unteres Sprunggelenk :: Eversion (Pronation)', OSG_DE = 'oberes Sprunggelenk :: Dorsalextension';
+const RAD68 = ['N. radialis (C6–8)'], SUP_HINT = '! hilft bei der Supination';
+const ADD_STAB = 'Stabilisierung des Beckens in der Frontal- und Sagittalebene';
+
+const M = [
+ // Hals, Thorax & Bauch
+ {n:'Mm. scaleni', r:'rumpf',
+  U:['M. scalenus anterior :: Tubercula anteriora der Querfortsätze des 3.–6. Halswirbels','M. scalenus medius :: Tubercula posteriora der Querfortsätze des 3.–7. Halswirbels','M. scalenus posterior :: Tubercula posteriora der Querfortsätze des 5.–7. Halswirbels'],
+  A:['M. scalenus anterior :: Tuberculum musculi scaleni anterioris der 1. Rippe','M. scalenus medius :: 1. Rippe (dorsal des Sulcus arteriae subclaviae)','M. scalenus posterior :: Außenfläche der 2. Rippe'],
+  F:['Punctum mobile an den Rippen :: Inspiration (Heben der oberen Rippen)','Punctum fixum an den Rippen :: Lateralflexion der HWS zur ipsilateralen Seite (bei einseitiger Kontraktion)','Ventralflexion des Halses (bei beidseitiger Kontraktion)'],
+  I:['direkte Äste aus dem Plexus cervicalis und dem Plexus brachialis (C3–6)']},
+ {n:'Mm. intercostales', r:'rumpf',
+  UA:['Mm. intercostales externi :: vom Tuberculum costae bis zur Knorpel-Knochen-Grenze; entspringen am Unterrand einer Rippe und inserieren am Oberrand der nächst tieferen Rippe (Verlauf: von hinten-oben nach vorne-unten)','Mm. intercostales interni :: vom Angulus costae bis zum Sternum; entspringen am Oberrand einer Rippe und inserieren am Unterrand der nächsthöheren Rippe (Verlauf: von hinten-unten nach vorne-oben)','Mm. intercostales intimi :: Abspaltung der Mm. intercostales interni (daher gleicher Verlauf und gleiche Funktion)'],
+  F:['Mm. intercostales externi :: Rippenheber (Inspiration); verspannen die Zwischenrippenräume; Stabilisation der Thoraxwand','Mm. intercostales interni und intimi :: Rippensenker (Exspiration); verspannen die Zwischenrippenräume; Stabilisation der Thoraxwand'],
+  I:['Nn. intercostales I–XI']},
+ {n:'M. transversus thoracis', r:'rumpf',
+  U:['Innenseite des Corpus sterni und des Proc. xiphoideus sterni'], A:['Innenseite der Rippenknorpel der 2.–6. Rippe'],
+  F:['Rippensenker (Exspiration)'], I:['Nn. intercostales II–VI']},
+ {n:'M. transversus abdominis', r:'rumpf',
+  U:['Innenflächen der 7.–10. Rippenknorpel (sowie 11. und 12. Rippe)','tiefes Blatt der Fascia thoracolumbalis','Labium internum der Crista iliaca, Spina iliaca anterior superior','lateraler Teil des Lig. inguinale'],
+  A:['hinteres Blatt der Rektusscheide, Linea alba'],
+  F:['einseitig :: Rotation des Rumpfes zur ipsilateralen Seite','beidseitig :: Bauchpresse und Ausatmung'],
+  I:['Nn. intercostales (Th5–12), Nn. iliohypogastricus und ilioinguinalis']},
+ {n:'M. obliquus externus abdominis', r:'rumpf',
+  U:['Außenfläche der 5.–12. Rippe'], A:['Labium externum der Crista iliaca','vorderes Blatt der Rektusscheide, Linea alba'],
+  F:['einseitig :: Lateralflexion des Rumpfes zur ipsilateralen Seite, Rotation des Rumpfes zur kontralateralen Seite','beidseitig :: Ventralflexion des Rumpfes, Aufrichtung des Beckens, Bauchpresse und Ausatmung'],
+  I:['Nn. intercostales (Th5–12)']},
+ {n:'M. sternocleidomastoideus', r:'rumpf',
+  U:['Caput sternale :: Manubrium sterni','Caput claviculare :: mediales Drittel der Clavicula'], A:['Proc. mastoideus und Linea nuchalis superior'],
+  F:['einseitig :: Lateralflexion des Kopfes zur ipsilateralen Seite, Rotation des Kopfes zur kontralateralen Seite','beidseitig :: Dorsalextension des Kopfes; Atemhilfsmuskel mit Punctum fixum am Kopf'],
+  I:['N. accessorius (XI. Hirnnerv) und direkte Äste aus dem Plexus cervicalis (C1–2)']},
+ // Rücken
+ {n:'Mm. rotatores breves und longi', r:'ruecken',
+  UA:['Mm. rotatores breves :: verlaufen zwischen Querfortsatz und nächsthöherem Dornfortsatz innerhalb der gesamten BWS','Mm. rotatores longi :: verlaufen zwischen Querfortsatz und übernächstem Dornfortsatz innerhalb der gesamten BWS'],
+  F:['beidseitige Kontraktion :: Dorsalextension der BWS','einseitige Kontraktion :: Rotation zur kontralateralen Seite'], I:['Rr. dorsales der Spinalnerven']},
+ {n:'M. multifidus', r:'ruecken',
+  UA:['verläuft zwischen Querfortsatz und Dornfortsatz, überspringt 2–4 Wirbel, innerhalb der gesamten Wirbelsäule (2. Halswirbel bis Os sacrum)','! am stärksten in der LWS ausgebildet'],
+  F:['beidseitige Kontraktion :: Dorsalextension','einseitige Kontraktion :: Lateralflexion zur ipsilateralen Seite und Rotation zur kontralateralen Seite'], I:['Rr. dorsales der Spinalnerven']},
+ {n:'M. semispinalis', r:'ruecken',
+  U:['M. semispinalis thoracis :: Querfortsätze des 6.–12. Brustwirbels','M. semispinalis cervicis :: Querfortsätze des 1.–6. Brustwirbels','M. semispinalis capitis :: Querfortsätze des 3. Hals- bis 6. Brustwirbels'],
+  A:['M. semispinalis thoracis :: Dornfortsätze des 6. Hals- bis 4. Brustwirbels','M. semispinalis cervicis :: Dornfortsätze des 2.–7. Halswirbels','M. semispinalis capitis :: Os occipitale zwischen Linea nuchalis superior und Linea nuchalis inferior'],
+  F:['beidseitige Kontraktion :: Dorsalextension der BWS, der HWS sowie des Kopfes (Stabilisierung der Kopfgelenke)','einseitige Kontraktion :: Lateralflexion zur ipsilateralen Seite und Rotation zur kontralateralen Seite (Kopf, HWS und BWS)'],
+  I:['Rr. dorsales der Spinalnerven']},
+ {n:'M. splenius', r:'ruecken',
+  U:['M. splenius cervicis :: Dornfortsätze des 3.–6. Brustwirbels','M. splenius capitis :: Dornfortsätze des 4. Hals- bis 3. Brustwirbels'],
+  A:['M. splenius cervicis :: Querfortsätze des 1. und 2. Halswirbels','M. splenius capitis :: laterale Linea nuchalis superior, Proc. mastoideus'],
+  F:['beidseitige Kontraktion :: Dorsalextension der HWS und des Kopfes','einseitige Kontraktion :: ipsilaterale Lateralflexion und Rotation'],
+  I:['laterale Äste der Rr. dorsales der Spinalnerven (C1–6)']},
+ {n:'Mm. intertransversarii', r:'ruecken',
+  UA:['Mm. intertransversarii mediales lumborum :: zwischen benachbarten Procc. mammillares aller Lendenwirbel','Mm. intertransversarii laterales lumborum :: zwischen benachbarten Procc. costales aller Lendenwirbel','Mm. intertransversarii posteriores cervicis :: zwischen benachbarten Tubercula posteriora des 2.–7. Halswirbels','Mm. intertransversarii anteriores cervicis :: zwischen benachbarten Tubercula anteriora des 2.–7. Halswirbels'],
+  F:['beidseitige Kontraktion :: Stabilisierung und Dorsalextension der HWS und LWS','einseitige Kontraktion :: Lateralflexion der HWS und LWS zur ipsilateralen Seite'],
+  I:['Rr. dorsales der Spinalnerven','Ausnahme laterales lumborum und anteriores cervicis :: Rr. ventrales der Spinalnerven']},
+ {n:'Mm. levatores costarum', r:'ruecken',
+  U:['Mm. levatores costarum breves :: Querfortsätze des 7. Hals- und 1.–11. Brustwirbels','Mm. levatores costarum longi :: Querfortsätze des 7. Hals- und 1.–10. Brustwirbels'],
+  A:['breves :: Angulus costae der nächsttieferen Rippe','longi :: Angulus costae der übernächsten Rippe'],
+  F:['beidseitige Kontraktion :: Dorsalextension der BWS','einseitige Kontraktion :: ipsilaterale Lateralflexion und kontralaterale Rotation'],
+  I:['sowohl Rr. dorsales als auch Rr. ventrales der Spinalnerven']},
+ // Schultergürtel & Schulter
+ {n:'M. trapezius', r:'schulter',
+  U:['Pars descendens :: Os occipitale: Linea nuchalis superior und Protuberantia occipitalis externa; über das Lig. nuchae an den Procc. spinosi aller Halswirbel','Pars transversa :: Sehnenspiegel auf Höhe der Procc. spinosi des 1.–4. Brustwirbels','Pars ascendens :: Procc. spinosi des 5.–12. Brustwirbels'],
+  A:['Pars descendens :: laterales Drittel der Clavicula','Pars transversa :: Acromion','Pars ascendens :: Spina scapulae'],
+  F:['Pars descendens :: zieht die Scapula schräg aufwärts und dreht sie nach außen (synergistisch mit der Pars inferior des M. serratus anterior); neigt den Kopf zur ipsilateralen Seite und dreht ihn zur kontralateralen Seite (Punctum fixum am Schultergürtel)','Pars transversa :: verlagert das Schulterblatt nach medial','Pars ascendens :: zieht die Scapula nach kaudal-medial (unterstützt die rotatorische Wirkung der Pars descendens)','gesamter Muskel :: Fixierung des Schulterblatts am Thorax'],
+  I:['N. accessorius (XI. Hirnnerv) und Plexus cervicalis (C2–4)']},
+ {n:'M. levator scapulae', r:'schulter',
+  U:['Procc. transversi des 1.–4. Halswirbels'], A:['Angulus superior der Scapula'],
+  F:['zieht die Scapula nach kranial-medial und schwenkt den Angulus inferior nach medial (Rückführung des elevierten Armes in die Neutral-Null-Stellung)','neigt den Hals zur ipsilateralen Seite (Punctum fixum an der Scapula)'],
+  I:['N. dorsalis scapulae (C4–5)']},
+ {n:'M. rhomboideus minor', r:'schulter',
+  U:['Procc. spinosi des 6. und 7. Halswirbels'], A:['Margo medialis der Scapula oberhalb der Spina scapulae'],
+  F:['Fixierung der Scapula','zieht die Scapula nach kranial-medial (Rückführung des elevierten Armes in die Neutral-Null-Stellung)'],
+  I:['N. dorsalis scapulae (C4–5)']},
+ {n:'M. rhomboideus major', r:'schulter',
+  U:['Procc. spinosi des 1.–4. Brustwirbels'], A:['Margo medialis der Scapula unterhalb der Spina scapulae'],
+  F:['Fixierung der Scapula','zieht die Scapula nach kranial-medial (Rückführung des elevierten Armes in die Neutral-Null-Stellung)'],
+  I:['N. dorsalis scapulae (C4–5)']},
+ {n:'M. serratus anterior', r:'schulter',
+  U:['1.–9. Rippe'],
+  A:['Pars superior :: Angulus superior der Scapula','Pars intermedia :: Margo medialis der Scapula','Pars inferior :: Angulus inferior und Margo medialis der Scapula'],
+  F:['gesamter Muskel :: Verschiebung der Scapula nach lateral-ventral, Rippenhebung bei fixiertem Schultergürtel (Atemhilfsmuskel)','Pars inferior :: Drehung der Scapula und Schwenken des Angulus inferior nach lateral-ventral (ermöglicht die Elevation des Armes über 90°)','Pars superior :: Rückführung des elevierten Armes (wirkt antagonistisch zur Pars inferior)'],
+  I:['N. thoracicus longus (C5–7)']},
+ {n:'M. subclavius', r:'schulter',
+  U:['1. Rippe (Knorpel-Knochen-Grenze)'], A:['Unterseite der Clavicula (laterales Drittel)'],
+  F:['Fixierung der Clavicula im Sternoklavikulargelenk'], I:['N. subclavius (C5, 6)']},
+ {n:'M. pectoralis minor', r:'schulter',
+  U:['3.–5. Rippe'], A:['Proc. coracoideus der Scapula'],
+  F:['Herabziehen der Scapula, dabei wandert der Angulus inferior nach dorsomedial (Rückführung des elevierten Armes)','Atemhilfsmuskel'],
+  I:['Nn. pectorales medialis und lateralis (C6–Th1)']},
+ {n:'M. pectoralis major', r:'schulter',
+  U:['Pars clavicularis :: mediale Hälfte der Clavicula','Pars sternocostalis :: Sternum und 2.–6. Rippenknorpel','Pars abdominalis :: Lamina anterior der Rektusscheide'],
+  A:['Crista tuberculi majoris des Humerus'],
+  F:['gesamter Muskel :: Adduktion und Innenrotation','Pars clavicularis und Pars sternocostalis :: Anteversion','Atemhilfsmuskel bei fixiertem Schultergürtel'],
+  I:['Nn. pectorales medialis und lateralis (C5–Th1)']},
+ {n:'M. deltoideus', r:'schulter',
+  U:['Pars clavicularis :: laterales Drittel der Clavicula','Pars acromialis :: Acromion','Pars spinalis :: Spina scapulae'],
+  A:['Tuberositas deltoidea am Humerus'],
+  F:['Pars clavicularis :: Anteversion, Innenrotation, Adduktion','Pars acromialis :: Abduktion','Pars spinalis :: Retroversion, Außenrotation, Adduktion','! Zwischen 60° und 90° Abduktion unterstützen der klavikuläre und spinale Teil die Pars acromialis bei der Abduktion.'],
+  I:['N. axillaris (C5, 6)']},
+ {n:'M. latissimus dorsi', r:'schulter',
+  U:['Pars vertebralis :: Procc. spinosi des 7.–12. Brustwirbels; über die Fascia thoracolumbalis von den Dornfortsätzen sämtlicher Lendenwirbel sowie vom Os sacrum (Facies dorsalis ossis sacri)','Pars iliaca :: hinteres Drittel der Crista iliaca','Pars costalis :: 9.–12. Rippe','Pars scapularis :: Angulus inferior'],
+  A:['Crista tuberculi minoris des Humerus'],
+  F:['Innenrotation, Adduktion, Retroversion','Atemhilfsmuskel (Ausatmung, „Hustenmuskel“)'],
+  I:['N. thoracodorsalis (C6–8)']},
+ {n:'M. teres major', r:'schulter',
+  U:['Angulus inferior der Scapula'], A:['Crista tuberculi minoris des Humerus'],
+  F:['Innenrotation, Adduktion, Retroversion'], I:['N. subscapularis (C5–8)']},
+ {n:'M. subscapularis', r:'schulter',
+  U:['Fossa subscapularis der Scapula'], A:['Tuberculum minus des Humerus'], F:['Innenrotation'], I:['N. subscapularis (C5–8)']},
+ {n:'M. supraspinatus', r:'schulter',
+  U:['Fossa supraspinata der Scapula'], A:['Tuberculum majus des Humerus'], F:['Abduktion'], I:['N. suprascapularis (C4–6)']},
+ {n:'M. infraspinatus', r:'schulter',
+  U:['Fossa infraspinata der Scapula'], A:['Tuberculum majus des Humerus'], F:['Außenrotation'], I:['N. suprascapularis (C4–6)']},
+ {n:'M. teres minor', r:'schulter',
+  U:['Margo lateralis der Scapula'], A:['Tuberculum majus des Humerus'], F:['Außenrotation, schwache Adduktion'], I:['N. axillaris (C5, 6)']},
+ {n:'M. coracobrachialis', r:'schulter',
+  U:['Proc. coracoideus der Scapula'], A:['Humerus (Verlängerung der Crista tuberculi minoris)'],
+  F:['Anteversion, Adduktion, Innenrotation'], I:['N. musculocutaneus (C5, 6)']},
+ // Oberarm
+ {n:'M. biceps brachii', r:'oberarm',
+  U:['Caput longum :: Tuberculum supraglenoidale der Scapula','Caput breve :: Proc. coracoideus der Scapula'],
+  A:['Tuberositas radii, Lacertus fibrosus'],
+  F:['Ellenbogengelenk :: Flexion, Supination (bei gebeugtem Ellenbogen)','Schultergelenk :: Abduktion und Innenrotation (Caput longum)','Schultergelenk :: Anteversion (Caput longum und Caput breve)'],
+  I:['N. musculocutaneus (C5–7)']},
+ {n:'M. brachialis', r:'oberarm',
+  U:['distale Hälfte der Vorderfläche des Humerus, Septa intermuscularia brachii mediale und laterale'], A:['Tuberositas ulnae'],
+  F:['Flexion im Ellenbogengelenk'],
+  I:['N. musculocutaneus (C5–7)','N. radialis (C5–6)','! variable Äste, die den N. radialis im Radialistunnel als Rr. musculares verlassen']},
+ {n:'M. triceps brachii', r:'oberarm',
+  U:['Caput longum :: Tuberculum infraglenoidale der Scapula','Caput mediale :: Hinterfläche des Humerus, distal vom Sulcus n. radialis, Septum intermusculare mediale','Caput laterale :: Hinterfläche des Humerus, proximal vom Sulcus n. radialis, Septum intermusculare laterale'],
+  A:['Olecranon der Ulna'],
+  F:['Ellenbogengelenk :: Extension','Schultergelenk (Caput longum) :: Retroversion und Adduktion des Oberarms'],
+  I:['N. radialis (C6–8)']},
+ {n:'M. anconeus', r:'oberarm',
+  U:['Epicondylus lateralis des Humerus (teilweise dorsale Gelenkkapsel)'], A:['Olecranon der Ulna (radiale Fläche)'],
+  F:['Extension, Kapselspanner'], I:['N. radialis (C6–8)']},
+ // Unterarm & Hand
+ {n:'M. brachioradialis', r:'unterarm',
+  U:['laterale Seite des distalen Humerus, Septum intermusculare laterale'], A:['Proc. styloideus radii'],
+  F:['Ellenbogengelenk :: Flexion','Unterarmgelenke :: Semipronationsstellung'], I:['N. radialis (C5–7)']},
+ {n:'M. extensor carpi radialis longus', r:'unterarm',
+  U:['laterale Seite des distalen Humerus (Crista supracondylaris lateralis), Septum intermusculare laterale'], A:['dorsale Basis des Os metacarpi II'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke :: Dorsalextension (Faustschlusshelfer), Radialabduktion'], I:['N. radialis (C5–7)']},
+ {n:'M. extensor carpi radialis brevis', r:'unterarm',
+  U:['Epicondylus lateralis des Humerus'], A:['dorsale Basis des Os metacarpi III'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke :: Dorsalextension (Faustschlusshelfer), Radialabduktion'], I:['N. radialis (C5–7)']},
+ {n:'M. extensor digitorum', r:'unterarm',
+  U:['Epicondylus lateralis des Humerus (Caput commune)'], A:['Dorsalaponeurose des 2.–5. Fingers'],
+  F:['Handgelenke :: Dorsalextension','Grund-, Mittel- und Endgelenke des 2.–5. Fingers :: Extension, Spreizen der Finger'], I:RAD68},
+ {n:'M. extensor digiti minimi', r:'unterarm',
+  U:['Epicondylus lateralis des Humerus (Caput commune)'], A:['Dorsalaponeurose des 5. Fingers'],
+  F:['Handgelenke :: Dorsalextension, Ulnarabduktion','Grund-, Mittel- und Endgelenk des 5. Fingers :: Extension, Abspreizen des 5. Fingers'], I:RAD68},
+ {n:'M. extensor carpi ulnaris', r:'unterarm',
+  U:['Caput commune :: Epicondylus lateralis des Humerus','Caput ulnare :: Dorsalseite der Ulna'], A:['Basis des Os metacarpi V'],
+  F:['Handgelenke :: Dorsalextension, Ulnarabduktion'], I:RAD68},
+ {n:'M. supinator', r:'unterarm',
+  U:['Olecranon der Ulna (Crista musculi supinatoris), Epicondylus lateralis, Lig. collaterale radiale, Lig. anulare radii'],
+  A:['Radius zwischen der Tuberositas radii und dem Ansatz des M. pronator teres'],
+  F:['Unterarmgelenke :: Supination'], I:['N. radialis (C5, 6)']},
+ {n:'M. abductor pollicis longus', r:'unterarm',
+  U:['Dorsalflächen von Radius und Ulna, Membrana interossea'], A:['Basis des Os metacarpi I'],
+  F:['proximales Handgelenk :: Radialabduktion','Daumensattelgelenk :: Abduktion',SUP_HINT], I:RAD68},
+ {n:'M. extensor pollicis brevis', r:'unterarm',
+  U:['Dorsalfläche des Radius und Membrana interossea (distal vom M. abductor pollicis longus)'], A:['Basis der Daumengrundphalanx'],
+  F:['proximales Handgelenk :: Radialabduktion','Daumensattel- und Grundgelenk :: Extension',SUP_HINT], I:RAD68},
+ {n:'M. extensor pollicis longus', r:'unterarm',
+  U:['Dorsalfläche der Ulna und Membrana interossea'], A:['Basis der Endphalanx des Daumens'],
+  F:['Handgelenke :: Dorsalextension und Radialabduktion','Daumensattelgelenk :: Adduktion','Grund- und Endgelenk des Daumens :: Extension',SUP_HINT], I:RAD68},
+ {n:'M. extensor indicis', r:'unterarm',
+  U:['Dorsalfläche der Ulna, Membrana interossea'], A:['Dorsalaponeurose des 2. Fingers'],
+  F:['Handgelenke :: Dorsalextension','Grund-, Mittel- und Endgelenke des 2. Fingers :: Dorsalextension',SUP_HINT], I:RAD68},
+ {n:'M. pronator teres', r:'unterarm',
+  U:['Caput humerale :: Epicondylus medialis des Humerus','Caput ulnare :: Proc. coronoideus der Ulna'], A:['Facies lateralis radii (distal vom Ansatz des M. supinator)'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Unterarmgelenke :: Pronation'], I:['N. medianus (C6)']},
+ {n:'M. flexor digitorum superficialis', r:'unterarm',
+  U:['Caput humerale :: Epicondylus medialis des Humerus (Caput commune)','Caput ulnare :: Proc. coronoideus der Ulna','Caput radiale :: distal der Tuberositas radii'],
+  A:['an den Seiten der Mittelphalangen des 2.–5. Fingers'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke, Grund- und Mittelgelenke der Finger II–V :: Flexion'], I:['N. medianus (C7–Th1)']},
+ {n:'M. flexor carpi radialis', r:'unterarm',
+  U:['Epicondylus medialis des Humerus (Caput commune)'], A:['Basis des Os metacarpi II (manchmal auch zusätzlich Os metacarpi III)'],
+  F:['Handgelenke :: Flexion, Radialabduktion','Ellenbogengelenk :: schwache Pronation'], I:['N. medianus (C6–8)']},
+ {n:'M. flexor carpi ulnaris', r:'unterarm',
+  U:['Caput humerale :: Epicondylus medialis des Humerus (Caput commune)','Caput ulnare :: Olecranon der Ulna'],
+  A:['Hamulus ossis hamati, Basis des Os metacarpi V, Os pisiforme (als Sesambein)'],
+  F:['Handgelenke :: Flexion, Ulnarabduktion'], I:['N. ulnaris (C8–Th1)']},
+ {n:'M. palmaris longus', r:'unterarm',
+  U:['Epicondylus medialis des Humerus (Caput commune)'], A:['Palmaraponeurose'],
+  F:['Ellenbogengelenk :: schwacher Beuger','Handgelenke :: Palmarflexion, Spannen der Palmaraponeurose'], I:['N. medianus (C8–Th1)']},
+ {n:'M. flexor digitorum profundus', r:'unterarm',
+  U:['proximale zwei Drittel der Beugeseite der Ulna sowie angrenzende Membrana interossea'], A:['Palmarseite der Endphalangen des 2.–5. Fingers'],
+  F:['Handgelenke, Grund-, Mittel- und Endgelenke der Finger II–V :: Flexion'],
+  I:['radialer Teil (2. und 3. Finger) :: N. medianus (C7–Th1)','ulnarer Teil (4. und 5. Finger) :: N. ulnaris (C8–Th1)']},
+ {n:'M. flexor pollicis longus', r:'unterarm',
+  U:['mittlere Vorderfläche des Radius, angrenzende Membrana interossea'], A:['Palmarseite der Endphalanx des Daumens'],
+  F:['Handgelenke :: Flexion und Radialabduktion','Daumensattelgelenk :: Opposition','Daumengrund- und Endgelenk :: Flexion'], I:['N. medianus (C6–8)']},
+ {n:'M. pronator quadratus', r:'unterarm',
+  U:['distales Viertel der Vorderfläche der Ulna'], A:['distales Viertel der Vorderfläche des Radius'],
+  F:['Pronation, sichert das distale Radioulnargelenk'], I:['N. medianus (C8–Th1)']},
+ // Hüfte & Gesäß
+ {n:'M. iliopsoas', r:'huefte',
+  U:['M. psoas major, oberflächliche Schicht :: Seitenflächen des 12. Brustwirbelkörpers, der 1.–4. Lendenwirbelkörper sowie der zugehörigen Disci intervertebrales','M. psoas major, tiefe Schicht :: Procc. costales des 1.–5. Lendenwirbels','M. iliacus :: Fossa iliaca'],
+  A:['gemeinsam als M. iliopsoas am Trochanter minor des Femurs'],
+  F:['Hüftgelenk :: Flexion und Außenrotation','Lendenwirbelsäule :: einseitig (Punctum fixum am Femur) Lateralflexion zur ipsilateralen Seite, beidseitig Aufrichten des Rumpfes aus der Rückenlage'],
+  I:['N. femoralis (L1–4) sowie direkte Äste aus dem Plexus lumbalis']},
+ {n:'M. gluteus maximus', r:'huefte',
+  U:['seitlicher Teil der Facies dorsalis des Os sacrum','hinterer Teil der Facies glutea des Os ilium (hinter der Linea glutea posterior)','Fascia thoracolumbalis','mit tiefen Fasern am Lig. sacrotuberale'],
+  A:['kraniale Fasern :: Tractus iliotibialis','kaudale Fasern :: Tuberositas glutea'],
+  F:['gesamter Muskel :: Extension und Außenrotation im Hüftgelenk; stabilisiert das Hüftgelenk in der Sagittal- und Frontalebene','kraniale Fasern :: Abduktion','kaudale Fasern :: Adduktion'],
+  I:['N. gluteus inferior (L5–S2)']},
+ {n:'M. gluteus medius', r:'huefte',
+  U:['Facies glutea des Os ilium (unterhalb der Crista iliaca zwischen den Lineae gluteae anterior und posterior)'], A:['seitliche Fläche des Trochanter major am Femur'],
+  F:['gesamter Muskel :: Abduktion, Stabilisierung des Beckens in der Frontalebene','vorderer Teil :: Flexion und Innenrotation','hinterer Teil :: Extension und Außenrotation'],
+  I:['N. gluteus superior (L4–S1)']},
+ {n:'M. gluteus minimus', r:'huefte',
+  U:['Facies glutea des Os ilium (unterhalb des Ursprungs vom M. gluteus medius)'], A:['mediale Fläche des Trochanter major am Femur'],
+  F:['gesamter Muskel :: Abduktion, Stabilisierung des Beckens in der Frontalebene','vorderer Teil :: Flexion und Innenrotation','hinterer Teil :: Extension und Außenrotation'],
+  I:['N. gluteus superior (L4–S1)']},
+ {n:'M. tensor fasciae latae', r:'huefte',
+  U:['Spina iliaca anterior superior'], A:['Tractus iliotibialis'],
+  F:['spannt die Fascia lata','Hüftgelenk :: Abduktion, Flexion und Innenrotation'], I:['N. gluteus superior (L4–S1)']},
+ {n:'M. piriformis', r:'huefte',
+  U:['Facies pelvica des Os sacrum'], A:['Spitze des Trochanter major am Femur'],
+  F:['Außenrotation, Abduktion und Extension im Hüftgelenk','Stabilisierung im Hüftgelenk'], I:['direkte Äste aus dem Plexus sacralis (L5–S2)']},
+ {n:'M. obturatorius internus', r:'huefte',
+  U:['Innenfläche der Membrana obturatoria und ihr knöcherner Rahmen'], A:['Fossa trochanterica am Femur'],
+  F:['Außenrotation, Adduktion und Extension im Hüftgelenk (in Abhängigkeit von der Stellung des Hüftgelenks Abduktion möglich)'],
+  I:['direkte Äste aus dem Plexus sacralis (L5–S2)']},
+ {n:'Mm. gemelli', r:'huefte',
+  U:['M. gemellus superior :: Spina ischiadica des Os ischii','M. gemellus inferior :: Tuber ischiadicum des Os ischii'],
+  A:['zusammen mit der Ansatzsehne des M. obturatorius internus in der Fossa trochanterica'],
+  F:['Außenrotation, Adduktion und Extension im Hüftgelenk (in Abhängigkeit von der Stellung des Hüftgelenks Abduktion möglich)'],
+  I:['direkte Äste aus dem Plexus sacralis (L5–S2)']},
+ {n:'M. quadratus femoris', r:'huefte',
+  U:['lateraler Rand des Tuber ischiadicum des Os ischii'], A:['Crista intertrochanterica des Femur'],
+  F:['Außenrotation und Adduktion im Hüftgelenk'], I:['direkte Äste aus dem Plexus sacralis (L5–S2) und/oder N. gluteus inferior']},
+ {n:'M. obturatorius externus', r:'huefte',
+  U:['Außenseite der Membrana obturatoria und angrenzender Knochen'], A:['Fossa trochanterica des Femur'],
+  F:['Adduktion und Außenrotation im Hüftgelenk','Stabilisierung des Beckens in der Sagittalebene'], I:['N. obturatorius (L2–4)']},
+ // Oberschenkel
+ {n:'M. sartorius', r:'oberschenkel',
+  U:['Spina iliaca anterior superior'], A:['medial der Tuberositas tibiae am Pes anserinus superficialis (zusammen mit den Mm. gracilis und semitendinosus)'],
+  F:['Hüftgelenk :: Flexion, Abduktion und Außenrotation','Kniegelenk :: Flexion und Innenrotation'], I:['N. femoralis (L1–4)']},
+ {n:'M. quadriceps femoris', r:'oberschenkel',
+  U:['M. rectus femoris :: Spina iliaca anterior inferior (Caput rectum), Pfannendach des Hüftgelenks (Caput reflexum)','M. vastus medialis :: Labium mediale der Linea aspera, distaler Teil der Linea intertrochanterica','M. vastus lateralis :: Labium laterale der Linea aspera, laterale Fläche des Trochanter major','M. vastus intermedius :: Vorderseite des Femurschaftes','M. articularis genus (distale Fasern des M. vastus intermedius) :: Vorderseite des Femurschaftes auf Höhe des Recessus suprapatellaris'],
+  A:['gesamter Muskel :: über das Lig. patellae an der Tuberositas tibiae','M. vastus medialis und lateralis :: über das Retinaculum patellae mediale und laterale beidseits der Tuberositas am Condylus medialis und lateralis','M. articularis genus :: am Recessus suprapatellaris der Kniegelenkkapsel'],
+  F:['Hüftgelenk (M. rectus femoris) :: Flexion','Kniegelenk (alle Anteile) :: Extension','M. articularis genus :: verhindert Einklemmung der Kapsel'],
+  I:['N. femoralis (L1–4)']},
+ {n:'M. pectineus', r:'oberschenkel',
+  U:['Pecten ossis pubis'], A:['Linea pectinea und proximale Linea aspera des Femur'],
+  F:['Adduktion, Außenrotation und leichte Flexion im Hüftgelenk',ADD_STAB], I:['N. femoralis (L1–4), N. obturatorius (L2–4)']},
+ {n:'M. adductor longus', r:'oberschenkel',
+  U:['R. superior des Os pubis und Vorderseite der Symphyse'], A:['Linea aspera: Labium mediale im mittleren Femurdrittel'],
+  F:['Adduktion und Flexion (bis 70°) im Hüftgelenk (Extension ab 80°-Beugung)',ADD_STAB], I:['N. obturatorius (L2–4)']},
+ {n:'M. adductor brevis', r:'oberschenkel',
+  U:['R. inferior des Os pubis'], A:['Linea aspera: Labium mediale im oberen Femurdrittel'],
+  F:['Adduktion und Flexion (bis 70°) im Hüftgelenk (Extension ab 80°-Beugung)',ADD_STAB], I:['N. obturatorius (L2–4)']},
+ {n:'M. adductor magnus', r:'oberschenkel',
+  U:['R. inferior des Os pubis, R. ossis ischii und Tuber ischiadicum'],
+  A:['tiefer Teil („fleischiger Ansatz“) :: Labium mediale der Linea aspera','oberflächlicher Teil („sehniger Ansatz“) :: Epicondylus medialis des Femur'],
+  F:['Adduktion, Außenrotation und Extension im Hüftgelenk','über den sehnigen Ansatz :: Innenrotation im Hüftgelenk',ADD_STAB],
+  I:['tiefer Teil :: N. obturatorius (L2–4)','oberflächlicher Teil :: N. tibialis (L4–5)']},
+ {n:'M. adductor minimus', r:'oberschenkel', h:'kraniale Abspaltung des M. adductor magnus',
+  U:['R. inferior des Os pubis'], A:['Labium mediale der Linea aspera'],
+  F:['Adduktion, Außenrotation und leichte Flexion im Hüftgelenk'], I:['N. obturatorius (L2–4)']},
+ {n:'M. gracilis', r:'oberschenkel',
+  U:['R. inferior des Os pubis unterhalb der Symphyse'], A:['medial der Tuberositas tibiae im Pes anserinus superficialis (zusammen mit den Endsehnen der Mm. sartorius und semitendinosus)'],
+  F:['Hüftgelenk :: Adduktion und Flexion','Kniegelenk :: Flexion und Innenrotation'], I:['N. obturatorius (L2–4)']},
+ {n:'M. biceps femoris', r:'oberschenkel',
+  U:['Caput longum :: Tuber ischiadicum, Lig. sacrotuberale (Caput commune mit dem M. semitendinosus)','Caput breve :: Labium laterale der Linea aspera im mittleren Drittel des Femur'],
+  A:['Caput fibulae'],
+  F:['Hüftgelenk (Caput longum) :: Adduktion, Extension, Stabilisierung des Beckens in der Sagittalebene','Kniegelenk (gesamter Muskel) :: Flexion und Außenrotation'],
+  I:['Caput longum :: N. tibialis (L5–S2)','Caput breve :: N. fibularis (peroneus) communis (L5–S2)']},
+ {n:'M. semimembranosus', r:'oberschenkel',
+  U:['Tuber ischiadicum'], A:['Pes anserinus profundus: Condylus medialis tibiae, Lig. popliteum obliquum, Faszie des M. popliteus'],
+  F:['Hüftgelenk :: Adduktion, Extension, Stabilisierung des Beckens in der Sagittalebene','Kniegelenk :: Flexion und Innenrotation'], I:['N. tibialis (L5–S2)']},
+ {n:'M. semitendinosus', r:'oberschenkel',
+  U:['Tuber ischiadicum und Lig. sacrotuberale (Caput commune mit dem Caput longum des M. biceps femoris)'],
+  A:['medial der Tuberositas tibiae im Pes anserinus superficialis (zusammen mit den Endsehnen der Mm. gracilis und sartorius)'],
+  F:['Hüftgelenk :: Adduktion, Extension, Stabilisierung des Beckens in der Sagittalebene','Kniegelenk :: Flexion und Innenrotation'], I:['N. tibialis (L5–S2)']},
+ // Unterschenkel & Fuß
+ {n:'M. popliteus', r:'unterschenkel',
+  U:['Condylus lateralis femoris, Hinterhorn des Außenmeniskus'], A:['Facies posterior tibiae (oberhalb des Ursprungs des M. soleus)'],
+  F:['Flexion und Innenrotation im Kniegelenk'], I:['N. tibialis (L5–S2)']},
+ {n:'M. tibialis anterior', r:'unterschenkel',
+  U:['obere zwei Drittel der Facies lateralis tibiae, Membrana interossea cruris und oberster Teil der Fascia cruris superficialis'],
+  A:['mediale und plantare Fläche des Os cuneiforme mediale, mediale Basis des Os metatarsi I'],
+  F:[OSG_DE,USG_INV], I:['N. fibularis profundus (L4, 5)']},
+ {n:'M. extensor digitorum longus', r:'unterschenkel',
+  U:['Condylus lateralis tibiae, Caput fibulae, Margo anterior fibulae und Membrana interossea cruris'],
+  A:['über vier Teilsehnen an den Dorsalaponeurosen der 2.–5. Zehe, Basen der Phalanges distales der 2.–5. Zehe'],
+  F:[OSG_DE,USG_EV,'Grund-, Mittel- und Endgelenke der 2.–5. Zehe :: Extension'], I:['N. fibularis profundus (L4–S1)']},
+ {n:'M. extensor hallucis longus', r:'unterschenkel',
+  U:['mittleres Drittel der Facies medialis fibulae, Membrana interossea cruris'], A:['Dorsalaponeurose der Großzehe sowie Basis ihrer Endphalanx'],
+  F:[OSG_DE,'unteres Sprunggelenk :: unterstützt Eversion und Inversion, abhängig von der Ausgangsstellung des Fußes','Grund- und Endgelenk der Großzehe :: Extension'], I:['N. fibularis profundus (L5–S1)']},
+ {n:'M. fibularis longus', r:'unterschenkel', h:'auch M. peroneus longus',
+  U:['Caput fibulae, proximale zwei Drittel der Facies lateralis fibulae (teilweise an den Septa intermuscularia)'],
+  A:['Plantarseite des Os cuneiforme mediale, Basis des Os metatarsi I'],
+  F:[OSG_PF,USG_EV,'Verspannung des Quergewölbes des Fußes'], I:['N. fibularis superficialis (L5–S1)']},
+ {n:'M. fibularis brevis', r:'unterschenkel', h:'auch M. peroneus brevis',
+  U:['distale Hälfte der Facies lateralis fibulae, teilweise an den Septa intermuscularia'],
+  A:['Tuberositas ossis metatarsi V (gelegentlich Abspaltung zur Dorsalaponeurose der 5. Zehe)'],
+  F:[OSG_PF,USG_EV], I:['N. fibularis superficialis (L5–S1)']},
+ {n:'M. fibularis tertius', r:'unterschenkel', h:'Abspaltung des M. extensor digitorum longus',
+  U:['Margo anterior der distalen Fibula'], A:['Basis des Os metatarsi V'],
+  F:[OSG_DE,USG_EV], I:['N. fibularis profundus (L4–S1)']},
+ {n:'M. triceps surae', r:'unterschenkel',
+  U:['M. soleus :: Dorsalseite des Caput und Collum fibulae, über den Arcus tendineus musculi solei an der Linea musculi solei der Tibia','M. gastrocnemius, Caput mediale :: Epicondylus medialis femoris','M. gastrocnemius, Caput laterale :: Epicondylus lateralis femoris'],
+  A:['über die Achillessehne (Tendo calcaneus) am Tuber calcanei'],
+  F:[OSG_PF,USG_INV,'Kniegelenk (M. gastrocnemius) :: Flexion'], I:['N. tibialis (S1, 2)']},
+ {n:'M. plantaris', r:'unterschenkel',
+  U:['proximal des Caput laterale des M. gastrocnemius'], A:['über die Achillessehne am Tuber calcanei'],
+  F:['aufgrund seines kleinen physiologischen Querschnitts zu vernachlässigen','! verhindert bei Knieflexion die Kompression der Vasa tibialia posteriora'], I:['N. tibialis (S1, 2)']},
+ {n:'M. tibialis posterior', r:'unterschenkel',
+  U:['Membrana interossea cruris, angrenzende Ränder von Tibia und Fibula'],
+  A:['Tuberositas ossis navicularis, Ossa cuneiformia mediale, intermedium und laterale, Basen der Ossa metatarsi II–IV'],
+  F:[OSG_PF,USG_INV,'Verspannung des Längs- und Quergewölbes des Fußes'], I:['N. tibialis (L4–S1)']},
+ {n:'M. flexor digitorum longus', r:'unterschenkel',
+  U:['mittleres Drittel der Facies posterior der Tibia'], A:['Basen der Endphalangen II–V'],
+  F:[OSG_PF,USG_INV,'Grund-, Mittel- und Endgelenke der Zehen II–V :: Plantarflexion'], I:['N. tibialis (L5–S2)']},
+ {n:'M. flexor hallucis longus', r:'unterschenkel',
+  U:['distale zwei Drittel der Facies posterior fibulae, angrenzende Membrana interossea cruris'], A:['Basis der Endphalanx der Großzehe'],
+  F:[OSG_PF,USG_INV,'Grund- und Endgelenk der Großzehe :: Plantarflexion','Verspannung des medialen Längsgewölbes des Fußes'], I:['N. tibialis (L5–S2)']}
+];
+M.forEach((m,i)=>m.id=i);
+
+/* Abbildungen aus dem Skript: Muskelname -> [Bilddatei in img/, Nummern in der Abbildung] */
+const IMG={'Mm. scaleni':['p01a','①–③'],'Mm. intercostales':['p01b','④ externi, ⑤ interni'],'M. transversus thoracis':['p06',''],'M. transversus abdominis':['p02',''],
+'M. obliquus externus abdominis':['p03',''],'M. sternocleidomastoideus':['p24',''],'Mm. rotatores breves und longi':['p04a','⑤ breves, ⑥ longi'],'M. multifidus':['p04b','⑦'],
+'M. semispinalis':['p04c','⑧ thoracis, ⑨ cervicis, ⑩ capitis'],'M. splenius':['p05a','⑦ cervicis, ⑧ capitis'],'Mm. intertransversarii':['p05b','⑨–⑪'],'Mm. levatores costarum':['p05b','⑫ breves, ⑬ longi'],
+'M. trapezius':['p28','① descendens, ② transversa, ③ ascendens'],'M. levator scapulae':['p21','①'],'M. rhomboideus minor':['p21','②'],'M. rhomboideus major':['p21','③'],
+'M. serratus anterior':['p23','① superior, ② intermedia, ③ inferior'],'M. subclavius':['p25','①'],'M. pectoralis minor':['p25','②'],'M. pectoralis major':['p22','①'],
+'M. deltoideus':['p19','① clavicularis, ② acromialis, ③ spinalis'],'M. latissimus dorsi':['p20','①'],'M. teres major':['p20','②'],'M. subscapularis':['p26','①'],
+'M. supraspinatus':['p27','②'],'M. infraspinatus':['p27','③'],'M. teres minor':['p27','④'],'M. coracobrachialis':['p22','②'],
+'M. biceps brachii':['p18','①'],'M. brachialis':['p18','②'],'M. triceps brachii':['p29','①'],'M. anconeus':['p29','②'],
+'M. brachioradialis':['p34','①'],'M. extensor carpi radialis longus':['p34','②'],'M. extensor carpi radialis brevis':['p34','③'],
+'M. extensor digitorum':['p33','①'],'M. extensor digiti minimi':['p33','②'],'M. extensor carpi ulnaris':['p33','③'],
+'M. supinator':['p30','①'],'M. abductor pollicis longus':['p30','②'],'M. extensor pollicis brevis':['p30','③'],'M. extensor pollicis longus':['p30','④'],'M. extensor indicis':['p30','⑤'],
+'M. pronator teres':['p31','①'],'M. flexor digitorum superficialis':['p31','②'],'M. flexor carpi radialis':['p31','③'],'M. flexor carpi ulnaris':['p31','④'],'M. palmaris longus':['p31','⑤'],
+'M. flexor digitorum profundus':['p32','①'],'M. flexor pollicis longus':['p32','②'],'M. pronator quadratus':['p32','③'],
+'M. iliopsoas':['p11','① psoas major, ② iliacus, ③ iliopsoas'],'M. gluteus maximus':['p09','①'],'M. gluteus medius':['p09','②'],'M. gluteus minimus':['p09','③'],
+'M. tensor fasciae latae':['p09','④'],'M. piriformis':['p09','⑤'],'M. obturatorius internus':['p10','①'],'Mm. gemelli':['p10','②'],'M. quadratus femoris':['p10','③'],
+'M. obturatorius externus':['p07','①'],'M. sartorius':['p12','①'],'M. quadriceps femoris':['p12','②'],'M. pectineus':['p07','②'],'M. adductor longus':['p07','③'],
+'M. adductor brevis':['p07','④'],'M. adductor magnus':['p07','⑤'],'M. adductor minimus':['p07','⑥'],'M. gracilis':['p07','⑦'],
+'M. biceps femoris':['p08','①'],'M. semimembranosus':['p08','②'],'M. semitendinosus':['p08','③'],'M. popliteus':['p08','④'],
+'M. tibialis anterior':['p14','①'],'M. extensor digitorum longus':['p14','②'],'M. extensor hallucis longus':['p14','③'],
+'M. fibularis longus':['p13','①'],'M. fibularis brevis':['p13','②'],'M. fibularis tertius':['p13','③'],
+'M. triceps surae':['p16','①'],'M. plantaris':['p16','②'],'M. tibialis posterior':['p15','①'],'M. flexor digitorum longus':['p15','②'],'M. flexor hallucis longus':['p15','③']};
+
+/* ---------- Textwerkzeuge ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function lowerDe(s){ return s.toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').normalize('NFD').replace(/[̀-ͯ]/g,''); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+
+/* Eintrag aus den Muskeldaten zerlegen: "! Hinweis" bzw. "Anteil :: Text" */
+function parseItem(s){
+  const note=s.startsWith('!'); const body=note?s.slice(1).trim():s;
+  const k=body.indexOf(' :: ');
+  return {note, label:k>=0?body.slice(0,k):'', text:k>=0?body.slice(k+4):body};
+}
+
+/* Kennwörter eines Textes, um ähnliche Antworten zu erkennen.
+   Ohne Füllwörter, Zahlen, Zahlwörter und Klammerzusätze. */
+const STOPWORDS=new Set(('der die das des dem den ein eine einer eines einem und oder sowie sowohl auch als am an im in ins von vom zur zum zu bei mit bis ueber auf aus nach '
+  +'dabei daher gleicher gleiche teilweise gelegentlich jeweils gesamter gesamte muskel alle aller saemtlicher teil entspringen inserieren verlaufen verlaeuft ausnahme '
+  +'proc procc lig musculus musculi nervus nervi processus ligamentum ramus rami ihr ihrer seines seiner sich ist wird the').split(' '));
+const NUMBER_WORDS=new Set('eins zwei drei vier fuenf sechs sieben acht neun zehn elf zwoelf iii vii viii'.split(' '));
+const ORDINALS=/^(erst|zweit|dritt|viert|fuenft|sechst|siebent|siebt|acht|neunt|zehnt|elft|zwoelft)(e|en|er|es|em|n|r|s)?$/;
+function keyWords(text){
+  const plain=text.replace(/\([^()]*\)/g,' ');
+  return new Set(lowerDe(plain).split(/[^a-z0-9]+/)
+    .filter(t=>t.length>=3&&!/\d/.test(t)&&!STOPWORDS.has(t)&&!NUMBER_WORDS.has(t)&&!ORDINALS.test(t)));
+}
+
+/* ---------- Vorlesen (Einstellung „Fragen vorlesen“) ---------- */
+const synth=window.speechSynthesis||null;
+let deVoice=null, autoRead=false;
+function pickVoice(){ if(!synth) return; const v=synth.getVoices(); deVoice=v.find(x=>/^de(-|_)DE/i.test(x.lang))||v.find(x=>/^de/i.test(x.lang))||null; }
+if(synth){ pickVoice(); synth.onvoiceschanged=pickVoice; }
+
+/* Abkürzungen ausschreiben, damit die Sprachausgabe sie richtig ausspricht */
+function ttsText(s){
+  return s.replace(/^!\s*/,'').replace(/\bMm\./g,'Musculi').replace(/\bM\./g,'Musculus').replace(/\bNn\./g,'Nervi').replace(/\bN\./g,'Nervus')
+   .replace(/\bProcc\./g,'Processus').replace(/\bProc\./g,'Processus').replace(/\bLig\./g,'Ligamentum').replace(/\bRr\./g,'Rami').replace(/\bR\./g,'Ramus')
+   .replace(/\bn\. radialis/g,'nervi radialis').replace(/\bu\./g,'und').replace(/HWS/g,'Halswirbelsäule').replace(/BWS/g,'Brustwirbelsäule').replace(/LWS/g,'Lendenwirbelsäule')
+   .replace(/\bTh(\d)/g,'T $1').replace(/\b([CLS])(\d)/g,'$1 $2').replace(/–/g,' bis ').replace(/ :: /g,': ').replace(/[„“]/g,'');
+}
+function speak(text){
+  if(!synth) return;
+  try{ synth.cancel(); const u=new SpeechSynthesisUtterance(ttsText(text)); u.lang='de-DE'; if(deVoice) u.voice=deVoice; u.rate=0.95; synth.speak(u); }catch(e){}
+}
+function stopSpeaking(){ if(synth) synth.cancel(); }
+
+/* ---------- Gemeinsame UI-Bausteine ---------- */
+const view=document.getElementById('view');
+const inviteBar=document.getElementById('inviteBar');
+
+const IC={
+  chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>',
+  check:'<svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+  bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3v3a5 5 0 0 1-4.6 5A5 5 0 0 1 13 15.9V18h3v3H8v-3h3v-2.1A5 5 0 0 1 8.6 13 5 5 0 0 1 4 8V5h3zm0 4H6v1a3 3 0 0 0 1 2.2zm10 0v3.2A3 3 0 0 0 18 8V7z"/></svg>',
+  person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'
+};
+
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+/* "M. biceps brachii" -> kleines "M." vor dem Namen */
+function nameHTML(n){ const m=n.match(/^(Mm?\.)\s+(.*)$/); return m?`<small>${m[1]}</small>${esc(m[2])}`:esc(n); }
+const fmtSec=ms=>(ms/1000).toFixed(1).replace('.',',')+' s';
+const infoRow=(title,sub)=>`<div class="row"><span class="label"><span>${title}</span>${sub?`<small>${sub}</small>`:''}</span></div>`;
+
+/* Zurück-Knopf in der Kopfzeile */
+const barBack=document.getElementById('navBack');
+function setBack(label,fn){
+  if(!fn){ barBack.hidden=true; barBack.onclick=null; return; }
+  barBack.hidden=false; barBack.setAttribute('aria-label',label); barBack.title=label; barBack.onclick=fn;
+}
+function showPage(html){ view.innerHTML=html; window.scrollTo({top:0}); }
+function setHint(id,text,warn){ const h=document.getElementById(id); if(h){ h.textContent=text||''; h.classList.toggle('warn',!!warn); } }
+
+/* ---------- Fragen: kurz, 4 Antworten, genau eine richtig ----------
+   Vorwärts (t:'f'): Muskel gegeben, richtigen Ursprung/Ansatz/… wählen. Optionen: [Muskel-ID, Eintrag-Index]
+   Rückwärts (t:'r'): Fakt gegeben, richtigen Muskel wählen. Optionen: Muskel-IDs */
+const QF=['U','A','F','I'];
+const NOPT=4;
+const MOVEMENTS='flexion extension abduktion adduktion innenrotation aussenrotation pronation supination anteversion retroversion dorsalextension plantarflexion palmarflexion inversion eversion lateralflexion rotation elevation inspiration exspiration spreizen opposition radialabduktion ulnarabduktion semipronation'.split(' ');
+
+function realItems(m,k){ return (m[k]||[]).map((s,i)=>Object.assign({i},parseItem(s))).filter(x=>!x.note); }
+function qFields(m){ return QF.filter(k=>realItems(m,k).length); }
+function jaccard(a,b){ let n=0; a.forEach(x=>{ if(b.has(x)) n++; }); const u=a.size+b.size-n; return u?n/u:0; }
+function movements(text){ const t=lowerDe(text); return new Set(MOVEMENTS.filter(w=>t.includes(w))); }
+const normLabel=l=>lowerDe(l||'').replace(/[^a-z]/g,'');
+const isJoint=l=>/gelenk|wirbelsaeule|hws|bws|lws|kopf/.test(lowerDe(l||''));
+
+/* Wäre ein Kandidat für Muskel m in Feld k womöglich auch richtig? Dann taugt er nicht als falsche Antwort. */
+function conflicts(m,k,ctext,clabel){
+  const ck=keyWords(ctext);
+  const fields=(k==='U'||k==='A')?['U','A','UA']:[k];
+  for(const f of fields) for(const x of realItems(m,f)) if(jaccard(ck,keyWords(x.text))>=0.5) return true;
+  if(k==='F'){
+    const cm=movements(ctext); if(!cm.size) return true;
+    for(const x of realItems(m,'F')){
+      const sameJoint=!(isJoint(clabel)&&isJoint(x.label)&&normLabel(clabel)!==normLabel(x.label));
+      const xm=movements(x.text);
+      if(sameJoint&&[...cm].some(v=>xm.has(v))) return true;
+    }
+  }
+  return false;
+}
+function forwardQ(m,k){
+  const items=realItems(m,k); if(!items.length) return null;
+  const short=items.filter(x=>x.text.length<=110);
+  const it=pickOne(short.length?short:items), len=it.text.length;
+  /* Ähnlich lange Einträge aus derselben Region bevorzugen, damit die Länge nichts verrät */
+  const pool=[];
+  M.forEach(o=>{ if(o.id===m.id) return; realItems(o,k).forEach(x=>pool.push({m:o.id,i:x.i,text:x.text,label:x.label,
+    score:Math.abs(x.text.length-len)/Math.max(len,20)+(o.r===m.r?0:0.35)+(it.label&&normLabel(x.label)===normLabel(it.label)?-0.3:0)+Math.random()*0.5})); });
+  pool.sort((a,b)=>a.score-b.score);
+  const picks=[], seen=[keyWords(it.text)];
+  for(const c of pool){
+    if(picks.length>=NOPT-1) break;
+    if(conflicts(m,k,c.text,c.label)) continue;
+    const ck=keyWords(c.text);
+    if(!ck.size||seen.some(s=>jaccard(s,ck)>=0.4||[...ck].filter(x=>s.has(x)).length>=Math.min(3,ck.size))) continue;
+    seen.push(ck); picks.push([c.m,c.i]);
+  }
+  if(picks.length<NOPT-1) return null;
+  return {t:'f',m:m.id,k,i:it.i,o:shuffle([[m.id,it.i],...picks])};
+}
+function reverseQ(m,k){
+  if(k==='F') return null;
+  const items=realItems(m,k).filter(x=>!x.label&&x.text.length<=110); if(!items.length) return null;
+  const it=pickOne(items), ik=keyWords(it.text);
+  const alsoTrue=(o,f)=>realItems(o,f).some(x=>jaccard(ik,keyWords(x.text))>=0.5);
+  const ok=o=>o.id!==m.id&&!alsoTrue(o,k)&&!(k!=='I'&&alsoTrue(o,k==='U'?'A':'U'));
+  const same=shuffle(M.filter(o=>o.r===m.r&&ok(o))), other=shuffle(M.filter(o=>o.r!==m.r&&ok(o)));
+  const picks=[...same.slice(0,2),...other,...same.slice(2)].slice(0,NOPT-1).map(o=>o.id);
+  if(picks.length<NOPT-1) return null;
+  return {t:'r',m:m.id,k,i:it.i,o:shuffle([m.id,...picks])};
+}
+function makeQuestion(mid,k){
+  const m=M[mid];
+  return (Math.random()<0.35&&reverseQ(m,k))||forwardQ(m,k)||reverseQ(m,k);
+}
+
+/* ----- Darstellung ----- */
+const QTXT={
+  f:{U:'Wo entspringt der Muskel?',A:'Wo setzt der Muskel an?',F:'Welche Funktion hat der Muskel?',I:'Welcher Nerv innerviert den Muskel?'},
+  fp:{U:'Wo entspringt dieser Anteil?',A:'Wo setzt dieser Anteil an?',I:'Welcher Nerv innerviert diesen Anteil?'},
+  r:{U:'Welcher Muskel entspringt hier?',A:'Welcher Muskel setzt hier an?',I:'Welcher Muskel wird von diesem Nerv innerviert?'}
+};
+function qItem(q){ return parseItem(M[q.m][q.k][q.i]); }
+function qPinned(q){ return q.t==='f'&&q.k!=='F'&&!!qItem(q).label; }   // Frage nach einem bestimmten Anteil
+function qText(q){ return q.t==='r'?QTXT.r[q.k]:(qPinned(q)?QTXT.fp[q.k]:QTXT.f[q.k]); }
+function qSpeak(q){ return q.t==='r'?qText(q)+' '+qItem(q).text:M[q.m].n+'. '+qText(q); }
+function correctKey(q){ return q.t==='f'?q.m+':'+q.i:String(q.m); }
+function optList(q){
+  if(q.t==='r') return q.o.map(id=>({key:String(id),text:M[id].n}));
+  return q.o.map(([mid,i])=>{ const it=parseItem(M[mid][q.k][i]); return {key:mid+':'+i,text:(q.k==='F'&&it.label?it.label+': ':'')+it.text}; });
+}
+function qCardHTML(q,showName){
+  const it=qItem(q);
+  if(q.t==='r'&&!showName) return `<article class="card qcard"><span class="pill">${FIELD[q.k]}</span><p class="fact">${esc(it.text)}</p></article>`;
+  return `<article class="card qcard">
+    <div class="pills"><span class="pill">${FIELD[q.k]}</span>${qPinned(q)?`<span class="pill neutral">${esc(it.label)}</span>`:''}</div>
+    <h2 class="title-xl">${nameHTML(M[q.m].n)}</h2>
+    ${q.t==='r'?`<p class="sub">${esc(it.text)}</p>`:''}
+  </article>`;
+}
+/* state: reveal (Lösung zeigen), mine (eigene Wahl), theirs/theirName (Wahl des Gegners), locked */
+function optionsHTML(q,state){
+  const st=state||{}, corr=correctKey(q);
+  return `<div class="opts" role="list">${optList(q).map((o,idx)=>{
+    let c='opt'; const tags=[];
+    if(st.reveal){ c+=o.key===corr?' right':o.key===st.mine?' wrong':' dim'; }
+    else if(st.mine!=null){ c+=o.key===st.mine?' picked':' dim'; }
+    if(st.reveal&&o.key===st.mine) tags.push('Du');
+    if(st.reveal&&st.theirs!=null&&o.key===st.theirs) tags.push(esc(st.theirName||'Gegner'));
+    return `<button class="${c}" role="listitem" data-opt="${o.key}" ${st.locked?'disabled':''}><span class="optl">${'ABCD'[idx]}</span><span class="optt">${esc(o.text)}</span>${tags.length?`<span class="opttag">${tags.join(' · ')}</span>`:''}</button>`;
+  }).join('')}</div>`;
+}
+
+/* ---------- Lernmodus: 20 Fragen aus der gewählten Auswahl ---------- */
+const ROUND_LEN=20;
+const S={regions:new Set(Object.keys(REG)), cats:new Set(QF), regOpen:false, phase:'start', queue:[], qi:0, right:0, results:{}};
+function fieldsFor(m){ return qFields(m).filter(k=>S.cats.has(k)); }
+function selected(){ return M.filter(m=>S.regions.has(m.r)&&fieldsFor(m).length); }
+
+function startQuiz(){
+  const qs=[];
+  selected().forEach(m=>fieldsFor(m).forEach(k=>{ const q=makeQuestion(m.id,k); if(q) qs.push(q); }));
+  S.queue=shuffle(qs).slice(0,ROUND_LEN); S.qi=0; S.results={}; S.right=0;
+  if(S.queue.length) renderAsk(); else renderStart();
+}
+function progressHTML(){
+  return `<div class="progress"><span>Frage ${S.qi+1} von ${S.queue.length}</span><div class="track"><span style="width:${S.qi/S.queue.length*100}%"></span></div><span>${S.right} ✓</span></div>`;
+}
+function renderAsk(){
+  S.phase='ask';
+  const q=S.queue[S.qi];
+  setBack('Beenden',()=>{ stopSpeaking(); renderEnd(); });
+  showPage(`<div class="stack">${progressHTML()}
+    ${qCardHTML(q,false)}
+    <section class="stack-sm">
+      <p class="question">${esc(qText(q))}</p>
+      ${optionsHTML(q)}
+    </section>
+    <button class="btn plain" id="dunno">Weiß ich nicht</button>
+  </div>`);
+  view.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>showResult(b.dataset.opt));
+  view.querySelector('#dunno').onclick=()=>showResult(null);
+  if(autoRead) speak(qSpeak(q));
+}
+function solutionHTML(items){
+  return items.map(s=>{ const it=parseItem(s); return it.note?`<li class="note">${esc(it.text)}</li>`:`<li>${it.label?`<b>${esc(it.label)}:</b> `:''}${esc(it.text)}</li>`; }).join('');
+}
+function figHTML(m){
+  const f=IMG[m.n]; if(!f) return '';
+  return `<figure class="fig"><button class="figbtn" aria-label="Abbildung vergrößern"><img src="img/${f[0]}.webp" alt="Abbildung ${esc(m.n)} aus dem Skript"></button><figcaption>${f[1]?'In der Abbildung: '+esc(f[1]):'Abbildung aus deinem Skript'} · zum Vergrößern antippen</figcaption></figure>`;
+}
+function bindFigure(){ const fb=view.querySelector('.figbtn'); if(fb) fb.onclick=()=>fb.closest('.fig').classList.toggle('big'); }
+function showResult(choice){
+  stopSpeaking(); S.phase='result';
+  const q=S.queue[S.qi], m=M[q.m];
+  const ok=choice===correctKey(q); if(ok) S.right++;
+  (S.results[m.id]=S.results[m.id]||{})[q.k]=ok;
+  const verdict=choice==null?'Hier ist die Lösung':ok?'Richtig!':'Leider falsch';
+  const last=S.qi===S.queue.length-1;
+  showPage(`<div class="stack">${progressHTML()}
+    ${qCardHTML(q,true)}
+    <section class="stack-sm">
+      <div class="verdict v-${ok?'good':'bad'}"><span class="vicon">${ok?IC.ok:IC.bad}</span><div><b>${verdict}</b><span>${esc(qText(q))}</span></div></div>
+      ${optionsHTML(q,{reveal:true,mine:choice,locked:true})}
+    </section>
+    <details class="card more"${ok?'':' open'}><summary>Alles zu ${esc(FIELD[q.k])} · ${esc(m.n)}</summary>
+      <ul class="sol">${solutionHTML(m[q.k])}</ul>
+      ${figHTML(m)}
+      ${autoRead?`<div class="btnrow"><button class="btn tinted small" id="readSol">${IC.speaker}Vorlesen</button></div>`:''}
+    </details>
+    <button class="btn primary" id="next">${last?'Ergebnis ansehen':'Weiter'}</button>
+  </div>`);
+  bindFigure();
+  const rs=view.querySelector('#readSol');
+  if(rs) rs.onclick=()=>speak(FIELD[q.k]+'. '+m[q.k].map(s=>{ const it=parseItem(s); return (it.label?it.label+': ':'')+it.text; }).join('. '));
+  view.querySelector('#next').onclick=()=>{ stopSpeaking(); if(last) renderEnd(); else { S.qi++; renderAsk(); } };
+  if(autoRead) speak(verdict);
+}
+function renderEnd(){
+  S.phase='end'; setBack('Start',renderStart);
+  const ids=Object.keys(S.results).map(Number);
+  const answered=ids.reduce((a,id)=>a+Object.keys(S.results[id]).length,0);
+  const rows=ids.map(id=>{ const r=S.results[id];
+    return `<div class="row"><span class="label">${esc(M[id].n)}</span><span class="badges">${QF.filter(k=>k in r).map(k=>`<span class="badge ${r[k]?'good':'bad'}">${FIELD[k]} ${r[k]?'✓':'✗'}</span>`).join('')}</span></div>`; }).join('');
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">Durchgang beendet</h2><p class="sub">${answered?`${S.right} von ${answered} Fragen richtig`:'Keine Fragen beantwortet'}</p></div>
+    ${rows?`<section class="group list">${rows}</section>`:''}
+    <div class="stack-sm"><button class="btn primary" id="again">Neue Runde mit gleicher Auswahl</button><button class="btn plain" id="back">Zur Auswahl</button></div>
+  </div>`);
+  view.querySelector('#again').onclick=startQuiz;
+  view.querySelector('#back').onclick=renderStart;
+}
+
+/* ---------- Kopfzeile, Einstellungen und Startseite ---------- */
+let theme=lsGet('ad-theme')||'auto';
+autoRead=lsGet('ad-read')==='1'&&!!synth;
+
+function applyTheme(){
+  const r=document.documentElement;
+  if(theme==='auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme',theme);
+  const dark=theme==='dark'||(theme==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelectorAll('meta[name="theme-color"]').forEach(mt=>mt.setAttribute('content',dark?'#000000':'#F2F2F7'));
+}
+
+/* Während eines laufenden Spiels führen Titel, Profil und Einstellungen nicht aus dem Spiel */
+const inMatch=()=>['game','wait','group'].includes(DUEL.view);
+function bindHeader(){
+  document.getElementById('barTitle').onclick=()=>{ if(S.phase!=='start'&&!inMatch()) renderStart(); };
+  document.getElementById('profileBtn').onclick=()=>{ if(inMatch()) return; stopSpeaking(); openProfile(); };
+  document.getElementById('settingsBtn').onclick=()=>{ if(inMatch()) return; stopSpeaking(); renderSettings(); };
+}
+function setProfileIcon(photo){
+  const b=document.getElementById('profileBtn');
+  b.innerHTML=photo?`<img src="${photo}" alt="">`:IC.person;
+}
+
+function renderSettings(){
+  const from=S.phase; S.phase='settings';
+  setBack('Zurück',()=>from==='duel'?openDuel():renderStart());
+  showPage(`<div class="stack">
+    <h2 class="pagetitle">Einstellungen</h2>
+    <p class="group-label">Darstellung</p>
+    <div class="seg" role="group" aria-label="Darstellung">
+      <button data-th="auto" aria-pressed="${theme==='auto'}">Automatisch</button><button data-th="light" aria-pressed="${theme==='light'}">Hell</button><button data-th="dark" aria-pressed="${theme==='dark'}">Dunkel</button>
+    </div>
+    ${synth?`<p class="group-label">Vorlesen</p>
+    <section class="group"><button class="row" role="switch" id="readSw" aria-checked="${autoRead}"><span class="label">Fragen vorlesen<small>Liest Muskel und Frage automatisch vor</small></span><span class="switch" aria-hidden="true"></span></button></section>`:''}
+  </div>`);
+  view.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{ theme=b.dataset.th; lsSet('ad-theme',theme); applyTheme(); S.phase=from; renderSettings(); });
+  const rs=view.querySelector('#readSw');
+  if(rs) rs.onclick=()=>{ autoRead=!autoRead; lsSet('ad-read',autoRead?'1':'0'); if(autoRead) speak('Vorlesen ist an.'); else stopSpeaking(); rs.setAttribute('aria-checked',autoRead); };
+}
+
+function regionValue(){ const n=S.regions.size, all=Object.keys(REG).length; return n===all?'Alle':n===0?'Keine':`${n} von ${all}`; }
+function renderStart(){
+  S.phase='start'; setBack(null);
+  leaveOnline();
+  const counts={}; M.forEach(m=>counts[m.r]=(counts[m.r]||0)+1);
+  const n=selected().length;
+  const regRows=Object.keys(REG).map(r=>`<button class="row" role="menuitemcheckbox" data-reg="${r}" aria-checked="${S.regions.has(r)}"><span class="label">${esc(REG[r])}</span><span class="count">${counts[r]}</span>${IC.check}</button>`).join('');
+  const catRows=QF.map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k]}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
+  view.innerHTML=`<div class="stack">
+    <section class="group">
+      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Gegen Freunde spielen<small>Duell 1 gegen 1 oder Lobby mit bis zu ${GMAX} Spielern</small></span>${IC.chev}</button>
+    </section>
+
+    <p class="group-label">Lernen</p>
+    <section class="group">
+      <button class="row" id="regRow" aria-expanded="${S.regOpen}" aria-controls="regList"><span class="label">Regionen</span><span class="value">${regionValue()}</span>${IC.chev}</button>
+      <div class="sublist" id="regList" ${S.regOpen?'':'hidden'}>${regRows}
+        <div class="tools"><button class="link" id="regAll">Alle auswählen</button><button class="link" id="regNone">Keine</button></div></div>
+    </section>
+
+    <p class="group-label">Abfragen</p>
+    <section class="group">${catRows}</section>
+
+    <div class="stack-sm">
+      <button class="btn primary" id="go" ${n?'':'disabled'}>Abfrage starten</button>
+      <p class="footnote">${n} ${n===1?'Muskel':'Muskeln'} ausgewählt · ${ROUND_LEN} Fragen pro Runde</p>
+    </div>
+  </div>`;
+  const rerender=()=>{ const y=window.scrollY; renderStart(); window.scrollTo(0,y); };
+  view.querySelector('#regRow').onclick=()=>{ S.regOpen=!S.regOpen; rerender(); };
+  view.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{ const r=b.dataset.reg; S.regions.has(r)?S.regions.delete(r):S.regions.add(r); rerender(); });
+  view.querySelector('#regAll').onclick=()=>{ Object.keys(REG).forEach(r=>S.regions.add(r)); rerender(); };
+  view.querySelector('#regNone').onclick=()=>{ S.regions.clear(); rerender(); };
+  view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return; S.cats.has(k)?S.cats.delete(k):S.cats.add(k); rerender(); });
+  view.querySelector('#go').onclick=startQuiz;
+  view.querySelector('#duel').onclick=()=>{ stopSpeaking(); openDuel(); };
+}
+
+/* ---------- Firebase: wird erst geladen, wenn jemand online spielen will ---------- */
+const FB_VER='10.12.2';
+const FB={app:null,auth:null,db:null,user:null,loading:null};
+
+function loadScript(src){
+  return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=res; s.onerror=()=>rej(new Error('load')); document.head.appendChild(s); });
+}
+function fbConfigured(){ const c=window.FIREBASE_CONFIG; return !!(c&&c.apiKey&&c.databaseURL); }
+async function loadFirebase(){
+  if(FB.loading) return FB.loading;
+  FB.loading=(async()=>{
+    const base='https://www.gstatic.com/firebasejs/'+FB_VER+'/';
+    await loadScript(base+'firebase-app-compat.js');
+    await Promise.all([loadScript(base+'firebase-auth-compat.js'),loadScript(base+'firebase-database-compat.js')]);
+    FB.app=firebase.initializeApp(window.FIREBASE_CONFIG);
+    FB.auth=firebase.auth(); FB.db=firebase.database();
+    await new Promise(res=>FB.auth.onAuthStateChanged(u=>{ FB.user=u; res(); }));
+  })();
+  FB.loading.catch(()=>{ FB.loading=null; });
+  return FB.loading;
+}
+
+/* Raum = Pfad in der Datenbank. Jeder Spieler schreibt nur seinen eigenen Eintrag ("presence")
+   und sieht die Einträge aller anderen ("peers"). Beim Verbindungsabbruch wird der Eintrag gelöscht.
+   Genutzt für die Lobby ("lobby"), Duelle ("rooms/duel-1234") und Gruppen ("rooms/grp-12345"). */
+function fbRoom(path){
+  const uid=FB.user.uid, ref=FB.db.ref(path), mine=ref.child(uid);
+  let peers=Object.freeze([]), cur={}, disc=false, alive=true;
+  const handlers=new Set(), errHandlers=new Set();
+  const onValue=s=>{
+    const v=s.val()||{};
+    peers=Object.freeze(Object.keys(v).map(k=>Object.freeze({peer:k,by:k,isMe:k===uid,presence:v[k]||{}})));
+    handlers.forEach(h=>{ try{ h(); }catch(e){ console.error(e); } });
+  };
+  ref.on('value',onValue,()=>errHandlers.forEach(e=>e()));
+  return {
+    peers:()=>peers,
+    onPeers(h,e){ handlers.add(h); if(e) errHandlers.add(e); setTimeout(()=>{ if(alive&&handlers.has(h)) h(); },0); return ()=>{ handlers.delete(h); if(e) errHandlers.delete(e); }; },
+    presence(patch){
+      if(!alive) return Promise.resolve();
+      const n={...cur}; for(const k in patch){ if(patch[k]==null) delete n[k]; else n[k]=JSON.parse(JSON.stringify(patch[k])); }
+      cur=n; if(!disc){ disc=true; mine.onDisconnect().remove(); }
+      return mine.set(cur);
+    },
+    leave(){ alive=false; ref.off('value',onValue); handlers.clear(); errHandlers.clear(); mine.onDisconnect().cancel(); return mine.remove(); },
+    join:name=>Promise.resolve(fbRoom('rooms/'+name))
+  };
+}
+
+/* ---------- Konto: Anmelden, Registrieren, Abmelden ---------- */
+const AUTH_ERR={
+  'auth/invalid-email':'Diese E-Mail-Adresse ist ungültig.',
+  'auth/user-not-found':'E-Mail oder Passwort stimmt nicht.',
+  'auth/wrong-password':'E-Mail oder Passwort stimmt nicht.',
+  'auth/invalid-credential':'E-Mail oder Passwort stimmt nicht.',
+  'auth/invalid-login-credentials':'E-Mail oder Passwort stimmt nicht.',
+  'auth/email-already-in-use':'Mit dieser E-Mail gibt es schon ein Konto. Melde dich an.',
+  'auth/weak-password':'Das Passwort braucht mindestens 6 Zeichen.',
+  'auth/too-many-requests':'Zu viele Versuche. Warte kurz und versuch es dann nochmal.',
+  'auth/network-request-failed':'Keine Internetverbindung.',
+  'auth/missing-password':'Bitte gib ein Passwort ein.'
+};
+const OFFLINE_TEXT='Zum Spielen gegen andere brauchst du eine Internetverbindung. Lernen geht auch offline.';
+let authMode='login', authNext='duel';
+
+/* Sorgt für eine Anmeldung. Gibt false zurück, wenn stattdessen eine Anmelde- oder Hinweisseite gezeigt wird. */
+async function ensureAuth(next){
+  authNext=next||'duel';
+  if(!fbConfigured()){ renderOnlineNote('Das Online-Spiel ist noch nicht eingerichtet. Es fehlt die Firebase-Konfiguration.'); return false; }
+  if(!navigator.onLine){ renderOnlineNote(OFFLINE_TEXT); return false; }
+  if(!FB.user){
+    renderOnlineNote(null);
+    try{ await loadFirebase(); }catch(e){ renderOnlineNote('Die Verbindung zum Server hat nicht geklappt. Prüfe dein Internet und versuch es nochmal.'); return false; }
+    if(!FB.user){ renderAuth(); return false; }
+  }
+  if(!SOC.profile){ try{ await ensureProfile(); }catch(e){} }
+  return true;
+}
+function renderOnlineNote(text){
+  S.phase='duel'; DUEL.view='note'; setBack('Start',renderStart);
+  showPage(`<div class="stack"><h2 class="pagetitle">Online spielen</h2>${text===null
+    ?'<section class="card center"><div class="spinner" aria-hidden="true"></div><p class="sub">Verbinde …</p></section>'
+    :`<section class="card"><p>${esc(text)}</p><button class="btn tinted" id="retry">Erneut versuchen</button></section>`}</div>`);
+  const r=view.querySelector('#retry'); if(r) r.onclick=()=>authNext==='profile'?openProfile():openDuel();
+}
+
+function renderAuth(msg){
+  S.phase='auth'; DUEL.view='auth';
+  setBack('Start',renderStart);
+  const reg=authMode==='register';
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">${reg?'Konto erstellen':'Anmelden'}</h2><p class="sub">Zum Spielen gegen andere brauchst du ein Konto. Zum Lernen nicht.</p></div>
+    <div class="seg" role="group" aria-label="Anmelden oder registrieren"><button data-m="login" aria-pressed="${!reg}">Anmelden</button><button data-m="register" aria-pressed="${reg}">Registrieren</button></div>
+    <form class="stack-sm" id="authForm" novalidate>
+      ${reg?'<label class="srlabel" for="aName">Name</label><input class="field" id="aName" autocomplete="nickname" maxlength="24" placeholder="Name (sehen deine Mitspieler)" required>':''}
+      <label class="srlabel" for="aMail">E-Mail</label><input class="field" id="aMail" type="email" autocomplete="email" inputmode="email" placeholder="E-Mail" required>
+      <label class="srlabel" for="aPass">Passwort</label><input class="field" id="aPass" type="password" autocomplete="${reg?'new-password':'current-password'}" placeholder="Passwort${reg?' (mind. 6 Zeichen)':''}" required>
+      <p class="hint" id="authHint" role="status"></p>
+      <button class="btn primary" id="aGo" type="submit">${reg?'Konto erstellen':'Anmelden'}</button>
+    </form>
+    ${reg?'':'<button class="link center-self" id="aReset">Passwort vergessen?</button>'}
+  </div>`);
+  const hint=(t,w)=>setHint('authHint',t,w);
+  if(msg) hint(msg,true);
+  view.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{ authMode=b.dataset.m; renderAuth(); });
+  view.querySelector('#authForm').onsubmit=async e=>{
+    e.preventDefault();
+    const mail=view.querySelector('#aMail').value.trim(), pass=view.querySelector('#aPass').value;
+    const name=reg?view.querySelector('#aName').value.trim():'';
+    if(reg&&!name){ hint('Bitte gib einen Namen ein.',true); return; }
+    const btn=view.querySelector('#aGo'); btn.disabled=true; hint('');
+    try{
+      if(reg){ const c=await FB.auth.createUserWithEmailAndPassword(mail,pass); await c.user.updateProfile({displayName:name}); }
+      else await FB.auth.signInWithEmailAndPassword(mail,pass);
+      FB.user=FB.auth.currentUser; lsSet('ad-auth','1');
+      if(authNext==='profile') openProfile(); else openDuel();
+    }catch(err){ btn.disabled=false; hint(AUTH_ERR[err&&err.code]||'Das hat nicht geklappt. Versuch es nochmal.',true); }
+  };
+  const rs=view.querySelector('#aReset');
+  if(rs) rs.onclick=async()=>{
+    const mail=view.querySelector('#aMail').value.trim(); if(!mail){ hint('Gib zuerst deine E-Mail-Adresse ein.',true); return; }
+    try{ await FB.auth.sendPasswordResetEmail(mail); hint('Wir haben dir eine E-Mail zum Zurücksetzen geschickt.'); }catch(err){ hint(AUTH_ERR[err&&err.code]||'Das hat nicht geklappt.',true); }
+  };
+}
+
+function accountRowHTML(){
+  return FB.user?`<section class="group"><div class="row"><span class="label"><span>Angemeldet</span><small>${esc(FB.user.email||'')}</small></span><button class="btn tinted small" id="logout">Abmelden</button></div></section>`:'';
+}
+function bindAccount(){
+  const b=document.getElementById('logout'); if(!b) return;
+  b.onclick=async()=>{
+    await disconnectLobby();
+    resetSocial();
+    await FB.auth.signOut(); lsSet('ad-auth','');
+    setProfileIcon(null); renderStart();
+  };
+}
+
+/* ---------- Profile, Freunde, Statistik (Firebase-Daten) ----------
+   users/{uid}:   {name, nameLower, code, photo, stats:{games,wins,losses,draws,points}, score, lastGid}
+   codes/{CODE}:  uid (6-stelliger Freundescode)
+   friends/{uid}/{fid}: true (beidseitig)
+   h2h/{uid1_uid2}: Bilanz zweier Spieler {games, d, w:{uid:n}, pts:{uid:n}, last, lastGid} */
+const SOC={profile:null,friends:{},info:{},h2h:{},listening:false};
+const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const pairKey=(a,b)=>[a,b].sort().join('_');
+const emptyStats=()=>({games:0,wins:0,losses:0,draws:0,points:0});
+const scoreOf=st=>st.wins*3+st.draws;   // Rangliste: Sieg 3, Unentschieden 1
+const userRef=uid=>FB.db.ref('users/'+uid);
+
+function resetSocial(){
+  try{ FB.db.ref('friends/'+FB.user.uid).off(); }catch(e){}
+  Object.assign(SOC,{profile:null,friends:{},info:{},h2h:{},listening:false});
+}
+/* Profil laden bzw. beim ersten Mal anlegen (mit Freundescode und Suchnamen) */
+async function ensureProfile(){
+  const u=FB.user; if(!u) return null;
+  const p=(await userRef(u.uid).once('value')).val()||{};
+  for(let t=0;t<6&&!p.code;t++){
+    let c=''; for(let i=0;i<6;i++) c+=pickOne(CODE_CHARS);
+    try{ await FB.db.ref('codes/'+c).set(u.uid); p.code=c; }catch(e){}   // Regel verhindert doppelte Codes
+  }
+  p.name=p.name||u.displayName||'Spieler';
+  p.nameLower=lowerDe(p.name).trim();
+  p.stats=Object.assign(emptyStats(),p.stats||{});
+  p.score=scoreOf(p.stats);
+  await userRef(u.uid).set(p);
+  SOC.profile=p; SOC.info[u.uid]=p; setProfileIcon(safePhoto(p.photo));
+  if(!SOC.listening){
+    SOC.listening=true;
+    FB.db.ref('friends/'+u.uid).on('value',s=>{ SOC.friends=s.val()||{}; loadFriendData(); });
+  }
+  return p;
+}
+async function loadFriendData(){
+  const me=FB.user&&FB.user.uid; if(!me) return;
+  await Promise.all(Object.keys(SOC.friends).map(async fid=>{
+    try{ SOC.info[fid]=(await userRef(fid).once('value')).val()||{name:'Spieler'}; }catch(e){ SOC.info[fid]=SOC.info[fid]||{name:'Spieler'}; }
+    try{ SOC.h2h[fid]=(await FB.db.ref('h2h/'+pairKey(me,fid)).once('value')).val(); }catch(e){}
+  }));
+  refreshPeople();
+}
+const isFriend=uid=>!!(uid&&SOC.friends[uid]);
+/* Bilanz gegen einen Freund aus meiner Sicht */
+function record(fid){
+  const me=FB.user.uid, h=SOC.h2h[fid];
+  if(!h) return {games:0,w:0,l:0,d:0,pm:0,pf:0,last:null};
+  return {games:h.games||0,w:(h.w||{})[me]||0,l:(h.w||{})[fid]||0,d:h.d||0,pm:(h.pts||{})[me]||0,pf:(h.pts||{})[fid]||0,last:h.last||null};
+}
+async function addFriend(fid){
+  const me=FB.user.uid; if(!fid||fid===me) return;
+  await FB.db.ref('friends/'+me+'/'+fid).set(true);
+  await FB.db.ref('friends/'+fid+'/'+me).set(true);
+}
+async function removeFriend(fid){
+  const me=FB.user.uid;
+  await FB.db.ref('friends/'+me+'/'+fid).remove();
+  try{ await FB.db.ref('friends/'+fid+'/'+me).remove(); }catch(e){}
+  delete SOC.info[fid];
+}
+async function saveName(n){
+  n=(n||'').trim().slice(0,24); if(!FB.user||!SOC.profile||!n) return;
+  try{ await userRef(FB.user.uid).update({name:n,nameLower:lowerDe(n)}); SOC.profile.name=n; pushLobby(); }catch(e){}
+}
+
+/* Ergebnis eines Duells speichern: jeder seine eigene Statistik, der Gastgeber die gemeinsame Bilanz.
+   lastGid verhindert, dass ein Spiel doppelt zählt. */
+async function saveGameResult(r){
+  const me=FB.user&&FB.user.uid; if(!me) return;
+  const res=r.me>r.them?'wins':r.me<r.them?'losses':'draws';
+  try{
+    await userRef(me).transaction(p=>{
+      p=p||{}; p.stats=Object.assign(emptyStats(),p.stats||{});
+      if(p.lastGid===r.gid) return p;
+      p.stats.games++; p.stats[res]++; p.stats.points+=r.me; p.lastGid=r.gid;
+      p.score=scoreOf(p.stats); p.name=p.name||myName(); return p;
+    });
+  }catch(e){}
+  if(r.host&&r.opp){
+    try{
+      await FB.db.ref('h2h/'+pairKey(me,r.opp)).transaction(h=>{
+        h=h||{games:0,d:0,w:{},pts:{}};
+        if(h.lastGid===r.gid) return h;
+        h.w=h.w||{}; h.pts=h.pts||{}; h.games=(h.games||0)+1;
+        if(r.me>r.them) h.w[me]=(h.w[me]||0)+1; else if(r.me<r.them) h.w[r.opp]=(h.w[r.opp]||0)+1; else h.d=(h.d||0)+1;
+        h.pts[me]=(h.pts[me]||0)+r.me; h.pts[r.opp]=(h.pts[r.opp]||0)+r.them;
+        h.last=Date.now(); h.lastGid=r.gid; return h;
+      });
+    }catch(e){}
+  }
+  try{ await ensureProfile(); }catch(e){}
+  if(r.opp) try{ SOC.h2h[r.opp]=(await FB.db.ref('h2h/'+pairKey(me,r.opp)).once('value')).val(); }catch(e){}
+  const rc=r.opp?record(r.opp):null, el=document.getElementById('h2hLine');
+  if(el&&rc&&rc.games) el.textContent=`Bilanz gegen ${oppName()}: ${rc.w} : ${rc.l}${rc.d?` (${rc.d} unentschieden)`:''}`;
+}
+
+/* ----- Profilbilder ----- */
+const AV_COLORS=['#E0453A','#F08A24','#2F9E5B','#1F8FBF','#5B5BD6','#B24FC9','#D94C86','#7A8B99'];
+function avColor(uid){ let h=0; for(const c of String(uid||'x')) h=(h*31+c.charCodeAt(0))>>>0; return AV_COLORS[h%AV_COLORS.length]; }
+function initials(n){ const p=String(n||'?').trim().split(/\s+/); return ((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase(); }
+/* Nur echte Bild-Daten-URLs zulassen (die Bilder kommen von anderen Spielern) */
+function safePhoto(ph){ return typeof ph==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(ph)?ph:null; }
+/* status: on | busy | off | null; size: '' | 'xl'; photo: undefined = aus dem Cache nehmen */
+function avatarHTML(uid,name,status,size,photo){
+  const ph=safePhoto(photo!==undefined?photo:(SOC.info[uid]||{}).photo);
+  const inner=ph?`<img src="${ph}" alt="">`:`<span style="background:${avColor(uid)}">${esc(initials(name))}</span>`;
+  return `<span class="avatar${size?' '+size:''}">${inner}${status?`<i class="st ${status}"></i>`:''}</span>`;
+}
+/* Avatar für jemanden, der online ist; lädt sein Profilbild bei Bedarf nach */
+const infoLoading=new Set();
+function avatarFor(uid,name,busy){
+  if(uid&&!SOC.info[uid]&&!infoLoading.has(uid)&&FB.db){
+    infoLoading.add(uid);
+    userRef(uid).once('value').then(s=>{ SOC.info[uid]=s.val()||{name:'Spieler'}; refreshPeople(); }).catch(()=>{}).finally(()=>infoLoading.delete(uid));
+  }
+  return avatarHTML(uid,name,busy?'busy':'on');
+}
+/* Foto quadratisch zuschneiden und auf 160 px verkleinern (passt so in die Datenbank) */
+function resizePhoto(file){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const size=160, c=document.createElement('canvas'); c.width=c.height=size;
+        const m=Math.min(img.width,img.height);
+        c.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,size,size);
+        res(c.toDataURL('image/jpeg',0.82));
+      };
+      img.onerror=()=>rej(new Error('bild')); img.src=fr.result;
+    };
+    fr.onerror=()=>rej(new Error('datei')); fr.readAsDataURL(file);
+  });
+}
+async function savePhoto(dataUrl){
+  await userRef(FB.user.uid).child('photo').set(dataUrl||null);
+  SOC.profile.photo=dataUrl||null; setProfileIcon(safePhoto(dataUrl));
+}
+
+/* Spieler suchen: 6-stelliger Freundescode oder Namensanfang */
+async function searchUsers(q){
+  q=(q||'').trim(); if(q.length<2) return [];
+  const found=new Map();
+  const code=q.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length===6){
+    try{ const id=(await FB.db.ref('codes/'+code).once('value')).val(); if(id){ const u=(await userRef(id).once('value')).val(); if(u) found.set(id,u); } }catch(e){}
+  }
+  const lq=lowerDe(q);
+  try{
+    const v=(await FB.db.ref('users').orderByChild('nameLower').startAt(lq).endAt(lq+'').limitToFirst(15).once('value')).val()||{};
+    Object.keys(v).forEach(id=>found.set(id,v[id]));
+  }catch(e){}
+  found.delete(FB.user.uid);
+  return [...found.entries()].map(([id,u])=>{ SOC.info[id]=u; return {id,u}; });
+}
+
+/* ---------- Lobby: wer ist online, Einladungen, Einstieg in Duell und Gruppe ----------
+   Jeder angemeldete Spieler hat in "lobby" einen Eintrag:
+   {app:'mt', nick, busy, inv:{to,code} (Duell-Einladung), ginv:{to:[…],code} (Gruppen-Einladung), dec:{to,code} (Absage)}
+   DUEL.view sagt, welche Online-Ansicht gerade offen ist (off, note, auth, lobby, wait, game, group, profile, friend, board). */
+const DUEL={room:null,loading:null,myPeer:null,view:'off',outInv:null,decline:null,seen:new Set(),
+  role:null,code:null,named:null,unsub:[],timers:[],game:null,hg:null,lastKey:null,hist:[],oppNick:'',oppId:null,target:null,reported:null};
+
+const myName=()=>((SOC.profile&&SOC.profile.name)||'Spieler').slice(0,24);
+
+async function initLobby(){
+  if(DUEL.room) return true;
+  if(!DUEL.loading) DUEL.loading=(async()=>{
+    if(!FB.user) return false;
+    DUEL.room=fbRoom('lobby'); DUEL.myPeer=FB.user.uid;
+    DUEL.room.onPeers(onLobbyPeers);
+    pushLobby();
+    return true;
+  })().finally(()=>{ DUEL.loading=null; });
+  return DUEL.loading;
+}
+async function disconnectLobby(){
+  leaveOnline();
+  const r=DUEL.room; DUEL.room=null; DUEL.myPeer=null;
+  if(r) try{ await r.leave(); }catch(e){}
+}
+function pushLobby(){
+  if(!DUEL.room) return;
+  DUEL.room.presence({app:'mt',nick:myName(),busy:inMatch(),inv:DUEL.outInv,ginv:groupInvitePresence(),dec:DUEL.decline}).catch(()=>{});
+}
+function lobbyPeers(){
+  if(!DUEL.room) return [];
+  const seen=new Set();
+  return DUEL.room.peers().filter(p=>!p.isMe&&p.presence.app==='mt'&&!seen.has(p.by)&&seen.add(p.by));
+}
+/* Verlässt laufende Online-Ansichten (z. B. beim Wechsel zur Startseite) */
+function leaveOnline(){
+  if(GRP.named) leaveGroupRoom();
+  if(DUEL.named) leaveDuelRoom();
+  DUEL.view='off'; pushLobby();
+}
+
+function onLobbyPeers(){
+  const ps=lobbyPeers();
+  if(DUEL.view==='wait'&&DUEL.outInv&&ps.some(p=>p.presence.dec&&p.presence.dec.to===DUEL.myPeer&&p.presence.dec.code===DUEL.outInv.code)){
+    leaveDuel('Deine Herausforderung wurde abgelehnt.'); return;
+  }
+  const duelInv=ps.find(p=>p.presence.inv&&p.presence.inv.to===DUEL.myPeer&&!DUEL.seen.has(p.presence.inv.code));
+  const groupInv=ps.find(p=>{ const gi=p.presence.ginv; return gi&&Array.isArray(gi.to)&&gi.to.includes(DUEL.myPeer)&&!DUEL.seen.has('g'+gi.code); });
+  showInvite(duelInv,groupInv);
+  refreshPeople();
+}
+/* Listen mit Spielern auf der gerade offenen Seite neu zeichnen */
+function refreshPeople(){
+  if(DUEL.view==='lobby'){ renderOnlineList('onlineList'); renderFriendList(); }
+  if(DUEL.view==='profile'){ renderOnlineList('othersOnline'); renderFriendList(); }
+  if(DUEL.view==='group') renderGroupMembers();
+}
+
+/* Einladung unten als Sheet einblenden */
+function showInvite(duelInv,groupInv){
+  if(inMatch()||(!duelInv&&!groupInv)){ inviteBar.hidden=true; return; }
+  const p=duelInv||groupInv;
+  const code=duelInv?p.presence.inv.code:p.presence.ginv.code, seenKey=duelInv?code:'g'+code;
+  inviteBar.innerHTML=`<div class="sheet-in"><p><b>${esc(p.presence.nick||'Jemand')}</b> ${duelInv?'fordert dich zum Duell heraus.':'lädt dich in eine Lobby ein.'}</p><div class="btnrow"><button class="btn plain" id="invNo">Ablehnen</button><button class="btn primary" id="invYes">${duelInv?'Annehmen':'Beitreten'}</button></div></div>`;
+  inviteBar.hidden=false;
+  inviteBar.querySelector('#invYes').onclick=()=>{ DUEL.seen.add(seenKey); inviteBar.hidden=true; stopSpeaking(); duelInv?joinDuel(code):openGroup(code); };
+  inviteBar.querySelector('#invNo').onclick=()=>{
+    DUEL.seen.add(seenKey); inviteBar.hidden=true;
+    if(!duelInv) return;
+    DUEL.decline={to:p.peer,code}; pushLobby();
+    setTimeout(()=>{ if(DUEL.decline&&DUEL.decline.code===code){ DUEL.decline=null; pushLobby(); } },15000);
+  };
+}
+
+/* ----- Lobby-Seite ----- */
+async function openDuel(){
+  if(!(await ensureAuth('duel'))) return;
+  await initLobby();
+  renderLobby();
+}
+function renderLobby(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
+  setBack('Start',renderStart);
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Richtig gibt 1 Punkt, unter 10 s +2 Bonus, unter 20 s +1.</p></div>
+    <section class="group"><button class="row" id="mkGroup"><span class="tile">${IC.bolt}</span><span class="label">Lobby erstellen<small>Mit bis zu ${GMAX} Spielern gleichzeitig spielen</small></span>${IC.chev}</button></section>
+
+    <p class="group-label">Freunde</p>
+    <section class="group list" id="friendList"></section>
+    <section class="group"><button class="row" id="toProfile"><span class="tile tile-ok">${IC.plus}</span><span class="label">Freunde hinzufügen<small>per Name oder Freundescode</small></span>${IC.chev}</button></section>
+    <section class="group"><button class="row" id="lbRow"><span class="tile tile-warn">${IC.trophy}</span><span class="label">Rangliste</span>${IC.chev}</button></section>
+
+    <p class="group-label">Weitere Spieler online</p>
+    <section class="group list" id="onlineList"></section>
+
+    <p class="group-label">Mit Code beitreten</p>
+    <section class="card">
+      <div class="coderow"><input id="codeIn" class="field" inputmode="numeric" maxlength="5" placeholder="Code" aria-label="Duell- oder Lobby-Code"><button class="btn tinted" id="joinCode">Beitreten</button></div>
+      <button class="btn plain" id="mkCode">Duell-Code für 1 gegen 1 erstellen</button>
+    </section>
+    ${accountRowHTML()}
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('lobbyHint',msg,true);
+  bindAccount();
+  view.querySelector('#mkGroup').onclick=()=>openGroup();
+  view.querySelector('#toProfile').onclick=()=>renderProfile();
+  view.querySelector('#lbRow').onclick=()=>renderLeaderboard('all');
+  view.querySelector('#mkCode').onclick=()=>hostDuel(newDuelCode(),null);
+  const ci=view.querySelector('#codeIn');
+  const join=()=>{
+    const c=ci.value.replace(/\D/g,'');
+    if(c.length===5) openGroup(c);
+    else if(c.length===4) joinDuel(c);
+    else setHint('lobbyHint','Duell-Codes haben 4 Ziffern, Lobby-Codes 5.',true);
+  };
+  view.querySelector('#joinCode').onclick=join; ci.onkeydown=e=>{ if(e.key==='Enter') join(); };
+  renderFriendList(); renderOnlineList('onlineList');
+  onLobbyPeers();
+}
+
+/* Spieler online, die (noch) keine Freunde sind: mit „+“ hinzufügen oder herausfordern */
+function renderOnlineList(boxId){
+  const box=document.getElementById(boxId); if(!box) return;
+  const list=lobbyPeers().filter(p=>!isFriend(p.by));
+  if(!list.length){ box.innerHTML=infoRow('Gerade ist sonst niemand online.','Schick deinen Freunden den Link zu dieser Seite. Sobald sie angemeldet sind, erscheinen sie hier.'); return; }
+  box.innerHTML=list.map(p=>`<div class="row">${avatarFor(p.by,p.presence.nick,p.presence.busy)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'spielt gerade':'online'}</small></span><button class="iconbtn addf" data-addf="${esc(p.by)}" aria-label="Als Freund hinzufügen" title="Als Freund hinzufügen">+</button>${p.presence.busy?'':`<button class="btn tinted small" data-ch="${esc(p.peer)}">Herausfordern</button>`}</div>`).join('');
+  box.querySelectorAll('[data-addf]').forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await addFriend(b.dataset.addf); }catch(e){ b.disabled=false; } });
+  box.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>challenge(b.dataset.ch));
+}
+function challenge(peer){ const p=lobbyPeers().find(x=>x.peer===peer); if(p&&!p.presence.busy) hostDuel(newDuelCode(),p); }
+
+/* ---------- Gemeinsamer Rundenablauf für Duell und Gruppe ----------
+   Der Gastgeber erzeugt die Fragen und steuert die Phasen (q = Frage, rev = Auflösung, end = Ende).
+   Alle anderen folgen seinem Spielstand und melden nur ihre eigene Antwort. */
+const ROUNDS=10, QTIME=30000, REVEAL=6000;
+const RT={tInt:null,deadline:null,revInt:null,next:null,start:0,myAns:null};
+
+/* Richtig = 1 Punkt; Bonus +2 unter 10 s, +1 unter 20 s */
+function evalChoice(c,key,t){
+  c=typeof c==='string'?c:''; const ok=!!c&&c===key; t=Math.min(Number(t)||QTIME,QTIME);
+  const bonus=ok?(t<=10000?2:t<=20000?1:0):0;
+  return {c,ok,pt:ok?1+bonus:0,bonus,t};
+}
+/* 10 Fragen zu 10 verschiedenen Muskeln */
+function pickQs(){
+  const qs=[];
+  for(const m of shuffle(M.slice())){
+    if(qs.length>=ROUNDS) break;
+    for(const k of shuffle(qFields(m))){ const q=makeQuestion(m.id,k); if(q){ qs.push(q); break; } }
+  }
+  return qs;
+}
+function clearRoundTimers(){
+  clearInterval(RT.tInt); clearTimeout(RT.deadline); clearInterval(RT.revInt); clearTimeout(RT.next);
+  RT.tInt=RT.deadline=RT.revInt=RT.next=null;
+}
+
+/* Frage mit 30-Sekunden-Balken zeigen. onLock(antwort) kommt genau einmal: beim Antippen oder wenn die Zeit abläuft. */
+function showRoundQuestion(topHTML,g,onLock){
+  clearRoundTimers();
+  const q=g.qs[g.r];
+  RT.myAns=null; RT.start=performance.now();
+  showPage(`<div class="stack">${topHTML}
+    <div class="tbar" aria-hidden="true"><span id="tfill"></span></div>
+    <p class="footnote tleft"><span id="tleft">30</span> Sekunden</p>
+    ${qCardHTML(q,false)}
+    <section class="stack-sm">
+      <p class="question">${esc(qText(q))}</p>
+      <div id="optBox">${optionsHTML(q)}</div>
+    </section>
+    <p class="opp" id="oppStat"></p>
+  </div>`);
+  const lock=choice=>{
+    if(RT.myAns) return;
+    const t=Math.min(Math.round(performance.now()-RT.start),QTIME);
+    RT.myAns={g:g.id,r:g.r,c:choice,t,lk:true};
+    document.getElementById('optBox').innerHTML=optionsHTML(q,{mine:choice,locked:true});
+    document.getElementById('oppStat').insertAdjacentHTML('beforebegin',`<p class="footnote">${choice?'Eingeloggt nach '+fmtSec(t):'Zeit abgelaufen'}</p>`);
+    onLock(RT.myAns);
+  };
+  view.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>lock(b.dataset.opt));
+  if(autoRead) speak(qSpeak(q));
+  const fill=document.getElementById('tfill'), left=document.getElementById('tleft');
+  RT.tInt=setInterval(()=>{
+    const rest=Math.max(0,QTIME-(performance.now()-RT.start));
+    fill.style.width=(rest/QTIME*100)+'%'; fill.classList.toggle('low',rest<8000);
+    left.textContent=Math.ceil(rest/1000);
+    if(rest<=0){ clearInterval(RT.tInt); RT.tInt=null; lock(''); }
+  },200);
+}
+/* Antwort, die zu dieser Runde gehört (oder null) */
+function answerFor(a,g){ return a&&a.g===g.id&&a.r===g.r?a:null; }
+
+/* Countdown unter der Auflösung */
+function startRevealCountdown(last){
+  const t0=performance.now(), el=document.getElementById('nextIn');
+  RT.revInt=setInterval(()=>{ const s=Math.max(0,Math.ceil((REVEAL-(performance.now()-t0))/1000)); if(el) el.textContent=(last?'Auswertung in ':'Nächste Runde in ')+s+' s'; },250);
+}
+function verdictHTML(label,r){
+  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':!r.c?'Keine Antwort':'Falsch'}</b><span>${r.ok?`+${r.pt}${r.bonus?` (inkl. ${r.bonus} Bonus)`:''}`:'+0'}</span></div><small class="tm">${r.c?fmtSec(r.t):'—'}</small></div>`;
+}
+
+/* ---------- Duell 1 gegen 1 ----------
+   Raum "duel-<4 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand}, Gast: {role:'guest', nick, a:Antwort}.
+   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}} */
+const newDuelCode=()=>String(Math.floor(1000+Math.random()*9000));
+const isHost=()=>DUEL.role==='host';
+const curGame=()=>isHost()?DUEL.game:DUEL.hg;
+const oppName=()=>DUEL.oppNick||'Gegner';
+
+async function hostDuel(code,target){
+  DUEL.role='host'; DUEL.target=target?(target.presence.nick||'Spieler'):null;
+  DUEL.outInv=target?{to:target.peer,code}:null;
+  await enterDuel(code);
+}
+async function joinDuel(code){
+  DUEL.role='guest'; DUEL.target=null; DUEL.outInv=null;
+  await enterDuel(code);
+}
+async function enterDuel(code){
+  DUEL.code=code; DUEL.view='wait'; pushLobby(); renderWait();
+  let r;
+  try{ r=await DUEL.room.join('duel-'+code); }
+  catch(e){ leaveDuel('Dem Duell konnte nicht beigetreten werden. Versuch es gleich nochmal.'); return; }
+  if(DUEL.view!=='wait'||DUEL.code!==code){ r.leave().catch(()=>{}); return; }
+  DUEL.named=r;
+  DUEL.unsub.push(r.onPeers(onDuelPeers,()=>{ if(DUEL.named===r) leaveDuel('Die Verbindung zum Duell ist abgebrochen.'); }));
+  r.presence({role:DUEL.role,nick:myName()}).catch(()=>{});
+  if(!isHost()) DUEL.timers.push(setTimeout(()=>{ if(DUEL.named===r&&!hostPeer()) leaveDuel('Kein offenes Duell mit diesem Code gefunden.'); },9000));
+}
+const roomPeers=()=>DUEL.named?DUEL.named.peers():[];
+const hostPeer=()=>roomPeers().find(p=>!p.isMe&&p.presence.role==='host');
+function oppPeer(){ return isHost()?(DUEL.game&&roomPeers().find(p=>p.peer===DUEL.game.op)):hostPeer(); }
+
+function onDuelPeers(){
+  if(!DUEL.named) return;
+  if(isHost()){
+    const g=DUEL.game;
+    if(!g){ const guest=roomPeers().find(p=>!p.isMe&&p.presence.role==='guest'); if(guest) startDuel(guest.peer); return; }
+    const opp=oppPeer();
+    if(!opp){ if(g.ph!=='end') leaveDuel('Dein Gegner hat das Duell verlassen.'); return; }
+    DUEL.oppNick=opp.presence.nick||'Gegner';
+    hostCheck(); renderOppStatus();
+    return;
+  }
+  const h=hostPeer();
+  if(!h){ if(DUEL.hg&&DUEL.hg.ph!=='end') leaveDuel('Dein Gegner hat das Duell verlassen.'); return; }
+  DUEL.oppNick=h.presence.nick||'Gegner'; DUEL.oppId=h.by;
+  const g=h.presence.g;
+  if(!g){ const s=document.getElementById('waitSub'); if(s) s.textContent='Verbunden. Gleich geht es los …'; return; }
+  if(g.op!==DUEL.myPeer){ leaveDuel('Dieses Duell läuft schon mit jemand anderem.'); return; }
+  guestFollow(g);
+}
+
+/* ----- Gastgeber ----- */
+function startDuel(op){
+  DUEL.outInv=null; DUEL.hist=[]; DUEL.view='game'; pushLobby();
+  DUEL.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  const opp=oppPeer(); DUEL.oppNick=(opp&&opp.presence.nick)||'Gegner';
+  pushHost(); beginRound();
+}
+function pushHost(){ if(DUEL.named) DUEL.named.presence({role:'host',nick:myName(),g:DUEL.game}).catch(()=>{}); }
+function beginRound(){ showDuelQuestion(DUEL.game); RT.deadline=setTimeout(hostReveal,QTIME+3000); }
+function hostCheck(){
+  const g=DUEL.game; if(!g||g.ph!=='q') return;
+  const opp=oppPeer(), oa=answerFor(opp&&opp.presence.a,g);
+  if(RT.myAns&&oa&&oa.lk) hostReveal();
+}
+function hostReveal(){
+  const g=DUEL.game; if(!g||g.ph!=='q') return;
+  clearRoundTimers();
+  const opp=oppPeer();
+  const mine=RT.myAns||{c:'',t:QTIME}, theirs=answerFor(opp&&opp.presence.a,g)||{c:'',t:QTIME};
+  const key=correctKey(g.qs[g.r]);
+  const h=evalChoice(mine.c,key,mine.t), o=evalChoice(theirs.c,key,theirs.t);
+  g.sc=[g.sc[0]+h.pt,g.sc[1]+o.pt]; g.ph='rev'; g.res={h,o};
+  pushHost(); showDuelReveal(g);
+  RT.next=setTimeout(()=>{
+    if(DUEL.game!==g) return;
+    delete g.res;
+    if(g.r+1>=ROUNDS){ g.ph='end'; pushHost(); showDuelEnd(g); }
+    else { g.r++; g.ph='q'; pushHost(); beginRound(); }
+  },REVEAL);
+}
+
+/* ----- Gast: folgt dem Spielstand des Gastgebers ----- */
+function guestFollow(g){
+  const prev=DUEL.hg; DUEL.hg=g;
+  const key=g.id+':'+g.r+':'+g.ph;
+  if(key===DUEL.lastKey){ renderOppStatus(); return; }
+  DUEL.lastKey=key;
+  if(!prev||prev.id!==g.id) DUEL.hist=[];
+  if(g.ph==='q'){ DUEL.view='game'; pushLobby(); showDuelQuestion(g); }
+  else if(g.ph==='rev'&&g.res){ clearRoundTimers(); showDuelReveal(g); }
+  else if(g.ph==='end'){ clearRoundTimers(); showDuelEnd(g); }
+}
+
+/* ----- Ansichten ----- */
+function scores(g){ return isHost()?[g.sc[0],g.sc[1]]:[g.sc[1],g.sc[0]]; }
+function scoreHTML(g){
+  const [a,b]=scores(g);
+  return `<div class="score"><div class="sc me"><small>Du</small><b>${a}</b></div><div class="sc mid">Runde ${Math.min(g.r+1,ROUNDS)} von ${ROUNDS}</div><div class="sc op"><small>${esc(oppName())}</small><b>${b}</b></div></div>`;
+}
+function renderWait(){
+  clearRoundTimers(); inviteBar.hidden=true;
+  setBack('Abbrechen',()=>leaveDuel());
+  const host=isHost();
+  showPage(`<div class="stack">
+    <section class="card center tall">
+      ${host&&!DUEL.target?`<p class="sectionhead">Dein Duell-Code</p><div class="codebig">${esc(DUEL.code)}</div><p class="sub">Schick den Code deinem Freund. Er tippt unter „Online spielen“ auf „Beitreten“ und gibt ihn ein.</p>`:''}
+      ${host&&DUEL.target?`<p class="sectionhead">Herausforderung gesendet</p><p>Warte, bis <b>${esc(DUEL.target)}</b> annimmt …</p>`:''}
+      ${!host?`<p class="sectionhead">Duell ${esc(DUEL.code)}</p><p id="waitSub">Verbinde …</p>`:''}
+      <div class="spinner" aria-hidden="true"></div>
+    </section>
+    <button class="btn plain" id="cancel">Abbrechen</button>
+  </div>`);
+  view.querySelector('#cancel').onclick=()=>leaveDuel();
+}
+function showDuelQuestion(g){
+  setBack('Aufgeben',()=>leaveDuel());
+  showRoundQuestion(scoreHTML(g),g,a=>{
+    if(DUEL.named) DUEL.named.presence({a}).catch(()=>{});
+    if(isHost()) hostCheck();
+  });
+  renderOppStatus();
+}
+function renderOppStatus(){
+  const el=document.getElementById('oppStat'), g=curGame(); if(!el||!g||g.ph!=='q') return;
+  const o=oppPeer(), a=answerFor(o&&o.presence.a,g);
+  el.innerHTML=a&&a.lk?`<i class="done"></i>${esc(oppName())} hat eingeloggt`:`<i></i>${esc(oppName())} denkt nach …`;
+}
+function showDuelReveal(g){
+  const q=g.qs[g.r];
+  const mine=isHost()?g.res.h:g.res.o, theirs=isHost()?g.res.o:g.res.h;
+  if(!DUEL.hist.some(h=>h.r===g.r)) DUEL.hist.push({r:g.r,mid:q.m,k:q.k,me:mine,op:theirs});
+  const last=g.r+1>=ROUNDS;
+  showPage(`<div class="stack">${scoreHTML(g)}
+    <div class="duo">${verdictHTML('Du',mine)}${verdictHTML(oppName(),theirs)}</div>
+    ${qCardHTML(q,true)}
+    ${optionsHTML(q,{reveal:true,mine:mine.c,theirs:theirs.c,theirName:oppName(),locked:true})}
+    <p class="footnote" id="nextIn">${last?'Gleich kommt die Auswertung …':'Nächste Runde gleich …'}</p>
+  </div>`);
+  startRevealCountdown(last);
+  if(autoRead) speak((mine.ok?'Richtig':'Falsch')+'. '+oppName()+(theirs.ok?' richtig':' falsch')+'.');
+}
+function showDuelEnd(g){
+  clearRoundTimers(); DUEL.view='game';
+  setBack('Zurück',()=>leaveDuel());
+  const [a,b]=scores(g);
+  const head=a>b?'Gewonnen!':a<b?'Verloren':'Unentschieden';
+  const rows=DUEL.hist.slice().sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(FIELD[h.k])}</small></span><span class="badges"><span class="badge ${h.me.ok?'good':'bad'}">Du +${h.me.pt}</span><span class="badge ${h.op.ok?'good':'bad'}">${esc(oppName())} +${h.op.pt}</span></span></div>`).join('');
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle big${a>b?' win':''}">${head}</h2><p class="sub score-line">Du ${a} : ${b} ${esc(oppName())}</p></div>
+    <p class="footnote" id="h2hLine"></p>
+    <section class="group list">${rows}</section>
+    <div class="stack-sm">${isHost()?'<button class="btn primary" id="again">Revanche</button>':'<p class="footnote">Revanche? Dein Gegner kann eine neue Runde starten. Bleib einfach hier.</p>'}<button class="btn plain" id="leave">Duell verlassen</button></div>
+  </div>`);
+  const ag=view.querySelector('#again');
+  if(ag) ag.onclick=()=>{ const opp=oppPeer(); if(opp) startDuel(opp.peer); else leaveDuel('Dein Gegner ist nicht mehr da.'); };
+  view.querySelector('#leave').onclick=()=>leaveDuel();
+  if(autoRead) speak(head+'. '+a+' zu '+b+'.');
+  if(DUEL.reported!==g.id){
+    DUEL.reported=g.id;
+    saveGameResult({gid:g.id,opp:isHost()?g.op:DUEL.oppId,me:a,them:b,host:isHost()});
+  }
+}
+
+function leaveDuelRoom(){
+  clearRoundTimers();
+  DUEL.timers.forEach(clearTimeout); DUEL.timers=[];
+  DUEL.unsub.forEach(u=>{ try{ u(); }catch(e){} }); DUEL.unsub=[];
+  const r=DUEL.named; DUEL.named=null; if(r) r.leave().catch(()=>{});
+  Object.assign(DUEL,{game:null,hg:null,lastKey:null,outInv:null,role:null,code:null,target:null});
+}
+function leaveDuel(msg){ leaveDuelRoom(); stopSpeaking(); renderLobby(msg); }
+
+/* ---------- Gruppen-Lobby: bis zu 8 Spieler gleichzeitig ----------
+   Raum "grp-<5 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand|null}, Mitspieler: {role:'m', nick, a:Antwort}.
+   Spielstand g: {id, qs, r, ph (q/rev/end), pl:[Spieler], nm:{Spieler:Name}, sc:{Spieler:Punkte}, res:{Spieler:Ergebnis}}
+   Wer während eines Spiels beitritt, wartet bis zur nächsten Runde. */
+const GMAX=8;
+const GRP={named:null,code:null,host:false,game:null,hg:null,lastKey:null,unsub:[],timers:[],hist:[],invited:new Set()};
+
+const newGroupCode=()=>String(Math.floor(10000+Math.random()*90000));
+const gPeers=()=>GRP.named?GRP.named.peers().filter(p=>p.presence.nick):[];
+const gHostPeer=()=>gPeers().find(p=>p.presence.role==='host');
+const gCur=()=>GRP.host?GRP.game:GRP.hg;
+const gMe=()=>DUEL.myPeer;
+
+async function openGroup(code){
+  if(!(await ensureAuth('duel'))) return;
+  if(!(await initLobby())){ renderLobby('Keine Verbindung. Versuch es gleich nochmal.'); return; }
+  GRP.host=!code;
+  await enterGroup(code||newGroupCode());
+}
+async function enterGroup(code){
+  leaveOnline();
+  GRP.code=code; GRP.invited=new Set(); S.phase='duel'; DUEL.view='group'; pushLobby(); inviteBar.hidden=true;
+  setBack('Abbrechen',()=>leaveGroup());
+  showPage(`<div class="stack"><section class="card center tall"><p class="sectionhead">Lobby ${esc(code)}</p><p>Verbinde …</p><div class="spinner" aria-hidden="true"></div></section></div>`);
+  let r;
+  try{ r=await DUEL.room.join('grp-'+code); }
+  catch(e){ leaveGroup('Der Lobby konnte nicht beigetreten werden. Versuch es gleich nochmal.'); return; }
+  if(GRP.code!==code){ r.leave().catch(()=>{}); return; }
+  GRP.named=r;
+  GRP.unsub.push(r.onPeers(onGroupPeers,()=>{ if(GRP.named===r) leaveGroup('Die Verbindung zur Lobby ist abgebrochen.'); }));
+  await r.presence({role:GRP.host?'host':'m',nick:myName()}).catch(()=>{});
+  if(GRP.host){ pushGroupHost(); renderGroupLobby(); }
+  else GRP.timers.push(setTimeout(()=>{ if(GRP.named===r&&!gHostPeer()) leaveGroup('Keine offene Lobby mit diesem Code gefunden.'); },9000));
+}
+
+function onGroupPeers(){
+  if(!GRP.named) return;
+  if(GRP.host){
+    const g=GRP.game;
+    if(!g||g.ph==='end') renderGroupMembers();
+    else { gHostCheck(); gRenderStatus(); }
+    return;
+  }
+  if(!gHostPeer()){ if(gPeers().some(p=>p.isMe)) leaveGroup('Der Gastgeber hat die Lobby verlassen.'); return; }
+  if(!GRP.lastKey&&gPeers().length>GMAX){ leaveGroup('Diese Lobby ist voll.'); return; }
+  gFollow(gHostPeer().presence.g||null);
+}
+/* Mitspieler folgen dem Spielstand des Gastgebers */
+function gFollow(g){
+  const prev=GRP.hg; GRP.hg=g;
+  if(!g){
+    if(GRP.lastKey!=='lobby'){ GRP.lastKey='lobby'; renderGroupLobby(); } else renderGroupMembers();
+    return;
+  }
+  const inGame=(g.pl||[]).includes(gMe());
+  const key=g.id+':'+g.r+':'+g.ph+':'+inGame;
+  if(key===GRP.lastKey){ gRenderStatus(); return; }
+  GRP.lastKey=key;
+  if(!prev||prev.id!==g.id) GRP.hist=[];
+  if(!inGame) renderGroupSpectator(g);
+  else if(g.ph==='q') gShowQuestion(g);
+  else if(g.ph==='rev'&&g.res){ clearRoundTimers(); gShowReveal(g); }
+  else if(g.ph==='end'){ clearRoundTimers(); gShowEnd(g); }
+}
+
+/* ----- Warteraum ----- */
+function renderGroupLobby(msg){
+  clearRoundTimers(); S.phase='duel'; DUEL.view='group'; pushLobby(); inviteBar.hidden=true;
+  setBack('Verlassen',()=>leaveGroup());
+  const hp=gHostPeer();
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">Lobby</h2><p class="sub">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · ${ROUNDS} Runden à 30 Sekunden</p></div>
+    <section class="card center">
+      <p class="sectionhead">Lobby-Code</p><div class="codebig">${esc(GRP.code)}</div>
+      <p class="sub">${GRP.host?'Schick den Code an deine Freunde. Sie geben ihn unter „Online spielen“ → „Mit Code beitreten“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
+    </section>
+    <p class="group-label" id="gCount">Spieler</p>
+    <section class="group list" id="gMembers"></section>
+    ${GRP.host?`<button class="btn primary" id="gStart">Spiel starten</button>
+    <p class="group-label">Einladen</p>
+    <section class="group list" id="gInvite"></section>`:''}
+    <button class="btn plain" id="gLeave">Lobby verlassen</button>
+    <p class="hint" id="gHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('gHint',msg);
+  const st=document.getElementById('gStart'); if(st) st.onclick=gStartGame;
+  document.getElementById('gLeave').onclick=()=>leaveGroup();
+  renderGroupMembers();
+}
+function renderGroupMembers(){
+  const box=document.getElementById('gMembers'); if(!box) return;
+  const ps=gPeers().slice().sort((a,b)=>(b.presence.role==='host')-(a.presence.role==='host'));
+  box.innerHTML=ps.map(p=>`<div class="row">${avatarFor(p.by,p.presence.nick,false)}<span class="label"><span>${esc(p.presence.nick)}${p.isMe?' (du)':''}</span><small>${p.presence.role==='host'?'Gastgeber':'bereit'}</small></span></div>`).join('')||infoRow('Verbinde …');
+  document.getElementById('gCount').textContent=`Spieler (${ps.length} von ${GMAX})`;
+  const st=document.getElementById('gStart');
+  if(st){ st.disabled=ps.length<2; st.textContent=ps.length<2?'Warte auf Mitspieler …':`Spiel starten (${ps.length} Spieler)`; }
+  renderGroupInvite();
+}
+function renderGroupInvite(){
+  const box=document.getElementById('gInvite'); if(!box) return;
+  const inRoom=new Set(gPeers().map(p=>p.by));
+  const list=lobbyPeers().filter(p=>!inRoom.has(p.by)).sort((a,b)=>isFriend(b.by)-isFriend(a.by));
+  if(!list.length){ box.innerHTML=infoRow('Gerade ist niemand sonst online.','Schick den Code einfach per Nachricht.'); return; }
+  box.innerHTML=list.map(p=>{ const inv=GRP.invited.has(p.peer);
+    return `<div class="row">${avatarFor(p.by,p.presence.nick,p.presence.busy)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'spielt gerade':isFriend(p.by)?'Freund · online':'online'}</small></span><button class="btn tinted small" data-ginv="${esc(p.peer)}" ${inv||p.presence.busy?'disabled':''}>${inv?'Eingeladen':'Einladen'}</button></div>`; }).join('');
+  box.querySelectorAll('[data-ginv]').forEach(b=>b.onclick=()=>{ GRP.invited.add(b.dataset.ginv); pushLobby(); renderGroupInvite(); });
+}
+function groupInvitePresence(){ return GRP.host&&GRP.code&&GRP.invited.size?{to:[...GRP.invited],code:GRP.code}:null; }
+
+/* ----- Gastgeber steuert das Spiel ----- */
+function pushGroupHost(){ if(GRP.named) GRP.named.presence({role:'host',nick:myName(),g:GRP.game}).catch(()=>{}); }
+function gStartGame(){
+  const ps=gPeers().slice(0,GMAX); if(ps.length<2) return;
+  const nm={}, sc={};
+  ps.forEach(p=>{ nm[p.peer]=String(p.presence.nick).slice(0,24); sc[p.peer]=0; });
+  GRP.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',pl:ps.map(p=>p.peer),nm,sc};
+  GRP.invited=new Set(); GRP.hist=[]; pushLobby();
+  pushGroupHost(); gBeginRound();
+}
+function gBeginRound(){ gShowQuestion(GRP.game); RT.deadline=setTimeout(gHostReveal,QTIME+3000); }
+function gActive(g){ const here=new Set(gPeers().map(p=>p.peer)); return (g.pl||[]).filter(p=>here.has(p)); }
+function gAnswerOf(peer,g){
+  if(peer===gMe()) return RT.myAns;
+  const p=gPeers().find(x=>x.peer===peer);
+  return answerFor(p&&p.presence.a,g);
+}
+function gHostCheck(){
+  const g=GRP.game; if(!g||g.ph!=='q') return;
+  if(gActive(g).every(p=>{ const a=gAnswerOf(p,g); return a&&a.lk; })) gHostReveal();
+}
+function gHostReveal(){
+  const g=GRP.game; if(!g||g.ph!=='q') return;
+  clearRoundTimers();
+  const key=correctKey(g.qs[g.r]), here=new Set(gPeers().map(p=>p.peer));
+  g.sc=g.sc||{}; g.res={};
+  g.pl.forEach(p=>{
+    const a=gAnswerOf(p,g)||{c:'',t:QTIME};
+    const e=evalChoice(a.c,key,a.t); e.gone=!here.has(p);
+    g.res[p]=e; g.sc[p]=(g.sc[p]||0)+e.pt;
+  });
+  g.ph='rev'; pushGroupHost(); gShowReveal(g);
+  RT.next=setTimeout(()=>{
+    if(GRP.game!==g) return;
+    delete g.res;
+    if(g.r+1>=ROUNDS){ g.ph='end'; pushGroupHost(); gShowEnd(g); }
+    else { g.r++; g.ph='q'; pushGroupHost(); gBeginRound(); }
+  },REVEAL);
+}
+function gBackToLobby(){ GRP.game=null; GRP.hist=[]; pushGroupHost(); renderGroupLobby(); }
+
+/* ----- Ansichten ----- */
+function gRanking(g){
+  const sc=g.sc||{}, nm=g.nm||{};
+  const rows=(g.pl||[]).map(p=>({p,n:nm[p]||'Spieler',s:sc[p]||0})).sort((a,b)=>b.s-a.s||a.n.localeCompare(b.n));
+  rows.forEach((r,i)=>{ r.rank=i&&rows[i-1].s===r.s?rows[i-1].rank:i+1; });   // gleiche Punkte = gleicher Platz
+  return rows;
+}
+function gTopHTML(g){
+  const rk=gRanking(g), mine=rk.find(r=>r.p===gMe())||{s:0,rank:'–'};
+  return `<div class="score"><div class="sc me"><small>Du</small><b>${mine.s}</b></div><div class="sc mid">Runde ${Math.min(g.r+1,ROUNDS)} von ${ROUNDS}</div><div class="sc op"><small>Platz</small><b>${mine.rank}<span class="of">/${rk.length}</span></b></div></div>`;
+}
+function gShowQuestion(g){
+  S.phase='duel'; DUEL.view='group';
+  setBack('Verlassen',()=>leaveGroup());
+  showRoundQuestion(gTopHTML(g),g,a=>{
+    if(GRP.named) GRP.named.presence({a}).catch(()=>{});
+    gRenderStatus();
+    if(GRP.host) gHostCheck();
+  });
+  gRenderStatus();
+}
+function gRenderStatus(){
+  const el=document.getElementById('oppStat'), g=gCur(); if(!el||!g||g.ph!=='q') return;
+  const others=gActive(g).filter(p=>p!==gMe());
+  const done=others.filter(p=>{ const a=gAnswerOf(p,g); return a&&a.lk; }).length;
+  el.innerHTML=`<i class="${done===others.length?'done':''}"></i>${done} von ${others.length} ${others.length===1?'Mitspieler hat':'Mitspielern haben'} eingeloggt`;
+}
+function gResultRow(r,res){
+  const e=res[r.p]||{c:'',ok:false,pt:0,t:QTIME}, me=r.p===gMe();
+  const detail=e.gone?'hat verlassen':!e.c?'keine Antwort':(e.ok?'richtig':'falsch')+' · '+fmtSec(e.t);
+  return `<div class="row${me?' me-row':''}"><span class="rank">${r.rank}</span><span class="label"><span>${esc(r.n)}${me?' (du)':''}</span><small>${detail}</small></span><span class="badge ${e.ok?'good':'bad'}">+${e.pt}</span><span class="value"><b>${r.s}</b></span></div>`;
+}
+function gShowReveal(g){
+  const q=g.qs[g.r], res=g.res||{};
+  const mine=res[gMe()]||{c:'',ok:false,pt:0,bonus:0,t:QTIME};
+  if(!GRP.hist.some(h=>h.r===g.r)) GRP.hist.push({r:g.r,mid:q.m,k:q.k,me:mine});
+  const last=g.r+1>=ROUNDS, right=Object.values(res).filter(e=>e.ok).length;
+  showPage(`<div class="stack">${gTopHTML(g)}
+    ${verdictHTML('Du',mine)}
+    <p class="footnote">${right} von ${Object.keys(res).length} richtig</p>
+    ${qCardHTML(q,true)}
+    ${optionsHTML(q,{reveal:true,mine:mine.c,locked:true})}
+    <p class="group-label">Zwischenstand</p>
+    <section class="group list">${gRanking(g).map(r=>gResultRow(r,res)).join('')}</section>
+    <p class="footnote" id="nextIn">${last?'Gleich kommt die Auswertung …':'Nächste Runde gleich …'}</p>
+  </div>`);
+  startRevealCountdown(last);
+  if(autoRead) speak(mine.ok?'Richtig.':'Falsch.');
+}
+function gShowEnd(g){
+  clearRoundTimers();
+  setBack('Lobby',()=>GRP.host?gBackToLobby():leaveGroup());
+  const rk=gRanking(g), mine=rk.find(r=>r.p===gMe())||{rank:rk.length,s:0};
+  const head=mine.rank===1?(rk.filter(r=>r.rank===1).length>1?'Geteilter 1. Platz!':'Gewonnen!'):`Platz ${mine.rank} von ${rk.length}`;
+  const medal=['🥇','🥈','🥉'];
+  const rows=rk.map(r=>`<div class="row${r.p===gMe()?' me-row':''}"><span class="rank">${medal[r.rank-1]||r.rank}</span><span class="label"><span>${esc(r.n)}${r.p===gMe()?' (du)':''}</span></span><span class="value"><b>${r.s}</b> Pkt.</span></div>`).join('');
+  const hist=GRP.hist.slice().sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(FIELD[h.k])}</small></span><span class="badge ${h.me.ok?'good':'bad'}">+${h.me.pt}</span></div>`).join('');
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle big${mine.rank===1?' win':''}">${head}</h2><p class="sub score-line">${mine.s} Punkte</p></div>
+    <p class="group-label">Endstand</p>
+    <section class="group list">${rows}</section>
+    <p class="group-label">Deine Runden</p>
+    <section class="group list">${hist}</section>
+    <div class="stack-sm">${GRP.host?'<button class="btn primary" id="gAgain">Nochmal spielen</button><button class="btn tinted" id="gLobby">Zurück zur Lobby</button>':'<p class="footnote">Bleib hier – der Gastgeber kann gleich eine neue Runde starten.</p>'}<button class="btn plain" id="gLeave">Lobby verlassen</button></div>
+  </div>`);
+  const ag=view.querySelector('#gAgain'); if(ag) ag.onclick=()=>gPeers().length<2?gBackToLobby():gStartGame();
+  const lb=view.querySelector('#gLobby'); if(lb) lb.onclick=gBackToLobby;
+  view.querySelector('#gLeave').onclick=()=>leaveGroup();
+  if(autoRead) speak(head+'. '+mine.s+' Punkte.');
+}
+function renderGroupSpectator(g){
+  clearRoundTimers(); DUEL.view='group';
+  setBack('Verlassen',()=>leaveGroup());
+  showPage(`<div class="stack"><section class="card center tall">
+    <p class="sectionhead">Lobby ${esc(GRP.code)}</p>
+    <p>${g.ph==='end'?'Das Spiel ist gerade zu Ende.':`Hier läuft gerade ein Spiel (Runde ${Math.min(g.r+1,ROUNDS)} von ${ROUNDS}).`} Bei der nächsten Runde bist du dabei.</p>
+    <div class="spinner" aria-hidden="true"></div></section>
+    <button class="btn plain" id="gLeave">Lobby verlassen</button></div>`);
+  view.querySelector('#gLeave').onclick=()=>leaveGroup();
+}
+
+function leaveGroupRoom(){
+  clearRoundTimers();
+  GRP.timers.forEach(clearTimeout); GRP.timers=[];
+  GRP.unsub.forEach(u=>{ try{ u(); }catch(e){} }); GRP.unsub=[];
+  const r=GRP.named; GRP.named=null; if(r) r.leave().catch(()=>{});
+  Object.assign(GRP,{game:null,hg:null,lastKey:null,code:null,hist:[],invited:new Set()});
+}
+function leaveGroup(msg){ leaveGroupRoom(); GRP.host=false; stopSpeaking(); renderLobby(msg); }
+
+/* ---------- Seiten: Freundesliste, Freund, Rangliste, eigenes Profil ---------- */
+function renderFriendList(){
+  const box=document.getElementById('friendList'); if(!box) return;
+  const ids=Object.keys(SOC.friends);
+  if(!ids.length){ box.innerHTML=infoRow('Noch keine Freunde','Füge Freunde per Name oder Freundescode hinzu.'); return; }
+  const online=new Map(lobbyPeers().map(p=>[p.by,p]));
+  const nameOf=id=>(SOC.info[id]||{}).name||'';
+  ids.sort((a,b)=>(online.has(b)-online.has(a))||nameOf(a).localeCompare(nameOf(b)));
+  box.innerHTML=ids.map(fid=>{
+    const p=online.get(fid), rc=record(fid), nm=(p&&p.presence.nick)||nameOf(fid)||'Spieler';
+    const status=p?(p.presence.busy?'busy':'on'):'off';
+    return `<div class="row">${avatarHTML(fid,nm,status)}<button class="label rowlink" data-fr="${esc(fid)}"><span>${esc(nm)}</span><small>${p?(p.presence.busy?'spielt gerade':'online'):'offline'}${rc.games?` · Bilanz ${rc.w} : ${rc.l}`:''}</small></button>${p&&!p.presence.busy?`<button class="btn tinted small" data-ch="${esc(p.peer)}">Herausfordern</button>`:''}</div>`;
+  }).join('');
+  box.querySelectorAll('[data-fr]').forEach(b=>b.onclick=()=>renderFriend(b.dataset.fr));
+  box.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>challenge(b.dataset.ch));
+}
+
+function fmtDate(ts){ if(!ts) return '—'; try{ return new Date(ts).toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return '—'; } }
+const avg=(sum,n)=>n?(sum/n).toFixed(1).replace('.',','):'—';
+const valueRow=(label,value)=>`<div class="row"><span class="label">${label}</span><span class="value">${value}</span></div>`;
+function renderFriend(fid){
+  DUEL.view='friend'; S.phase='duel'; setBack('Zurück',()=>renderLobby());
+  const info=SOC.info[fid]||{}, rc=record(fid), p=lobbyPeers().find(x=>x.by===fid);
+  const nm=(p&&p.presence.nick)||info.name||'Spieler';
+  const st=Object.assign(emptyStats(),info.stats||{});
+  showPage(`<div class="stack">
+    <div class="pagehead">${avatarHTML(fid,nm,null,'xl')}<h2 class="pagetitle">${esc(nm)}</h2><p class="sub">${p?(p.presence.busy?'spielt gerade':'online'):'offline'}</p></div>
+    <div class="score"><div class="sc me"><small>Du</small><b>${rc.w}</b></div><div class="sc mid">Siege<br>${rc.games} ${rc.games===1?'Duell':'Duelle'}</div><div class="sc op"><small>${esc(nm)}</small><b>${rc.l}</b></div></div>
+    <p class="group-label">Eure Bilanz</p>
+    <section class="group list">
+      ${valueRow('Duelle gegeneinander',rc.games)}${valueRow('Deine Siege',rc.w)}${valueRow('Siege von '+esc(nm),rc.l)}${valueRow('Unentschieden',rc.d)}
+      ${valueRow('Ø Punkte pro Duell',avg(rc.pm,rc.games)+' : '+avg(rc.pf,rc.games))}${valueRow('Letztes Duell',fmtDate(rc.last))}
+    </section>
+    <p class="group-label">Gesamt von ${esc(nm)}</p>
+    <section class="group list">${valueRow('Ranglistenpunkte',scoreOf(st))}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}</section>
+    ${p&&!p.presence.busy?'<button class="btn primary" id="frCh">Herausfordern</button>':''}
+    <button class="btn plain muted" id="frRm">Freund entfernen</button>
+  </div>`);
+  const ch=document.getElementById('frCh'); if(ch) ch.onclick=()=>challenge(p.peer);
+  const rm=document.getElementById('frRm');
+  rm.onclick=async()=>{
+    if(rm.dataset.sure!=='1'){ rm.dataset.sure='1'; rm.textContent='Wirklich entfernen? Nochmal tippen'; rm.classList.remove('muted'); return; }
+    rm.disabled=true; await removeFriend(fid); renderLobby('Freund entfernt.');
+  };
+}
+
+async function renderLeaderboard(mode){
+  DUEL.view='board'; S.phase='duel'; setBack('Zurück',()=>renderLobby());
+  showPage(`<div class="stack">
+    <h2 class="pagetitle">Rangliste</h2>
+    <div class="seg" role="group" aria-label="Rangliste"><button data-lb="all" aria-pressed="${mode==='all'}">Alle</button><button data-lb="friends" aria-pressed="${mode==='friends'}">Freunde</button></div>
+    <section class="group list" id="lbList">${infoRow('Lade …')}</section>
+    <p class="footnote">Duelle 1 gegen 1 · Sieg 3 Punkte · Unentschieden 1 Punkt</p>
+  </div>`);
+  view.querySelectorAll('[data-lb]').forEach(b=>b.onclick=()=>renderLeaderboard(b.dataset.lb));
+  const me=FB.user.uid; let rows=[];
+  try{
+    if(mode==='all'){
+      const v=(await FB.db.ref('users').orderByChild('score').limitToLast(100).once('value')).val()||{};
+      rows=Object.keys(v).map(id=>Object.assign({id},v[id]));
+    } else {
+      rows=await Promise.all([me,...Object.keys(SOC.friends)].map(async id=>Object.assign({id},(await userRef(id).once('value').catch(()=>null))?.val()||{})));
+    }
+  }catch(e){ const l=document.getElementById('lbList'); if(l) l.innerHTML=infoRow('Die Rangliste konnte nicht geladen werden.'); return; }
+  const l=document.getElementById('lbList'); if(!l||DUEL.view!=='board') return;
+  rows=rows.filter(r=>r.id===me||(r.stats&&r.stats.games>0))
+    .sort((a,b)=>(b.score||0)-(a.score||0)||((b.stats||{}).wins||0)-((a.stats||{}).wins||0));
+  if(!rows.length){ l.innerHTML=infoRow('Noch keine Duelle gespielt.'); return; }
+  l.innerHTML=rows.map((r,i)=>{ const st=Object.assign(emptyStats(),r.stats||{});
+    return `<div class="row${r.id===me?' me-row':''}"><span class="rank">${i+1}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${st.games} Duelle · ${st.wins} Siege</small></span><span class="value"><b>${r.score||0}</b></span></div>`; }).join('');
+}
+
+/* ----- Eigenes Profil: Bild, Name, Freundescode, Freunde finden, wer ist online ----- */
+async function openProfile(){
+  if(!(await ensureAuth('profile'))) return;
+  await initLobby();
+  renderProfile();
+}
+function renderProfile(msg){
+  if(!SOC.profile){ openProfile(); return; }
+  leaveOnline(); S.phase='duel'; DUEL.view='profile'; setBack('Start',renderStart);
+  const p=SOC.profile, st=Object.assign(emptyStats(),p.stats||{});
+  showPage(`<div class="stack">
+    <section class="pagehead">
+      ${avatarHTML(FB.user.uid,p.name,null,'xl',p.photo||null)}
+      <div class="btnrow center-row">
+        <label class="btn tinted small" for="photoIn">${p.photo?'Foto ändern':'Profilbild hinzufügen'}</label>
+        ${p.photo?'<button class="btn plain small" id="photoRm">Entfernen</button>':''}
+      </div>
+      <input type="file" id="photoIn" accept="image/*" hidden>
+      <p class="hint" id="photoHint" role="status"></p>
+    </section>
+    <section class="stack-sm"><label class="group-label" for="pName">Dein Name</label><input id="pName" class="field" maxlength="24" value="${esc(p.name)}" autocomplete="nickname"></section>
+    <section class="group list">
+      <div class="row"><span class="label"><span>Dein Freundescode</span><b class="fcode">${esc(p.code||'…')}</b><small>Freunde können dich damit finden</small></span><button class="btn tinted small" id="copyCode">Kopieren</button></div>
+      ${valueRow('Ranglistenpunkte','<b>'+scoreOf(st)+'</b>')}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}
+    </section>
+
+    <p class="group-label">Freunde finden</p>
+    <section class="card">
+      <input id="fSearch" class="field" type="search" placeholder="Name oder Freundescode" aria-label="Freunde suchen" autocomplete="off">
+      <div class="list" id="fResults"></div>
+    </section>
+
+    <p class="group-label">Deine Freunde</p>
+    <section class="group list" id="friendList"></section>
+
+    <p class="group-label">Gerade online</p>
+    <section class="group list" id="othersOnline"></section>
+
+    <section class="group"><button class="row" id="lbRow"><span class="label">Rangliste</span>${IC.chev}</button></section>
+    ${accountRowHTML()}
+    <p class="hint" id="profileHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('profileHint',msg);
+  bindAccount();
+
+  const pi=document.getElementById('photoIn');
+  pi.onchange=async()=>{
+    const f=pi.files&&pi.files[0]; if(!f) return;
+    setHint('photoHint','Wird gespeichert …');
+    try{ await savePhoto(await resizePhoto(f)); renderProfile('Profilbild gespeichert.'); }
+    catch(e){ setHint('photoHint','Dieses Bild konnte nicht gelesen werden. Versuch ein JPG oder PNG.',true); }
+  };
+  const rm=document.getElementById('photoRm'); if(rm) rm.onclick=async()=>{ await savePhoto(null); renderProfile('Profilbild entfernt.'); };
+
+  const pn=document.getElementById('pName'); let nameTimer=null;
+  pn.oninput=()=>{ clearTimeout(nameTimer); nameTimer=setTimeout(()=>saveName(pn.value),600); };
+  document.getElementById('copyCode').onclick=async()=>{
+    try{ await navigator.clipboard.writeText(p.code); setHint('profileHint','Freundescode kopiert.'); }catch(e){ setHint('profileHint','Dein Code: '+p.code); }
+  };
+
+  const fs=document.getElementById('fSearch'), fr=document.getElementById('fResults'); let searchTimer=null, seq=0;
+  fs.oninput=()=>{
+    clearTimeout(searchTimer);
+    if(fs.value.trim().length<2){ fr.innerHTML=''; return; }
+    searchTimer=setTimeout(async()=>{
+      const my=++seq; fr.innerHTML=infoRow('','Suche …');
+      const res=await searchUsers(fs.value); if(my!==seq) return;
+      if(!res.length){ fr.innerHTML=infoRow('','Niemand gefunden. Prüf die Schreibweise oder frag nach dem Freundescode.'); return; }
+      fr.innerHTML=res.map(({id,u})=>`<div class="row">${avatarHTML(id,u.name,null,'',u.photo||null)}<span class="label"><span>${esc(u.name||'Spieler')}</span><small>${(u.stats&&u.stats.games)||0} Duelle</small></span>${isFriend(id)?'<span class="value">Freund</span>':`<button class="btn tinted small" data-addr="${esc(id)}">Hinzufügen</button>`}</div>`).join('');
+      fr.querySelectorAll('[data-addr]').forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await addFriend(b.dataset.addr); b.outerHTML='<span class="value">Freund</span>'; }catch(e){ b.disabled=false; } });
+    },350);
+  };
+  document.getElementById('lbRow').onclick=()=>renderLeaderboard('all');
+  renderFriendList(); renderOnlineList('othersOnline');
+}
+
+/* ---------- Start ---------- */
+applyTheme();
+if(window.matchMedia) try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme); }catch(e){}
+bindHeader();
+renderStart();
+
+/* Offline-Lernen und „Zum Startbildschirm hinzufügen“ */
+if('serviceWorker' in navigator&&location.protocol==='https:') window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+/* Wer schon angemeldet war, ist beim Öffnen direkt online (für Einladungen und die Freundesliste) */
+if(lsGet('ad-auth')==='1'&&fbConfigured()&&navigator.onLine){
+  setTimeout(async()=>{ try{ await loadFirebase(); if(FB.user){ await ensureProfile(); await initLobby(); } }catch(e){} },300);
+}
+</script>
+</body>
+</html>

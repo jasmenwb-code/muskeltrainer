@@ -1,0 +1,7 @@
+{
+  "name": "anatomy-duel-tests",
+  "private": true,
+  "description": "Tests für Anatomy Duel: laden die gebaute Seite in jsdom mit einer Firebase-Attrappe",
+  "scripts": { "test": "node run.js" },
+  "devDependencies": { "jsdom": "^24.1.3" }
+}
