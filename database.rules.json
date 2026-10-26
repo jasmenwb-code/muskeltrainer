@@ -10,10 +10,27 @@
     "rooms": {
       "$room": {
         ".read": "auth != null",
-        "$uid": {
-          ".write": "auth != null && auth.uid === $uid"
-        }
+        "$uid": { ".write": "auth != null && auth.uid === $uid" }
       }
+    },
+    "users": {
+      ".read": "auth != null",
+      ".indexOn": ["score"],
+      "$uid": { ".write": "auth != null && auth.uid === $uid" }
+    },
+    "codes": {
+      ".read": "auth != null",
+      "$code": { ".write": "auth != null && !data.exists() && newData.val() === auth.uid" }
+    },
+    "friends": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$fid": { ".write": "auth != null && (auth.uid === $uid || auth.uid === $fid)" }
+      }
+    },
+    "h2h": {
+      ".read": "auth != null",
+      "$pair": { ".write": "auth != null && ($pair.beginsWith(auth.uid + '_') || $pair.endsWith('_' + auth.uid))" }
     }
   }
 }
