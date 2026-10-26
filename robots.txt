@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://jasmenwb-code.github.io/muskeltrainer/sitemap.xml
+Sitemap: https://anatomyduel.com/sitemap.xml
