@@ -2,7 +2,8 @@
    users/{uid}:   {name, nameLower, code, photo, stats:{games,wins,losses,draws,points}, score, lastGid}
    codes/{CODE}:  uid (6-stelliger Freundescode)
    friends/{uid}/{fid}: true (beidseitig)
-   h2h/{uid1_uid2}: Bilanz zweier Spieler {games, d, w:{uid:n}, pts:{uid:n}, last, lastGid} */
+   h2h/{uid1_uid2}: Bilanz zweier Spieler {games, d, w:{uid:n}, pts:{uid:n}, last, lastGid}
+   stats, score und h2h schreibt nur die Server-Auswertung (functions/process.js). */
 const SOC={profile:null,friends:{},info:{},h2h:{},listening:false};
 const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const pairKey=(a,b)=>[a,b].sort().join('_');
@@ -24,9 +25,8 @@ async function ensureProfile(){
   }
   p.name=p.name||u.displayName||'Spieler';
   p.nameLower=lowerDe(p.name).trim();
+  await userRef(u.uid).update(Object.assign({name:p.name,nameLower:p.nameLower},p.code?{code:p.code}:{}));   // Statistik schreibt nur der Server
   p.stats=Object.assign(emptyStats(),p.stats||{});
-  p.score=scoreOf(p.stats);
-  await userRef(u.uid).set(p);
   SOC.profile=p; SOC.info[u.uid]=p; setProfileIcon(safePhoto(p.photo));
   if(!SOC.listening){
     SOC.listening=true;
@@ -63,37 +63,6 @@ async function removeFriend(fid){
 async function saveName(n){
   n=(n||'').trim().slice(0,24); if(!FB.user||!SOC.profile||!n) return;
   try{ await userRef(FB.user.uid).update({name:n,nameLower:lowerDe(n)}); SOC.profile.name=n; pushLobby(); }catch(e){}
-}
-
-/* Ergebnis eines Duells speichern: jeder seine eigene Statistik, der Gastgeber die gemeinsame Bilanz.
-   lastGid verhindert, dass ein Spiel doppelt zählt. */
-async function saveGameResult(r){
-  const me=FB.user&&FB.user.uid; if(!me) return;
-  const res=r.me>r.them?'wins':r.me<r.them?'losses':'draws';
-  try{
-    await userRef(me).transaction(p=>{
-      p=p||{}; p.stats=Object.assign(emptyStats(),p.stats||{});
-      if(p.lastGid===r.gid) return p;
-      p.stats.games++; p.stats[res]++; p.stats.points+=r.me; p.lastGid=r.gid;
-      p.score=scoreOf(p.stats); p.name=p.name||myName(); return p;
-    });
-  }catch(e){}
-  if(r.host&&r.opp){
-    try{
-      await FB.db.ref('h2h/'+pairKey(me,r.opp)).transaction(h=>{
-        h=h||{games:0,d:0,w:{},pts:{}};
-        if(h.lastGid===r.gid) return h;
-        h.w=h.w||{}; h.pts=h.pts||{}; h.games=(h.games||0)+1;
-        if(r.me>r.them) h.w[me]=(h.w[me]||0)+1; else if(r.me<r.them) h.w[r.opp]=(h.w[r.opp]||0)+1; else h.d=(h.d||0)+1;
-        h.pts[me]=(h.pts[me]||0)+r.me; h.pts[r.opp]=(h.pts[r.opp]||0)+r.them;
-        h.last=Date.now(); h.lastGid=r.gid; return h;
-      });
-    }catch(e){}
-  }
-  try{ await ensureProfile(); }catch(e){}
-  if(r.opp) try{ SOC.h2h[r.opp]=(await FB.db.ref('h2h/'+pairKey(me,r.opp)).once('value')).val(); }catch(e){}
-  const rc=r.opp?record(r.opp):null, el=document.getElementById('h2hLine');
-  if(el&&rc&&rc.games) el.textContent=`Bilanz gegen ${oppName()}: ${rc.w} : ${rc.l}${rc.d?` (${rc.d} unentschieden)`:''}`;
 }
 
 /* ----- Profilbilder ----- */

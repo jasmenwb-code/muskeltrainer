@@ -16,9 +16,11 @@ src/                     Quellcode (reines JavaScript, kein Framework)
   core/                  Textwerkzeuge, Vorlesen, UI-Bausteine
   learn/                 Fragengenerator und Lernmodus
   app/shell.js           Startseite, Einstellungen, Kopfzeile
-  online/                Firebase, Konto, Profile/Freunde, Lobby, Duell, Gruppe, Rangliste
+  online/                Firebase, Konto, Profile/Freunde, Lobby, Spielprotokoll, Duell, Gruppe, Rangliste
   main.js                Start
 public/                  Dateien, die unverändert veröffentlicht werden (Bilder, Icons, Firebase-Konfiguration, CNAME)
+functions/               Server-Auswertung der Duelle (Firebase Cloud Function)
+deploy-server.sh         veröffentlicht Server-Funktion und Datenbank-Regeln
 docs/                    fertige Website (von build.py erzeugt, nicht von Hand ändern)
 tests/                   automatische Tests
 database.rules.json      Sicherheitsregeln der Firebase-Datenbank
@@ -31,10 +33,24 @@ Die Skripte werden in der Reihenfolge aus `build.py` zu einer Datei zusammengef�
 
 ```bash
 python3 build.py              # baut docs/
-cd tests && npm install && npm test   # prüft Lernmodus, Fragen, Duell, Gruppe, Profil
+cd tests && npm install && npm test   # prüft Lernmodus, Fragen, Duell, Gruppe, Profil, Server-Auswertung
 git add -A && git commit -m "…" && git push   # GitHub Pages veröffentlicht docs/
 ```
 
-Die Firebase-Regeln aus `database.rules.json` werden in der Firebase-Konsole unter *Realtime Database → Regeln* eingefügt.
+## Server-Auswertung
+
+Duelle werden auf dem Server gewertet, damit niemand Siege oder Punkte fälschen kann:
+
+1. Während des Duells protokolliert die Website in `games/{id}` Fragen, Rundenstart und jede Antwort mit **Server-Zeitstempel**. Die Regeln in `database.rules.json` erlauben jedem nur seine eigenen Einträge und jeden nur einmal.
+2. Nach dem Ende rechnet die Cloud Function in `functions/` alles nach: Sind die Fragen echt? Welche Antwort ist laut Muskeldaten richtig? Wie viele Sekunden lagen laut Server dazwischen?
+3. Nur der Server schreibt Statistik, Ranglistenpunkte und Bilanzen (`users/*/stats`, `score`, `h2h`). Die Website zeigt danach „Gewertet: …“.
+
+Gruppenspiele zählen nicht für die Rangliste und laufen ohne Protokoll.
+
+Veröffentlichen von Funktion und Regeln (braucht den Firebase-Tarif *Blaze*): in der Google Cloud Shell
+
+```bash
+git clone https://github.com/jasmenwb-code/muskeltrainer.git && cd muskeltrainer && bash deploy-server.sh
+```
 
 > **Übergang:** Solange GitHub Pages noch aus dem Hauptordner veröffentlicht, liegt dort eine Kopie von `docs/`. Nach der Umstellung (Settings → Pages → Branch `main`, Ordner `/docs`) können `index.html`, `sw.js`, `robots.txt`, `sitemap.xml`, `CNAME`, `.nojekyll`, `firebase-config.js`, `manifest.webmanifest`, `icons/` und `img/` im Hauptordner gelöscht werden.

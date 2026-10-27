@@ -1,6 +1,7 @@
 /* ---------- Duell 1 gegen 1 ----------
    Raum "duel-<4 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand}, Gast: {role:'guest', nick, a:Antwort}.
-   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}} */
+   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}}
+   Die Punkte hier sind nur die Anzeige; gewertet wird auf dem Server (siehe record.js). */
 const newDuelCode=()=>String(Math.floor(1000+Math.random()*9000));
 const isHost=()=>DUEL.role==='host';
 const curGame=()=>isHost()?DUEL.game:DUEL.hg;
@@ -53,12 +54,13 @@ function onDuelPeers(){
 /* ----- Gastgeber ----- */
 function startDuel(op){
   DUEL.outInv=null; DUEL.hist=[]; DUEL.view='game'; pushLobby();
-  DUEL.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  DUEL.game={id:newGameId(),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  logCreate(DUEL.game.id,op,DUEL.game.qs);
   const opp=oppPeer(); DUEL.oppNick=(opp&&opp.presence.nick)||'Gegner';
   pushHost(); beginRound();
 }
 function pushHost(){ if(DUEL.named) DUEL.named.presence({role:'host',nick:myName(),g:DUEL.game}).catch(()=>{}); }
-function beginRound(){ showDuelQuestion(DUEL.game); RT.deadline=setTimeout(hostReveal,QTIME+3000); }
+function beginRound(){ logStart(DUEL.game.id,DUEL.game.r); showDuelQuestion(DUEL.game); RT.deadline=setTimeout(hostReveal,QTIME+3000); }
 function hostCheck(){
   const g=DUEL.game; if(!g||g.ph!=='q') return;
   const opp=oppPeer(), oa=answerFor(opp&&opp.presence.a,g);
@@ -76,7 +78,7 @@ function hostReveal(){
   RT.next=setTimeout(()=>{
     if(DUEL.game!==g) return;
     delete g.res;
-    if(g.r+1>=ROUNDS){ g.ph='end'; pushHost(); showDuelEnd(g); }
+    if(g.r+1>=ROUNDS){ g.ph='end'; pushHost(); logEnd(g.id); showDuelEnd(g); }
     else { g.r++; g.ph='q'; pushHost(); beginRound(); }
   },REVEAL);
 }
@@ -87,7 +89,7 @@ function guestFollow(g){
   const key=g.id+':'+g.r+':'+g.ph;
   if(key===DUEL.lastKey){ renderOppStatus(); return; }
   DUEL.lastKey=key;
-  if(!prev||prev.id!==g.id) DUEL.hist=[];
+  if(!prev||prev.id!==g.id){ DUEL.hist=[]; logJoin(g.id); }
   if(g.ph==='q'){ DUEL.view='game'; pushLobby(); showDuelQuestion(g); }
   else if(g.ph==='rev'&&g.res){ clearRoundTimers(); showDuelReveal(g); }
   else if(g.ph==='end'){ clearRoundTimers(); showDuelEnd(g); }
@@ -118,6 +120,7 @@ function showDuelQuestion(g){
   setBack('Aufgeben',()=>leaveDuel());
   showRoundQuestion(scoreHTML(g),g,a=>{
     if(DUEL.named) DUEL.named.presence({a}).catch(()=>{});
+    if(a.c) logAnswer(g.id,g.r,a.c);
     if(isHost()) hostCheck();
   });
   renderOppStatus();
@@ -157,10 +160,7 @@ function showDuelEnd(g){
   if(ag) ag.onclick=()=>{ const opp=oppPeer(); if(opp) startDuel(opp.peer); else leaveDuel('Dein Gegner ist nicht mehr da.'); };
   view.querySelector('#leave').onclick=()=>leaveDuel();
   if(autoRead) speak(head+'. '+a+' zu '+b+'.');
-  if(DUEL.reported!==g.id){
-    DUEL.reported=g.id;
-    saveGameResult({gid:g.id,opp:isHost()?g.op:DUEL.oppId,me:a,them:b,host:isHost()});
-  }
+  if(DUEL.reported!==g.id){ DUEL.reported=g.id; showOfficialResult(g.id,isHost()?g.op:DUEL.oppId); }
 }
 
 function leaveDuelRoom(){

@@ -1,0 +1,33 @@
+/* ---------- Spielprotokoll für die Server-Auswertung ----------
+   Während eines Duells wird in games/{gid} festgehalten, was der Server zum Nachrechnen braucht:
+   Fragen, Startzeit jeder Runde und jede Antwort, jeweils mit Server-Zeitstempel.
+   Die Datenbank-Regeln erlauben jedem nur seine eigenen Einträge und jeden nur einmal.
+   Nach "end" rechnet die Cloud Function (functions/) das Duell nach und schreibt Statistik und Bilanz. */
+const serverTime=()=>firebase.database.ServerValue.TIMESTAMP;
+const gameRef=gid=>FB.db.ref('games/'+gid);
+const logged=p=>p.catch(e=>console.warn('Spielprotokoll:',e&&e.message));
+
+function newGameId(){ return FB.db.ref('games').push().key; }
+function logCreate(gid,op,qs){ return logged(gameRef(gid).update({host:FB.user.uid,op,qs,['players/'+FB.user.uid]:true})); }
+function logJoin(gid){ return logged(gameRef(gid).child('players/'+FB.user.uid).set(true)); }
+function logStart(gid,r){ return logged(gameRef(gid).child('start/'+r).set(serverTime())); }
+function logAnswer(gid,r,c){ return logged(gameRef(gid).child('ans/'+FB.user.uid+'/'+r).set({c,at:serverTime()})); }
+function logEnd(gid){ return logged(gameRef(gid).child('end').set(serverTime())); }
+
+/* Offizielles Ergebnis abwarten und unter dem Duell anzeigen */
+function showOfficialResult(gid,oppId){
+  const ref=gameRef(gid).child('result');
+  const line=t=>{ const el=document.getElementById('h2hLine'); if(el&&DUEL.reported===gid) el.textContent=t; };
+  line('Wird auf dem Server gewertet …');
+  const waiting=setTimeout(()=>line('Die Wertung dauert gerade länger. Rangliste und Bilanz werden gleich aktualisiert.'),20000);
+  const onResult=async s=>{
+    const res=s.val(); if(!res||res.status==='pending') return;
+    ref.off('value',onResult); clearTimeout(waiting);
+    if(res.status!=='ok'){ line('Dieses Duell konnte nicht gewertet werden.'); return; }
+    const me=FB.user.uid, pts=res.points||{};
+    try{ await ensureProfile(); SOC.h2h[oppId]=(await FB.db.ref('h2h/'+pairKey(me,oppId)).once('value')).val(); }catch(e){}
+    const rc=record(oppId);
+    line(`Gewertet: Du ${pts[me]||0} : ${pts[oppId]||0} ${oppName()}`+(rc.games?` · Bilanz ${rc.w} : ${rc.l}${rc.d?` (${rc.d} unentschieden)`:''}`:''));
+  };
+  ref.on('value',onResult);
+}

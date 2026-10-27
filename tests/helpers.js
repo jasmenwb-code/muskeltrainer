@@ -1,7 +1,13 @@
 // Testhilfen: lädt die gebaute Seite (docs/index.html) in jsdom, mit Firebase-Attrappe und verkürzten Zeiten.
 const {JSDOM}=require('jsdom');
 const fs=require('fs'), path=require('path');
-const {makeFirebase,store}=require('./fbmock');
+const {makeFirebase,store,hooks}=require('./fbmock');
+const {processGame}=require('../functions/process');
+
+/* Simulierte Cloud Function: wie in functions/index.js wird nach games/{gid}/end ausgewertet */
+const adminDb=makeFirebase('admin').database();
+const serverRuns=[];
+hooks.push((path,val)=>{ const m=path.match(/^games\/([^/]+)\/end$/); if(m&&val!=null) setTimeout(()=>serverRuns.push(processGame(adminDb,m[1])),20); });
 
 const HTML=fs.readFileSync(path.join(__dirname,'..','docs','index.html'),'utf8')
   .replace('QTIME=30000, REVEAL=6000','QTIME=1500, REVEAL=300')   // 30 s -> 1,5 s, Auflösung 6 s -> 0,3 s
@@ -44,4 +50,4 @@ function answerRound(clients,key,pattern){
     if(b) b.click();
   });
 }
-module.exports={client,sleep,$,$$,text,texts,input,register,answerRound,store,errors};
+module.exports={serverRuns,adminDb,client,sleep,$,$$,text,texts,input,register,answerRound,store,errors};

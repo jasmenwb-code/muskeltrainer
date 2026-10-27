@@ -25,7 +25,13 @@ async function play(A,B,aAlwaysRight){
   await sleep(200);
   assert.deepStrictEqual([store.users.u_anna.stats.wins,store.users.u_ben.stats.losses],[1,1]);
   const h=store.h2h.u_anna_u_ben; assert.strictEqual(h.games,1); assert.strictEqual(h.w.u_anna,1);
-  assert.match(text(A,'#h2hLine'),/Bilanz gegen Ben: 1 : 0/);
+  assert.match(text(A,'#h2hLine'),/^Gewertet: Du \d+ : \d+ Ben · Bilanz 1 : 0$/);
+  assert.match(text(B,'#h2hLine'),/^Gewertet: Du \d+ : \d+ Anna · Bilanz 0 : 1$/);
+  // Statistik kommt vom Server und passt zur offiziellen Wertung
+  const gid=Object.keys(store.games)[0], res=store.games[gid].result;
+  assert.strictEqual(res.status,'ok'); assert.strictEqual(res.winner,'u_anna');
+  assert.strictEqual(store.users.u_anna.stats.points,res.points.u_anna);
+  assert.ok(!store.games[gid].ans&&!store.games[gid].qs,'Protokoll nach der Wertung aufgeräumt');
 
   // Revanche zählt einzeln
   $(A,'#again').click(); await sleep(250); await play(A,B,false); await sleep(200);

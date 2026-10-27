@@ -52,7 +52,8 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,register,ans
   assert.strictEqual(Object.keys(store.rooms['grp-'+code]||{}).length,0,'Raum leer');
   assert.ok(!store.lobby.u_anna.ginv,'Einladung zurückgezogen');
   // Gruppenspiele zählen nicht für die Rangliste
-  assert.strictEqual(store.users.u_anna.stats.games,0);
+  assert.ok(!store.users.u_anna.stats,'keine Statistik für Gruppenspiele');
+  assert.ok(!store.games,'kein Spielprotokoll für Gruppenspiele');
   assert.deepStrictEqual(errors,[]);
   process.exit(0);
 })().catch(e=>{ console.error(e); process.exit(1); });

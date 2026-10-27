@@ -1112,7 +1112,8 @@ function bindAccount(){
    users/{uid}:   {name, nameLower, code, photo, stats:{games,wins,losses,draws,points}, score, lastGid}
    codes/{CODE}:  uid (6-stelliger Freundescode)
    friends/{uid}/{fid}: true (beidseitig)
-   h2h/{uid1_uid2}: Bilanz zweier Spieler {games, d, w:{uid:n}, pts:{uid:n}, last, lastGid} */
+   h2h/{uid1_uid2}: Bilanz zweier Spieler {games, d, w:{uid:n}, pts:{uid:n}, last, lastGid}
+   stats, score und h2h schreibt nur die Server-Auswertung (functions/process.js). */
 const SOC={profile:null,friends:{},info:{},h2h:{},listening:false};
 const CODE_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const pairKey=(a,b)=>[a,b].sort().join('_');
@@ -1134,9 +1135,8 @@ async function ensureProfile(){
   }
   p.name=p.name||u.displayName||'Spieler';
   p.nameLower=lowerDe(p.name).trim();
+  await userRef(u.uid).update(Object.assign({name:p.name,nameLower:p.nameLower},p.code?{code:p.code}:{}));   // Statistik schreibt nur der Server
   p.stats=Object.assign(emptyStats(),p.stats||{});
-  p.score=scoreOf(p.stats);
-  await userRef(u.uid).set(p);
   SOC.profile=p; SOC.info[u.uid]=p; setProfileIcon(safePhoto(p.photo));
   if(!SOC.listening){
     SOC.listening=true;
@@ -1173,37 +1173,6 @@ async function removeFriend(fid){
 async function saveName(n){
   n=(n||'').trim().slice(0,24); if(!FB.user||!SOC.profile||!n) return;
   try{ await userRef(FB.user.uid).update({name:n,nameLower:lowerDe(n)}); SOC.profile.name=n; pushLobby(); }catch(e){}
-}
-
-/* Ergebnis eines Duells speichern: jeder seine eigene Statistik, der Gastgeber die gemeinsame Bilanz.
-   lastGid verhindert, dass ein Spiel doppelt zählt. */
-async function saveGameResult(r){
-  const me=FB.user&&FB.user.uid; if(!me) return;
-  const res=r.me>r.them?'wins':r.me<r.them?'losses':'draws';
-  try{
-    await userRef(me).transaction(p=>{
-      p=p||{}; p.stats=Object.assign(emptyStats(),p.stats||{});
-      if(p.lastGid===r.gid) return p;
-      p.stats.games++; p.stats[res]++; p.stats.points+=r.me; p.lastGid=r.gid;
-      p.score=scoreOf(p.stats); p.name=p.name||myName(); return p;
-    });
-  }catch(e){}
-  if(r.host&&r.opp){
-    try{
-      await FB.db.ref('h2h/'+pairKey(me,r.opp)).transaction(h=>{
-        h=h||{games:0,d:0,w:{},pts:{}};
-        if(h.lastGid===r.gid) return h;
-        h.w=h.w||{}; h.pts=h.pts||{}; h.games=(h.games||0)+1;
-        if(r.me>r.them) h.w[me]=(h.w[me]||0)+1; else if(r.me<r.them) h.w[r.opp]=(h.w[r.opp]||0)+1; else h.d=(h.d||0)+1;
-        h.pts[me]=(h.pts[me]||0)+r.me; h.pts[r.opp]=(h.pts[r.opp]||0)+r.them;
-        h.last=Date.now(); h.lastGid=r.gid; return h;
-      });
-    }catch(e){}
-  }
-  try{ await ensureProfile(); }catch(e){}
-  if(r.opp) try{ SOC.h2h[r.opp]=(await FB.db.ref('h2h/'+pairKey(me,r.opp)).once('value')).val(); }catch(e){}
-  const rc=r.opp?record(r.opp):null, el=document.getElementById('h2hLine');
-  if(el&&rc&&rc.games) el.textContent=`Bilanz gegen ${oppName()}: ${rc.w} : ${rc.l}${rc.d?` (${rc.d} unentschieden)`:''}`;
 }
 
 /* ----- Profilbilder ----- */
@@ -1398,6 +1367,40 @@ function renderOnlineList(boxId){
 }
 function challenge(peer){ const p=lobbyPeers().find(x=>x.peer===peer); if(p&&!p.presence.busy) hostDuel(newDuelCode(),p); }
 
+/* ---------- Spielprotokoll für die Server-Auswertung ----------
+   Während eines Duells wird in games/{gid} festgehalten, was der Server zum Nachrechnen braucht:
+   Fragen, Startzeit jeder Runde und jede Antwort, jeweils mit Server-Zeitstempel.
+   Die Datenbank-Regeln erlauben jedem nur seine eigenen Einträge und jeden nur einmal.
+   Nach "end" rechnet die Cloud Function (functions/) das Duell nach und schreibt Statistik und Bilanz. */
+const serverTime=()=>firebase.database.ServerValue.TIMESTAMP;
+const gameRef=gid=>FB.db.ref('games/'+gid);
+const logged=p=>p.catch(e=>console.warn('Spielprotokoll:',e&&e.message));
+
+function newGameId(){ return FB.db.ref('games').push().key; }
+function logCreate(gid,op,qs){ return logged(gameRef(gid).update({host:FB.user.uid,op,qs,['players/'+FB.user.uid]:true})); }
+function logJoin(gid){ return logged(gameRef(gid).child('players/'+FB.user.uid).set(true)); }
+function logStart(gid,r){ return logged(gameRef(gid).child('start/'+r).set(serverTime())); }
+function logAnswer(gid,r,c){ return logged(gameRef(gid).child('ans/'+FB.user.uid+'/'+r).set({c,at:serverTime()})); }
+function logEnd(gid){ return logged(gameRef(gid).child('end').set(serverTime())); }
+
+/* Offizielles Ergebnis abwarten und unter dem Duell anzeigen */
+function showOfficialResult(gid,oppId){
+  const ref=gameRef(gid).child('result');
+  const line=t=>{ const el=document.getElementById('h2hLine'); if(el&&DUEL.reported===gid) el.textContent=t; };
+  line('Wird auf dem Server gewertet …');
+  const waiting=setTimeout(()=>line('Die Wertung dauert gerade länger. Rangliste und Bilanz werden gleich aktualisiert.'),20000);
+  const onResult=async s=>{
+    const res=s.val(); if(!res||res.status==='pending') return;
+    ref.off('value',onResult); clearTimeout(waiting);
+    if(res.status!=='ok'){ line('Dieses Duell konnte nicht gewertet werden.'); return; }
+    const me=FB.user.uid, pts=res.points||{};
+    try{ await ensureProfile(); SOC.h2h[oppId]=(await FB.db.ref('h2h/'+pairKey(me,oppId)).once('value')).val(); }catch(e){}
+    const rc=record(oppId);
+    line(`Gewertet: Du ${pts[me]||0} : ${pts[oppId]||0} ${oppName()}`+(rc.games?` · Bilanz ${rc.w} : ${rc.l}${rc.d?` (${rc.d} unentschieden)`:''}`:''));
+  };
+  ref.on('value',onResult);
+}
+
 /* ---------- Gemeinsamer Rundenablauf für Duell und Gruppe ----------
    Der Gastgeber erzeugt die Fragen und steuert die Phasen (q = Frage, rev = Auflösung, end = Ende).
    Alle anderen folgen seinem Spielstand und melden nur ihre eigene Antwort. */
@@ -1471,7 +1474,8 @@ function verdictHTML(label,r){
 
 /* ---------- Duell 1 gegen 1 ----------
    Raum "duel-<4 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand}, Gast: {role:'guest', nick, a:Antwort}.
-   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}} */
+   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}}
+   Die Punkte hier sind nur die Anzeige; gewertet wird auf dem Server (siehe record.js). */
 const newDuelCode=()=>String(Math.floor(1000+Math.random()*9000));
 const isHost=()=>DUEL.role==='host';
 const curGame=()=>isHost()?DUEL.game:DUEL.hg;
@@ -1524,12 +1528,13 @@ function onDuelPeers(){
 /* ----- Gastgeber ----- */
 function startDuel(op){
   DUEL.outInv=null; DUEL.hist=[]; DUEL.view='game'; pushLobby();
-  DUEL.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  DUEL.game={id:newGameId(),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  logCreate(DUEL.game.id,op,DUEL.game.qs);
   const opp=oppPeer(); DUEL.oppNick=(opp&&opp.presence.nick)||'Gegner';
   pushHost(); beginRound();
 }
 function pushHost(){ if(DUEL.named) DUEL.named.presence({role:'host',nick:myName(),g:DUEL.game}).catch(()=>{}); }
-function beginRound(){ showDuelQuestion(DUEL.game); RT.deadline=setTimeout(hostReveal,QTIME+3000); }
+function beginRound(){ logStart(DUEL.game.id,DUEL.game.r); showDuelQuestion(DUEL.game); RT.deadline=setTimeout(hostReveal,QTIME+3000); }
 function hostCheck(){
   const g=DUEL.game; if(!g||g.ph!=='q') return;
   const opp=oppPeer(), oa=answerFor(opp&&opp.presence.a,g);
@@ -1547,7 +1552,7 @@ function hostReveal(){
   RT.next=setTimeout(()=>{
     if(DUEL.game!==g) return;
     delete g.res;
-    if(g.r+1>=ROUNDS){ g.ph='end'; pushHost(); showDuelEnd(g); }
+    if(g.r+1>=ROUNDS){ g.ph='end'; pushHost(); logEnd(g.id); showDuelEnd(g); }
     else { g.r++; g.ph='q'; pushHost(); beginRound(); }
   },REVEAL);
 }
@@ -1558,7 +1563,7 @@ function guestFollow(g){
   const key=g.id+':'+g.r+':'+g.ph;
   if(key===DUEL.lastKey){ renderOppStatus(); return; }
   DUEL.lastKey=key;
-  if(!prev||prev.id!==g.id) DUEL.hist=[];
+  if(!prev||prev.id!==g.id){ DUEL.hist=[]; logJoin(g.id); }
   if(g.ph==='q'){ DUEL.view='game'; pushLobby(); showDuelQuestion(g); }
   else if(g.ph==='rev'&&g.res){ clearRoundTimers(); showDuelReveal(g); }
   else if(g.ph==='end'){ clearRoundTimers(); showDuelEnd(g); }
@@ -1589,6 +1594,7 @@ function showDuelQuestion(g){
   setBack('Aufgeben',()=>leaveDuel());
   showRoundQuestion(scoreHTML(g),g,a=>{
     if(DUEL.named) DUEL.named.presence({a}).catch(()=>{});
+    if(a.c) logAnswer(g.id,g.r,a.c);
     if(isHost()) hostCheck();
   });
   renderOppStatus();
@@ -1628,10 +1634,7 @@ function showDuelEnd(g){
   if(ag) ag.onclick=()=>{ const opp=oppPeer(); if(opp) startDuel(opp.peer); else leaveDuel('Dein Gegner ist nicht mehr da.'); };
   view.querySelector('#leave').onclick=()=>leaveDuel();
   if(autoRead) speak(head+'. '+a+' zu '+b+'.');
-  if(DUEL.reported!==g.id){
-    DUEL.reported=g.id;
-    saveGameResult({gid:g.id,opp:isHost()?g.op:DUEL.oppId,me:a,them:b,host:isHost()});
-  }
+  if(DUEL.reported!==g.id){ DUEL.reported=g.id; showOfficialResult(g.id,isHost()?g.op:DUEL.oppId); }
 }
 
 function leaveDuelRoom(){

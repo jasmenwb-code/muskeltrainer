@@ -1,4 +1,5 @@
-"""Baut die Website nach docs/ (GitHub Pages veröffentlicht diesen Ordner).
+"""Baut die Website nach docs/ (GitHub Pages veröffentlicht diesen Ordner)
+und die Muskeldaten für die Server-Auswertung nach functions/muscles.js.
 
     python3 build.py
 
@@ -26,6 +27,7 @@ SCRIPTS = [
     'online/auth.js',       # Anmelden, Registrieren
     'online/social.js',     # Profile, Freunde, Statistik
     'online/lobby.js',      # Wer ist online, Einladungen, Lobby-Seite
+    'online/record.js',     # Spielprotokoll für die Server-Auswertung
     'online/round.js',      # Rundenablauf (Duell und Gruppe)
     'online/duel.js',       # Duell 1 gegen 1
     'online/group.js',      # Gruppen-Lobby
@@ -71,6 +73,10 @@ def build():
     write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n'
           f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{SITE}</loc>'
           '<changefreq>weekly</changefreq><priority>1.0</priority></url></urlset>\n')
+    # Der Server braucht dieselben Muskeldaten, um die richtigen Antworten zu bestimmen
+    with open(os.path.join(ROOT, 'functions', 'muscles.js'), 'w', encoding='utf-8') as f:
+        f.write("'use strict';\n// Automatisch erzeugt aus src/data/muscles.js – nicht von Hand ändern\n"
+                + read('src/data/muscles.js') + '\nmodule.exports = { M };\n')
     print(f'docs/ gebaut · {len(js) // 1024} KB Skript · Cache anatomyduel-{digest}')
 
 
