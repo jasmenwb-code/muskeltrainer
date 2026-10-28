@@ -45,6 +45,12 @@ Duelle werden auf dem Server gewertet, damit niemand Siege oder Punkte fälschen
 2. Nach dem Ende rechnet die Cloud Function in `functions/` alles nach: Sind die Fragen echt? Welche Antwort ist laut Muskeldaten richtig? Wie viele Sekunden lagen laut Server dazwischen?
 3. Nur der Server schreibt Statistik, Ranglistenpunkte und Bilanzen (`users/*/stats`, `score`, `h2h`). Die Website zeigt danach „Gewertet: …“.
 
+**Ranked** läuft komplett über den Server:
+
+- Gegnersuche: Suchende tragen sich in `queue/{uid}` ein; die Funktion `matchRanked` paart die zwei, die am längsten warten, und legt das Spiel selbst an (`ranked: true` kann nur der Server setzen).
+- Wertung nach Glicko wie bei chess.com (`functions/glicko.js`): Start 1000 mit großer Unsicherheit, große Sprünge in den ersten Spielen, ruhiger mit mehr Spielen, beweglicher nach längerer Pause. „?“ = vorläufig unter 10 Ranked-Spielen.
+- Gegen Punkte-Schieben zählen höchstens 3 Ranked-Spiele pro Paar und Tag.
+
 Gruppenspiele zählen nicht für die Rangliste und laufen ohne Protokoll.
 
 Veröffentlichen von Funktion und Regeln (braucht den Firebase-Tarif *Blaze*): in der Google Cloud Shell

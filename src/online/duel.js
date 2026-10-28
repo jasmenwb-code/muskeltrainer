@@ -1,7 +1,7 @@
 /* ---------- Duell 1 gegen 1 ----------
    Raum "duel-<4 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand}, Gast: {role:'guest', nick, a:Antwort}.
    Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}}
-   Ranked-Duelle (siehe ranked.js) tragen zusätzlich ranked:true und rk:{Spieler:Wertung vor dem Spiel}.
+   Ranked-Duelle (siehe ranked.js) tragen zusätzlich ranked:true; Spiel-ID und Gegner teilt der Server zu.
    Die Punkte hier sind nur die Anzeige; gewertet wird auf dem Server (siehe record.js). */
 const newDuelCode=()=>String(Math.floor(1000+Math.random()*9000));
 const isHost=()=>DUEL.role==='host';
@@ -36,7 +36,12 @@ function onDuelPeers(){
   if(!DUEL.named) return;
   if(isHost()){
     const g=DUEL.game;
-    if(!g){ const guest=roomPeers().find(p=>!p.isMe&&p.presence.role==='guest'); if(guest) startDuel(guest.peer); return; }
+    if(!g){
+      // Ranked: nur der vom Server zugeteilte Gegner darf mitspielen
+      const guest=roomPeers().find(p=>!p.isMe&&p.presence.role==='guest'&&(!DUEL.ranked||(RK.match&&p.peer===RK.match.opp)));
+      if(guest) startDuel(guest.peer);
+      return;
+    }
     const opp=oppPeer();
     if(!opp){ if(g.ph!=='end') leaveDuel('Dein Gegner hat das Duell verlassen.'); return; }
     DUEL.oppNick=opp.presence.nick||'Gegner';
@@ -56,13 +61,10 @@ function onDuelPeers(){
 /* ----- Gastgeber ----- */
 function startDuel(op){
   DUEL.outInv=null; DUEL.hist=[]; DUEL.view='game'; pushLobby();
-  DUEL.game={id:newGameId(),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
-  if(DUEL.ranked){
-    DUEL.game.ranked=true;
-    DUEL.game.rk={[DUEL.myPeer]:myRating(),[op]:(RK.opp&&RK.opp.id===op&&typeof RK.opp.rating==='number')?RK.opp.rating:RANK_START};
-    leaveQueue();
-  }
-  logCreate(DUEL.game.id,op,DUEL.game.qs,!!DUEL.game.ranked);
+  const ranked=DUEL.ranked&&RK.match;   // Ranked-Spiele hat der Server schon angelegt (games/{gid})
+  DUEL.game={id:ranked?RK.match.gid:newGameId(),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  if(ranked) DUEL.game.ranked=true;
+  logCreate(DUEL.game.id,op,DUEL.game.qs,!!ranked);
   const opp=oppPeer(); DUEL.oppNick=(opp&&opp.presence.nick)||'Gegner';
   pushHost(); beginRound();
 }
@@ -114,7 +116,7 @@ function renderWait(){
   const host=isHost();
   showPage(`<div class="stack">
     <section class="card center tall">
-      ${DUEL.ranked?`<p class="sectionhead">Ranked</p><p><b>Gegner gefunden${RK.opp&&RK.opp.nick?': '+esc(RK.opp.nick):''}</b></p><p class="sub" id="waitSub">Verbinde …</p>`:''}
+      ${DUEL.ranked?`<p class="sectionhead">Ranked</p><p><b>Gegner gefunden${RK.match&&(SOC.info[RK.match.opp]||{}).name?': '+esc(SOC.info[RK.match.opp].name):''}</b></p><p class="sub" id="waitSub">Verbinde …</p>`:''}
       ${!DUEL.ranked&&host&&!DUEL.target?`<p class="sectionhead">Dein Duell-Code</p><div class="codebig">${esc(DUEL.code)}</div><p class="sub">Schick den Code deinem Freund. Er gibt ihn unter Duell → „1 gegen 1“ ein.</p>`:''}
       ${!DUEL.ranked&&host&&DUEL.target?`<p class="sectionhead">Herausforderung gesendet</p><p>Warte, bis <b>${esc(DUEL.target)}</b> annimmt …</p>`:''}
       ${!DUEL.ranked&&!host?`<p class="sectionhead">Duell ${esc(DUEL.code)}</p><p id="waitSub">Verbinde …</p>`:''}
@@ -159,10 +161,7 @@ function showDuelEnd(g){
   const head=a>b?'Gewonnen!':a<b?'Verloren':'Unentschieden';
   const oppId=isHost()?g.op:DUEL.oppId;
   let rankLine='';
-  if(g.ranked&&g.rk){
-    const before=g.rk[DUEL.myPeer], delta=eloDelta(before,g.rk[oppId],a>b?1:a<b?0:0.5);
-    rankLine=`<div class="rankchange ${delta>=0?'up':'down'}"><span>Wertung</span><b>${before} → ${before+delta}</b><i>${delta>=0?'+':''}${delta}</i></div>`;
-  }
+  if(g.ranked) rankLine=`<div class="rankchange"><span>Wertung wird auf dem Server berechnet …</span></div>`;
   const rows=DUEL.hist.slice().sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(FIELD[h.k])}</small></span><span class="badges"><span class="badge ${h.me.ok?'good':'bad'}">Du +${h.me.pt}</span><span class="badge ${h.op.ok?'good':'bad'}">${esc(oppName())} +${h.op.pt}</span></span></div>`).join('');
   showPage(`<div class="stack">
     <div class="pagehead"><h2 class="pagetitle big${a>b?' win':''}">${head}</h2><p class="sub score-line">Du ${a} : ${b} ${esc(oppName())}</p></div>

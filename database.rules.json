@@ -54,6 +54,12 @@
         "rwins": {
           ".validate": false
         },
+        "rd": {
+          ".validate": false
+        },
+        "rlast": {
+          ".validate": false
+        },
         "lastSeen": {
           ".validate": "newData.isNumber()"
         },
@@ -110,9 +116,6 @@
         "qs": {
           ".write": "auth != null && !data.exists() && newData.parent().child('host').val() === auth.uid"
         },
-        "ranked": {
-          ".write": "auth != null && !data.exists() && newData.parent().child('host').val() === auth.uid && newData.val() === true"
-        },
         "players": {
           "$uid": {
             ".write": "auth != null && auth.uid === $uid && !data.exists() && newData.val() === true && newData.parent().parent().child('host').exists() && !data.parent().parent().child('end').exists()"
@@ -136,6 +139,19 @@
           ".write": "auth != null && !data.exists() && data.parent().child('host').val() === auth.uid",
           ".validate": "newData.val() === now"
         }
+      }
+    },
+    "queue": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['at']) && newData.child('at').val() === now"
+      }
+    },
+    "matches": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && !newData.exists()"
       }
     }
   }

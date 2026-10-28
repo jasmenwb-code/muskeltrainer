@@ -7,7 +7,10 @@ const gameRef=gid=>FB.db.ref('games/'+gid);
 const logged=p=>p.catch(e=>console.warn('Spielprotokoll:',e&&e.message));
 
 function newGameId(){ return FB.db.ref('games').push().key; }
-function logCreate(gid,op,qs,ranked){ return logged(gameRef(gid).update(Object.assign({host:FB.user.uid,op,qs,['players/'+FB.user.uid]:true},ranked?{ranked:true}:{}))); }
+/* Ranked: host, op und ranked hat der Server schon gesetzt; der Gastgeber ergänzt nur die Fragen */
+function logCreate(gid,op,qs,ranked){
+  return logged(gameRef(gid).update(ranked?{qs,['players/'+FB.user.uid]:true}:{host:FB.user.uid,op,qs,['players/'+FB.user.uid]:true}));
+}
 function logJoin(gid){ return logged(gameRef(gid).child('players/'+FB.user.uid).set(true)); }
 function logStart(gid,r){ return logged(gameRef(gid).child('start/'+r).set(serverTime())); }
 function logAnswer(gid,r,c){ return logged(gameRef(gid).child('ans/'+FB.user.uid+'/'+r).set({c,at:serverTime()})); }
@@ -29,7 +32,10 @@ function showOfficialResult(gid,oppId,ranked){
     line(`Gewertet: Du ${pts[me]||0} : ${pts[oppId]||0} ${oppName()}`+(rc.games?` · Bilanz ${rc.w} : ${rc.l}${rc.d?` (${rc.d} unentschieden)`:''}`:''));
     // Ranked: offizielle Wertung vom Server anzeigen
     const box=document.querySelector('.rankchange');
-    if(ranked&&rt&&box){ const d=rt.after-rt.before; box.className='rankchange '+(d>=0?'up':'down'); box.innerHTML=`<span>Wertung</span><b>${rt.before} → ${rt.after}</b><i>${d>=0?'+':''}${d}</i>`; }
+    if(ranked&&box){
+      if(rt){ const d=rt.after-rt.before, q=rt.provisional?'?':''; box.className='rankchange '+(d>=0?'up':'down'); box.innerHTML=`<span>Wertung</span><b>${rt.before} → ${rt.after}${q}</b><i>${d>=0?'+':''}${d}</i>`; }
+      else box.innerHTML=`<span>${res.rankNote==='limit'?'Nicht gewertet: höchstens 3 Ranked-Spiele pro Tag gegen denselben Gegner.':'Nicht gewertet.'}</span>`;
+    }
   };
   ref.on('value',onResult);
 }

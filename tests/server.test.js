@@ -50,19 +50,31 @@ g=game(); g.players.C=true; g.ans.C={0:{c:'0:0',at:1}}; assert.deepStrictEqual(s
   assert.deepStrictEqual(store.users.B.stats,{games:1,wins:0,losses:1,draws:0,points:0});
   assert.strictEqual(store.h2h.A_B.games,1); assert.strictEqual(store.h2h.A_B.w.A,1);
   assert.strictEqual(store.games.g1.result.status,'ok');
-  // Ranked: Elo aus den Wertungen in der Datenbank (nicht aus Angaben des Gastgebers)
+  // Ranked (Glicko) nur für Spiele, die der Server angelegt hat (ranked + created)
   store.users.A.rating=1000; store.users.B.rating=1040;
-  store.games.g3=game({ranked:true,rk:{A:5000,B:1}});
+  store.games.g3=game({ranked:true,created:1,rk:{A:5000,B:1}});
   await processGame(db,'g3'); await sleep(10);
-  assert.deepStrictEqual([store.users.A.rating,store.users.A.rgames,store.users.A.rwins],[1018,1,1]);
-  assert.deepStrictEqual([store.users.B.rating,store.users.B.rgames],[1022,1]);
-  assert.deepStrictEqual(store.games.g3.result.ratings,{A:{before:1000,after:1018},B:{before:1040,after:1022}});
-  // Normales Duell ändert die Wertung nicht
-  store.games.g4=game(); await processGame(db,'g4'); await sleep(10);
-  assert.strictEqual(store.users.A.rating,1018);
+  const ra=store.games.g3.result.ratings;
+  assert.strictEqual(ra.A.before,1000,'Wertung aus der Datenbank, nicht vom Gastgeber'); assert.ok(ra.A.after>1100&&ra.B.after<940,'große Sprünge bei neuen Spielern');
+  assert.strictEqual(store.users.A.rating,ra.A.after); assert.ok(ra.A.provisional);
+  // Vom Handy als „ranked“ markiert, aber nicht vom Server angelegt (kein created): keine Wertung
+  const rBefore=store.users.A.rating;
+  store.games.g4=game({ranked:true}); await processGame(db,'g4'); await sleep(10);
+  assert.strictEqual(store.users.A.rating,rBefore); assert.ok(!store.games.g4.result.ratings,'keine Wertung');
+  // Punkte-Schieben: höchstens 3 gewertete Ranked-Spiele pro Paar und Tag
+  for(const id of ['g5','g6','g7']){ store.games[id]=game({ranked:true,created:1}); await processGame(db,id); await sleep(5); }
+  assert.ok(store.games.g6.result.ratings,'3. Spiel gewertet'); assert.strictEqual(store.games.g7.result.rankNote,'limit','4. Spiel nicht gewertet');
+  assert.strictEqual(store.users.A.rgames,3);
+  // Gegnersuche: die zwei, die am längsten warten, werden gepaart
+  const {matchQueue}=require('../functions/matchmaking');
+  store.queue={X:{at:3},Y:{at:1},Z:{at:2}};
+  const m=await matchQueue(db); await sleep(10);
+  assert.deepStrictEqual([m.host,m.op],['Y','Z']); assert.deepStrictEqual(Object.keys(store.queue),['X']);
+  assert.ok(store.games[m.gid].ranked&&store.matches.Y.gid===m.gid&&store.matches.Z.role==='guest');
+  assert.strictEqual(await matchQueue(db),null,'allein in der Schlange: kein Spiel');
   // Ungültiges Spiel: nichts wird gezählt
   g=game(); g.qs[0].i=99; store.games.g2=g;
   await processGame(db,'g2');
-  assert.strictEqual(store.games.g2.result.status,'invalid'); assert.strictEqual(store.users.A.stats.games,4);
+  assert.strictEqual(store.games.g2.result.status,'invalid'); assert.strictEqual(store.users.A.stats.games,7);
   process.exit(0);
 })().catch(e=>{ console.error(e); process.exit(1); });

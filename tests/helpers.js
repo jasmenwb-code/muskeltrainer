@@ -7,7 +7,10 @@ const {processGame}=require('../functions/process');
 /* Simulierte Cloud Function: wie in functions/index.js wird nach games/{gid}/end ausgewertet */
 const adminDb=makeFirebase('admin').database();
 const serverRuns=[];
+const {matchQueue}=require('../functions/matchmaking');
 hooks.push((path,val)=>{ const m=path.match(/^games\/([^/]+)\/end$/); if(m&&val!=null) setTimeout(()=>serverRuns.push(processGame(adminDb,m[1])),20); });
+/* Simulierte Gegnersuche: wie matchRanked in functions/index.js bei jedem neuen Eintrag in queue/ */
+hooks.push((path,val)=>{ if(/^queue\/[^/]+$/.test(path)&&val!=null) setTimeout(()=>matchQueue(adminDb),20); });
 
 const HTML=fs.readFileSync(path.join(__dirname,'..','docs','index.html'),'utf8')
   .replace('QTIME=30000, REVEAL=6000','QTIME=1500, REVEAL=300')   // 30 s -> 1,5 s, Auflösung 6 s -> 0,3 s

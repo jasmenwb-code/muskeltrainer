@@ -93,7 +93,7 @@ function renderDuelHub(msg){
     <section class="group list">
       ${modeRow('mode1v1','',IC.bolt,'1 gegen 1','Freunde herausfordern oder per Code spielen')}
       ${modeRow('modeGroup','tile-blue',IC.users,`2–${GMAX} Spieler`,'Lobby erstellen und gemeinsam spielen')}
-      ${modeRow('modeRanked','tile-warn',IC.trophy,'Ranked',`Zufälliger Gegner · deine Wertung: ${myRating()}`)}
+      ${modeRow('modeRanked','tile-warn',IC.trophy,'Ranked',`Zufälliger Gegner · deine Wertung: ${ratingText(SOC.profile)}`)}
     </section>
     <section class="group"><button class="row" id="lbRow"><span class="label">Rangliste</span>${IC.chev}</button></section>
     <p class="hint" id="lobbyHint" role="status"></p>

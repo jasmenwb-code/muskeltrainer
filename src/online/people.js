@@ -93,7 +93,7 @@ function renderFriend(fid){
       ${valueRow('Ø Punkte pro Duell',avg(rc.pm,rc.games)+' : '+avg(rc.pf,rc.games))}${valueRow('Letztes Duell',fmtDate(rc.last))}
     </section>
     <p class="group-label">Gesamt von ${esc(nm)}</p>
-    <section class="group list">${valueRow('Ranked-Wertung',typeof info.rating==='number'?info.rating:RANK_START)}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}</section>
+    <section class="group list">${valueRow('Ranked-Wertung',ratingText(info))}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}</section>
     ${p&&!p.presence.busy?'<button class="btn primary" id="frCh">Herausfordern</button>':''}
     <button class="btn plain muted" id="frRm">Freund entfernen</button>
   </div>`);
@@ -111,7 +111,7 @@ async function renderLeaderboard(mode){
     <h2 class="pagetitle">Rangliste</h2>
     <div class="seg" role="group" aria-label="Rangliste"><button data-lb="all" aria-pressed="${mode==='all'}">Alle</button><button data-lb="friends" aria-pressed="${mode==='friends'}">Freunde</button></div>
     <section class="group list" id="lbList">${infoRow('Lade …')}</section>
-    <p class="footnote">Nur Ranked-Spiele · Start bei 1000 · ein Sieg gegen Stärkere bringt mehr</p>
+    <p class="footnote">Nur Ranked-Spiele · Wertung wie bei chess.com (Glicko) · „?“ = vorläufig, unter ${PROVISIONAL_GAMES} Spielen</p>
   </div>`);
   view.querySelectorAll('[data-lb]').forEach(b=>b.onclick=()=>renderLeaderboard(b.dataset.lb));
   const me=FB.user.uid; let rows=[];
@@ -127,7 +127,7 @@ async function renderLeaderboard(mode){
   const rating=r=>typeof r.rating==='number'?r.rating:RANK_START;
   rows=rows.filter(r=>r.id===me||r.rgames>0).sort((a,b)=>rating(b)-rating(a)||(b.rgames||0)-(a.rgames||0));
   if(!rows.length){ l.innerHTML=infoRow('Noch keine Ranked-Spiele.'); return; }
-  l.innerHTML=rows.map((r,i)=>`<div class="row${r.id===me?' me-row':''}"><span class="rank">${r.rgames?i+1:'–'}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${r.rgames?`${r.rgames} Ranked-Spiele · ${r.rwins||0} Siege`:'noch kein Ranked-Spiel'}</small></span><span class="value"><b>${rating(r)}</b></span></div>`).join('');
+  l.innerHTML=rows.map((r,i)=>`<div class="row${r.id===me?' me-row':''}"><span class="rank">${r.rgames?i+1:'–'}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${r.rgames?`${r.rgames} Ranked-Spiele · ${r.rwins||0} Siege`:'noch kein Ranked-Spiel'}</small></span><span class="value"><b>${ratingText(r)}</b></span></div>`).join('');
 }
 
 /* ----- Eigenes Profil: Bild, Name, Freundescode, Freunde finden, wer ist online ----- */
@@ -155,7 +155,7 @@ function renderProfile(msg){
     <section class="stack-sm"><label class="group-label" for="pName">Dein Name</label><input id="pName" class="field" maxlength="24" value="${esc(p.name)}" autocomplete="nickname"></section>
     <section class="group list">
       <div class="row"><span class="label"><span>Dein Freundescode</span><b class="fcode">${esc(p.code||'…')}</b><small>Freunde können dich damit finden</small></span><button class="btn tinted small" id="copyCode">Kopieren</button></div>
-      ${valueRow('Ranked-Wertung','<b>'+myRating()+'</b>')}${valueRow('Ranked-Spiele · Siege',(p.rgames||0)+' · '+(p.rwins||0))}${valueRow('Alle Duelle · Siege',st.games+' · '+st.wins)}
+      ${valueRow('Ranked-Wertung','<b>'+ratingText(p)+'</b>')}${valueRow('Ranked-Spiele · Siege',(p.rgames||0)+' · '+(p.rwins||0))}${valueRow('Alle Duelle · Siege',st.games+' · '+st.wins)}
     </section>
 
     <p class="group-label">Freunde finden</p>
