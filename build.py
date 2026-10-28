@@ -30,6 +30,7 @@ SCRIPTS = [
     'online/record.js',     # Spielprotokoll für die Server-Auswertung
     'online/round.js',      # Rundenablauf (Duell und Gruppe)
     'online/duel.js',       # Duell 1 gegen 1
+    'online/ranked.js',     # Ranked: Gegnersuche und Wertung
     'online/group.js',      # Gruppen-Lobby
     'online/people.js',     # Freunde, Rangliste, Profilseite
     'main.js',              # Start

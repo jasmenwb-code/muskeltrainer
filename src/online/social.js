@@ -1,5 +1,6 @@
 /* ---------- Profile, Freunde, Statistik (Firebase-Daten) ----------
-   users/{uid}:   {name, nameLower, code, photo, stats:{games,wins,losses,draws,points}, score, lastGid}
+   users/{uid}:   {name, nameLower, code, photo, lastSeen, stats:{games,wins,losses,draws,points}, score, lastGid,
+                   rating (Ranked-Wertung, Start 1000), rgames, rwins}
    codes/{CODE}:  uid (6-stelliger Freundescode)
    friends/{uid}/{fid}: true (beidseitig, entsteht erst, wenn eine Anfrage angenommen wird)
    requests/{an}/{von}: {name, at}  eingehende Freundschaftsanfragen (liest nur der Empfänger)

@@ -50,9 +50,19 @@ g=game(); g.players.C=true; g.ans.C={0:{c:'0:0',at:1}}; assert.deepStrictEqual(s
   assert.deepStrictEqual(store.users.B.stats,{games:1,wins:0,losses:1,draws:0,points:0});
   assert.strictEqual(store.h2h.A_B.games,1); assert.strictEqual(store.h2h.A_B.w.A,1);
   assert.strictEqual(store.games.g1.result.status,'ok');
+  // Ranked: Elo aus den Wertungen in der Datenbank (nicht aus Angaben des Gastgebers)
+  store.users.A.rating=1000; store.users.B.rating=1040;
+  store.games.g3=game({ranked:true,rk:{A:5000,B:1}});
+  await processGame(db,'g3'); await sleep(10);
+  assert.deepStrictEqual([store.users.A.rating,store.users.A.rgames,store.users.A.rwins],[1018,1,1]);
+  assert.deepStrictEqual([store.users.B.rating,store.users.B.rgames],[1022,1]);
+  assert.deepStrictEqual(store.games.g3.result.ratings,{A:{before:1000,after:1018},B:{before:1040,after:1022}});
+  // Normales Duell ändert die Wertung nicht
+  store.games.g4=game(); await processGame(db,'g4'); await sleep(10);
+  assert.strictEqual(store.users.A.rating,1018);
   // Ungültiges Spiel: nichts wird gezählt
   g=game(); g.qs[0].i=99; store.games.g2=g;
   await processGame(db,'g2');
-  assert.strictEqual(store.games.g2.result.status,'invalid'); assert.strictEqual(store.users.A.stats.games,2);
+  assert.strictEqual(store.games.g2.result.status,'invalid'); assert.strictEqual(store.users.A.stats.games,4);
   process.exit(0);
 })().catch(e=>{ console.error(e); process.exit(1); });

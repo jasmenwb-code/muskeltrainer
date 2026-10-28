@@ -80,7 +80,7 @@ function fmtDate(ts){ if(!ts) return '—'; try{ return new Date(ts).toLocaleDat
 const avg=(sum,n)=>n?(sum/n).toFixed(1).replace('.',','):'—';
 const valueRow=(label,value)=>`<div class="row"><span class="label">${label}</span><span class="value">${value}</span></div>`;
 function renderFriend(fid){
-  DUEL.view='friend'; S.phase='duel'; setBack('Zurück',()=>renderLobby());
+  DUEL.view='friend'; S.phase='duel'; setBack('Zurück',()=>render1v1());
   const info=SOC.info[fid]||{}, rc=record(fid), p=lobbyPeers().find(x=>x.by===fid);
   const nm=(p&&p.presence.nick)||info.name||'Spieler';
   const st=Object.assign(emptyStats(),info.stats||{});
@@ -93,7 +93,7 @@ function renderFriend(fid){
       ${valueRow('Ø Punkte pro Duell',avg(rc.pm,rc.games)+' : '+avg(rc.pf,rc.games))}${valueRow('Letztes Duell',fmtDate(rc.last))}
     </section>
     <p class="group-label">Gesamt von ${esc(nm)}</p>
-    <section class="group list">${valueRow('Ranglistenpunkte',scoreOf(st))}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}</section>
+    <section class="group list">${valueRow('Ranked-Wertung',typeof info.rating==='number'?info.rating:RANK_START)}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}</section>
     ${p&&!p.presence.busy?'<button class="btn primary" id="frCh">Herausfordern</button>':''}
     <button class="btn plain muted" id="frRm">Freund entfernen</button>
   </div>`);
@@ -101,34 +101,33 @@ function renderFriend(fid){
   const rm=document.getElementById('frRm');
   rm.onclick=async()=>{
     if(rm.dataset.sure!=='1'){ rm.dataset.sure='1'; rm.textContent='Wirklich entfernen? Nochmal tippen'; rm.classList.remove('muted'); return; }
-    rm.disabled=true; await removeFriend(fid); renderLobby('Freund entfernt.');
+    rm.disabled=true; await removeFriend(fid); render1v1('Freund entfernt.');
   };
 }
 
 async function renderLeaderboard(mode){
-  DUEL.view='board'; S.phase='duel'; setBack('Zurück',()=>renderLobby());
+  DUEL.view='board'; S.phase='duel'; setBack('Zurück',()=>renderDuelHub());
   showPage(`<div class="stack">
     <h2 class="pagetitle">Rangliste</h2>
     <div class="seg" role="group" aria-label="Rangliste"><button data-lb="all" aria-pressed="${mode==='all'}">Alle</button><button data-lb="friends" aria-pressed="${mode==='friends'}">Freunde</button></div>
     <section class="group list" id="lbList">${infoRow('Lade …')}</section>
-    <p class="footnote">Duelle 1 gegen 1 · Sieg 3 Punkte · Unentschieden 1 Punkt</p>
+    <p class="footnote">Nur Ranked-Spiele · Start bei 1000 · ein Sieg gegen Stärkere bringt mehr</p>
   </div>`);
   view.querySelectorAll('[data-lb]').forEach(b=>b.onclick=()=>renderLeaderboard(b.dataset.lb));
   const me=FB.user.uid; let rows=[];
   try{
     if(mode==='all'){
-      const v=(await FB.db.ref('users').orderByChild('score').limitToLast(100).once('value')).val()||{};
+      const v=(await FB.db.ref('users').orderByChild('rating').limitToLast(100).once('value')).val()||{};
       rows=Object.keys(v).map(id=>Object.assign({id},v[id]));
     } else {
       rows=await Promise.all([me,...Object.keys(SOC.friends)].map(async id=>Object.assign({id},(await userRef(id).once('value').catch(()=>null))?.val()||{})));
     }
   }catch(e){ const l=document.getElementById('lbList'); if(l) l.innerHTML=infoRow('Die Rangliste konnte nicht geladen werden.'); return; }
   const l=document.getElementById('lbList'); if(!l||DUEL.view!=='board') return;
-  rows=rows.filter(r=>r.id===me||(r.stats&&r.stats.games>0))
-    .sort((a,b)=>(b.score||0)-(a.score||0)||((b.stats||{}).wins||0)-((a.stats||{}).wins||0));
-  if(!rows.length){ l.innerHTML=infoRow('Noch keine Duelle gespielt.'); return; }
-  l.innerHTML=rows.map((r,i)=>{ const st=Object.assign(emptyStats(),r.stats||{});
-    return `<div class="row${r.id===me?' me-row':''}"><span class="rank">${i+1}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${st.games} Duelle · ${st.wins} Siege</small></span><span class="value"><b>${r.score||0}</b></span></div>`; }).join('');
+  const rating=r=>typeof r.rating==='number'?r.rating:RANK_START;
+  rows=rows.filter(r=>r.id===me||r.rgames>0).sort((a,b)=>rating(b)-rating(a)||(b.rgames||0)-(a.rgames||0));
+  if(!rows.length){ l.innerHTML=infoRow('Noch keine Ranked-Spiele.'); return; }
+  l.innerHTML=rows.map((r,i)=>`<div class="row${r.id===me?' me-row':''}"><span class="rank">${r.rgames?i+1:'–'}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${r.rgames?`${r.rgames} Ranked-Spiele · ${r.rwins||0} Siege`:'noch kein Ranked-Spiel'}</small></span><span class="value"><b>${rating(r)}</b></span></div>`).join('');
 }
 
 /* ----- Eigenes Profil: Bild, Name, Freundescode, Freunde finden, wer ist online ----- */
@@ -156,7 +155,7 @@ function renderProfile(msg){
     <section class="stack-sm"><label class="group-label" for="pName">Dein Name</label><input id="pName" class="field" maxlength="24" value="${esc(p.name)}" autocomplete="nickname"></section>
     <section class="group list">
       <div class="row"><span class="label"><span>Dein Freundescode</span><b class="fcode">${esc(p.code||'…')}</b><small>Freunde können dich damit finden</small></span><button class="btn tinted small" id="copyCode">Kopieren</button></div>
-      ${valueRow('Ranglistenpunkte','<b>'+scoreOf(st)+'</b>')}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}
+      ${valueRow('Ranked-Wertung','<b>'+myRating()+'</b>')}${valueRow('Ranked-Spiele · Siege',(p.rgames||0)+' · '+(p.rwins||0))}${valueRow('Alle Duelle · Siege',st.games+' · '+st.wins)}
     </section>
 
     <p class="group-label">Freunde finden</p>

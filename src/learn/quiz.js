@@ -1,14 +1,34 @@
-/* ---------- Lernmodus: 20 Fragen aus der gewählten Auswahl ---------- */
+/* ---------- Lernmodus: Region antippen, 20 kurze Fragen ---------- */
 const ROUND_LEN=20;
-const S={regions:new Set(Object.keys(REG)), cats:new Set(QF), regOpen:false, phase:'start', queue:[], qi:0, right:0, results:{}};
+const S={region:'all', cats:new Set(QF), phase:'start', queue:[], qi:0, right:0, results:{}};
 function fieldsFor(m){ return qFields(m).filter(k=>S.cats.has(k)); }
-function selected(){ return M.filter(m=>S.regions.has(m.r)&&fieldsFor(m).length); }
+function selected(){ return M.filter(m=>(S.region==='all'||m.r===S.region)&&fieldsFor(m).length); }
 
-function startQuiz(){
+function renderLearn(){
+  S.phase='learn'; setBack('Start',renderStart);
+  const count=r=>M.filter(m=>r==='all'||m.r===r).length;
+  const regionRow=(r,label)=>`<button class="row" data-region="${r}"><span class="label">${esc(label)}</span><span class="count">${count(r)}</span>${IC.chev}</button>`;
+  const catRows=QF.map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k]}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
+  view.innerHTML=`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">Lernen</h2><p class="sub">Tippe eine Region an: ${ROUND_LEN} kurze Fragen mit Lösung und Abbildung.</p></div>
+    <section class="group">${regionRow('all','Alle Regionen')}</section>
+    <p class="group-label">Regionen</p>
+    <section class="group">${Object.keys(REG).map(r=>regionRow(r,REG[r])).join('')}</section>
+    <p class="group-label">Abgefragt wird</p>
+    <section class="group">${catRows}</section>
+  </div>`;
+  view.querySelectorAll('[data-region]').forEach(b=>b.onclick=()=>startQuiz(b.dataset.region));
+  view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return;   // eine Kategorie bleibt immer an
+    S.cats.has(k)?S.cats.delete(k):S.cats.add(k); b.setAttribute('aria-checked',S.cats.has(k));
+  });
+}
+function startQuiz(region){
+  if(region) S.region=region;
   const qs=[];
   selected().forEach(m=>fieldsFor(m).forEach(k=>{ const q=makeQuestion(m.id,k); if(q) qs.push(q); }));
   S.queue=shuffle(qs).slice(0,ROUND_LEN); S.qi=0; S.results={}; S.right=0;
-  if(S.queue.length) renderAsk(); else renderStart();
+  if(S.queue.length) renderAsk(); else renderLearn();
 }
 function progressHTML(){
   return `<div class="progress"><span>Frage ${S.qi+1} von ${S.queue.length}</span><div class="track"><span style="width:${S.qi/S.queue.length*100}%"></span></div><span>${S.right} ✓</span></div>`;
@@ -64,7 +84,7 @@ function showResult(choice){
   if(autoRead) speak(verdict);
 }
 function renderEnd(){
-  S.phase='end'; setBack('Start',renderStart);
+  S.phase='end'; setBack('Lernen',renderLearn);
   const ids=Object.keys(S.results).map(Number);
   const answered=ids.reduce((a,id)=>a+Object.keys(S.results[id]).length,0);
   const rows=ids.map(id=>{ const r=S.results[id];
@@ -72,8 +92,8 @@ function renderEnd(){
   showPage(`<div class="stack">
     <div class="pagehead"><h2 class="pagetitle">Durchgang beendet</h2><p class="sub">${answered?`${S.right} von ${answered} Fragen richtig`:'Keine Fragen beantwortet'}</p></div>
     ${rows?`<section class="group list">${rows}</section>`:''}
-    <div class="stack-sm"><button class="btn primary" id="again">Neue Runde mit gleicher Auswahl</button><button class="btn plain" id="back">Zur Auswahl</button></div>
+    <div class="stack-sm"><button class="btn primary" id="again">Neue Runde: ${esc(S.region==='all'?'Alle Regionen':REG[S.region])}</button><button class="btn plain" id="back">Andere Region</button></div>
   </div>`);
-  view.querySelector('#again').onclick=startQuiz;
-  view.querySelector('#back').onclick=renderStart;
+  view.querySelector('#again').onclick=()=>startQuiz();
+  view.querySelector('#back').onclick=renderLearn;
 }

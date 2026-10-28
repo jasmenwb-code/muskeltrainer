@@ -13,7 +13,7 @@ const gMe=()=>DUEL.myPeer;
 
 async function openGroup(code){
   if(!(await ensureAuth('duel'))) return;
-  if(!(await initLobby())){ renderLobby('Keine Verbindung. Versuch es gleich nochmal.'); return; }
+  if(!(await initLobby())){ renderGroupHome('Keine Verbindung. Versuch es gleich nochmal.'); return; }
   GRP.host=!code;
   await enterGroup(code||newGroupCode());
 }
@@ -72,7 +72,7 @@ function renderGroupLobby(msg){
     <div class="pagehead"><h2 class="pagetitle">Lobby</h2><p class="sub">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · ${ROUNDS} Runden à 30 Sekunden · je schneller richtig, desto mehr Punkte</p></div>
     <section class="card center">
       <p class="sectionhead">Lobby-Code</p><div class="codebig">${esc(GRP.code)}</div>
-      <p class="sub">${GRP.host?'Schick den Code an deine Freunde. Sie geben ihn unter „Online spielen“ → „Mit Code beitreten“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
+      <p class="sub">${GRP.host?'Schick den Code an deine Freunde. Sie geben ihn unter Duell → „2–${GMAX} Spieler“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
     </section>
     <p class="group-label" id="gCount">Spieler</p>
     <section class="group list" id="gMembers"></section>
@@ -240,4 +240,4 @@ function leaveGroupRoom(){
   const r=GRP.named; GRP.named=null; if(r) r.leave().catch(()=>{});
   Object.assign(GRP,{game:null,hg:null,lastKey:null,code:null,hist:[],invited:new Set()});
 }
-function leaveGroup(msg){ leaveGroupRoom(); GRP.host=false; stopSpeaking(); renderLobby(msg); }
+function leaveGroup(msg){ leaveGroupRoom(); GRP.host=false; stopSpeaking(); renderGroupHome(msg); }

@@ -19,7 +19,8 @@
       ".read": "auth != null",
       ".indexOn": [
         "score",
-        "nameLower"
+        "nameLower",
+        "rating"
       ],
       "$uid": {
         ".write": "auth != null && auth.uid === $uid",
@@ -42,6 +43,15 @@
           ".validate": false
         },
         "lastGid": {
+          ".validate": false
+        },
+        "rating": {
+          ".validate": false
+        },
+        "rgames": {
+          ".validate": false
+        },
+        "rwins": {
           ".validate": false
         },
         "lastSeen": {
@@ -99,6 +109,9 @@
         },
         "qs": {
           ".write": "auth != null && !data.exists() && newData.parent().child('host').val() === auth.uid"
+        },
+        "ranked": {
+          ".write": "auth != null && !data.exists() && newData.parent().child('host').val() === auth.uid && newData.val() === true"
         },
         "players": {
           "$uid": {
