@@ -9,8 +9,11 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,input,regist
 
   input(A,'#fSearch','ben'); await sleep(500);
   assert.deepStrictEqual(texts(A,'#fResults .row .label > span').sort(),['Ben Müller','Benedikt']);
-  $$(A,'[data-addr]').find(b=>b.dataset.addr==='u_ben').click(); await sleep(250);
-  assert.ok(store.friends.u_anna.u_ben&&store.friends.u_ben.u_anna,'Freundschaft beidseitig');
+  $$(A,'[data-freq]').find(b=>b.dataset.freq==='u_ben').click(); await sleep(250);
+  assert.ok(store.requests?.u_ben.u_anna&&!store.friends,'erst Anfrage, noch keine Freundschaft');
+  B.w.eval('renderProfile()'); await sleep(50);
+  $(B,'[data-faccept="u_anna"]').click(); await sleep(300);
+  assert.ok(store.friends?.u_anna.u_ben&&store.friends?.u_ben.u_anna,'nach Annahme beidseitig befreundet');
 
   input(A,'#fSearch',store.users.u_carla.code); await sleep(500);
   assert.deepStrictEqual(texts(A,'#fResults .row .label > span'),['Benedikt'],'Suche per Code');
@@ -24,7 +27,7 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,input,regist
   assert.ok(!$(B,'#friendList .avatar img'),'nur echte Bilddaten');
 
   input(A,'#pName','Anna B.'); await sleep(800);
-  assert.deepStrictEqual([store.users.u_anna.name,store.users.u_anna.nameLower],['Anna B.','anna b.']);
+  assert.deepStrictEqual([store.users.u_anna.name,store.users.u_anna.nameLower],['Anna B.','anna b']);
   assert.ok(texts(A,'#othersOnline .row').some(t=>/Benedikt/.test(t)),'Benedikt unter „Gerade online“');
 
   $(A,'#lbRow').click(); await sleep(150);
@@ -35,7 +38,7 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,input,regist
   A.w.eval('renderProfile()'); await sleep(50); $(A,'#logout').click(); await sleep(150);
   assert.ok($(A,'#go'),'zurück auf der Startseite');
   assert.ok(!$(A,'#profileBtn img'),'Foto aus der Kopfzeile entfernt');
-  assert.ok(!store.lobby.u_anna,'aus der Lobby abgemeldet');
+  assert.ok(!store.lobby?.u_anna,'aus der Lobby abgemeldet');
   assert.deepStrictEqual(errors,[]);
   process.exit(0);
 })().catch(e=>{ console.error(e); process.exit(1); });

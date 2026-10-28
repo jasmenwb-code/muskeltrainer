@@ -100,9 +100,13 @@ function renderGroupInvite(){
   const box=document.getElementById('gInvite'); if(!box) return;
   const inRoom=new Set(gPeers().map(p=>p.by));
   const list=lobbyPeers().filter(p=>!inRoom.has(p.by)).sort((a,b)=>isFriend(b.by)-isFriend(a.by));
-  if(!list.length){ box.innerHTML=infoRow('Gerade ist niemand sonst online.','Schick den Code einfach per Nachricht.'); return; }
+  const online=new Set(lobbyPeers().map(p=>p.by));
+  const offlineFriends=Object.keys(SOC.friends).filter(id=>!online.has(id)&&!inRoom.has(id));
+  if(!list.length&&!offlineFriends.length){ box.innerHTML=infoRow('Gerade ist niemand sonst online.','Schick den Code einfach per Nachricht.'); return; }
   box.innerHTML=list.map(p=>{ const inv=GRP.invited.has(p.peer);
-    return `<div class="row">${avatarFor(p.by,p.presence.nick,p.presence.busy)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'spielt gerade':isFriend(p.by)?'Freund · online':'online'}</small></span><button class="btn tinted small" data-ginv="${esc(p.peer)}" ${inv||p.presence.busy?'disabled':''}>${inv?'Eingeladen':'Einladen'}</button></div>`; }).join('');
+    return `<div class="row">${avatarFor(p.by,p.presence.nick,p.presence.busy)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'spielt gerade':isFriend(p.by)?'Freund · online':'online'}</small></span><button class="btn tinted small" data-ginv="${esc(p.peer)}" ${inv||p.presence.busy?'disabled':''}>${inv?'Eingeladen':'Einladen'}</button></div>`; }).join('')
+   +offlineFriends.map(id=>{ const nm=(SOC.info[id]||{}).name||'Spieler';
+    return `<div class="row dimmed">${avatarHTML(id,nm,'off')}<span class="label"><span>${esc(nm)}</span><small>Freund · ${presenceText(id,null)}</small></span></div>`; }).join('');
   box.querySelectorAll('[data-ginv]').forEach(b=>b.onclick=()=>{ GRP.invited.add(b.dataset.ginv); pushLobby(); renderGroupInvite(); });
 }
 function groupInvitePresence(){ return GRP.host&&GRP.code&&GRP.invited.size?{to:[...GRP.invited],code:GRP.code}:null; }

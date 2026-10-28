@@ -49,8 +49,8 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,register,ans
   $(A,'#navBack').click(); await sleep(300);
   assert.match(text(B,'#lobbyHint'),/Gastgeber hat die Lobby verlassen/);
   assert.match(text(D,'#lobbyHint'),/Gastgeber hat die Lobby verlassen/);
-  assert.strictEqual(Object.keys(store.rooms['grp-'+code]||{}).length,0,'Raum leer');
-  assert.ok(!store.lobby.u_anna.ginv,'Einladung zurückgezogen');
+  assert.strictEqual(Object.keys(store.rooms?.['grp-'+code]||{}).length,0,'Raum leer');
+  assert.ok(!store.lobby?.u_anna.ginv,'Einladung zurückgezogen');
   // Gruppenspiele zählen nicht für die Rangliste
   assert.ok(!store.users.u_anna.stats,'keine Statistik für Gruppenspiele');
   assert.ok(!store.games,'kein Spielprotokoll für Gruppenspiele');

@@ -3,7 +3,6 @@
    Fragen, Startzeit jeder Runde und jede Antwort, jeweils mit Server-Zeitstempel.
    Die Datenbank-Regeln erlauben jedem nur seine eigenen Einträge und jeden nur einmal.
    Nach "end" rechnet die Cloud Function (functions/) das Duell nach und schreibt Statistik und Bilanz. */
-const serverTime=()=>firebase.database.ServerValue.TIMESTAMP;
 const gameRef=gid=>FB.db.ref('games/'+gid);
 const logged=p=>p.catch(e=>console.warn('Spielprotokoll:',e&&e.message));
 

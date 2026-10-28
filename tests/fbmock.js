@@ -5,8 +5,10 @@ const hooks=[];   // werden nach jedem Schreiben aufgerufen (für die simulierte
 /* ServerValue.TIMESTAMP ({".sv":"timestamp"}) durch die aktuelle Zeit ersetzen */
 const resolve=v=>Array.isArray(v)?v.map(resolve):v&&typeof v==='object'?(v['.sv']==='timestamp'?Date.now():Object.fromEntries(Object.entries(v).map(([k,x])=>[k,resolve(x)]))):v;
 let pushN=0;
+/* Wie Firebase: leere Knoten verschwinden */
+function prune(ks){ for(let n=ks.length-1;n>0;n--){ let o=store; for(let i=0;i<n-1;i++) o=o&&o[ks[i]]; const k=ks[n-1]; if(o&&o[k]&&typeof o[k]==='object'&&!Object.keys(o[k]).length) delete o[k]; else break; } }
 function get(path){ let o=store; for(const k of path.split('/').filter(Boolean)){ if(o==null||typeof o!=='object') return null; o=o[k]; } return o===undefined?null:clone(o); }
-function setP(path,val){ const ks=path.split('/').filter(Boolean); let o=store; for(let i=0;i<ks.length-1;i++){ if(typeof o[ks[i]]!=='object'||o[ks[i]]===null) o[ks[i]]={}; o=o[ks[i]]; } if(val===null||val===undefined) delete o[ks.at(-1)]; else o[ks.at(-1)]=clone(resolve(val)); setTimeout(()=>listeners.forEach(l=>l()),3); hooks.forEach(h=>h(ks.join('/'),val)); }
+function setP(path,val){ const ks=path.split('/').filter(Boolean); let o=store; for(let i=0;i<ks.length-1;i++){ if(typeof o[ks[i]]!=='object'||o[ks[i]]===null) o[ks[i]]={}; o=o[ks[i]]; } if(val===null||val===undefined){ delete o[ks.at(-1)]; prune(ks); } else o[ks.at(-1)]=clone(resolve(val)); setTimeout(()=>listeners.forEach(l=>l()),3); hooks.forEach(h=>h(ks.join('/'),val)); }
 function snap(v){ return {val:()=>clone(v)}; }
 function makeFirebase(email){
   let user=null;
@@ -22,7 +24,7 @@ function makeFirebase(email){
     update(o){ for(const k in o) setP(path+"/"+k,o[k]); return Promise.resolve(); },
     remove(){ setP(path,null); return Promise.resolve(); },
     async transaction(fn){ const nv=fn(get(path)); if(nv!==undefined) setP(path,nv); return {committed:nv!==undefined}; },
-    onDisconnect(){ return {remove(){}, cancel(){}}; } }; }
+    onDisconnect(){ return {remove(){}, cancel(){}, set(){}}; } }; }
   const obs=new Set();
   const auth={ get currentUser(){return user;}, onAuthStateChanged(f){ obs.add(f); setTimeout(()=>f(user),1); return ()=>obs.delete(f); },
     async createUserWithEmailAndPassword(m,p){ user={uid:'u_'+m.split('@')[0],email:m,displayName:'',updateProfile(o){ Object.assign(user,o); return Promise.resolve(); }}; obs.forEach(f=>f(user)); return {user}; },
