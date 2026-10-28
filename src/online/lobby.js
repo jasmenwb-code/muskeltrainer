@@ -51,8 +51,8 @@ function onLobbyPeers(){
 }
 /* Listen mit Spielern auf der gerade offenen Seite neu zeichnen */
 function refreshPeople(){
-  if(DUEL.view==='lobby'){ renderOnlineList('onlineList'); renderFriendList(); }
-  if(DUEL.view==='profile'){ renderOnlineList('othersOnline'); renderFriendList(); }
+  if(DUEL.view==='lobby'){ renderRequests(); renderOnlineList('onlineList'); renderFriendList(); }
+  if(DUEL.view==='profile'){ renderRequests(); renderSentList(); renderSearchResults(); renderOnlineList('othersOnline'); renderFriendList(); }
   if(DUEL.view==='group') renderGroupMembers();
 }
 
@@ -77,17 +77,19 @@ async function openDuel(){
   if(!(await ensureAuth('duel'))) return;
   await initLobby();
   renderLobby();
+  loadFriendData();   // „zuletzt online“ auffrischen
 }
 function renderLobby(msg){
   leaveOnline(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
   setBack('Start',renderStart);
   showPage(`<div class="stack">
     <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Je schneller richtig, desto mehr Punkte: sofort 100, kurz vor Schluss 10.</p></div>
+    <div class="stack" id="reqBox" hidden></div>
     <section class="group"><button class="row" id="mkGroup"><span class="tile">${IC.bolt}</span><span class="label">Lobby erstellen<small>Mit bis zu ${GMAX} Spielern gleichzeitig spielen</small></span>${IC.chev}</button></section>
 
     <p class="group-label">Freunde</p>
     <section class="group list" id="friendList"></section>
-    <section class="group"><button class="row" id="toProfile"><span class="tile tile-ok">${IC.plus}</span><span class="label">Freunde hinzufügen<small>per Name oder Freundescode</small></span>${IC.chev}</button></section>
+    <section class="group"><button class="row" id="toProfile"><span class="tile tile-ok">${IC.plus}</span><span class="label">Freunde hinzufügen<small>Anfrage per Name oder Freundescode</small></span>${IC.chev}</button></section>
     <section class="group"><button class="row" id="lbRow"><span class="tile tile-warn">${IC.trophy}</span><span class="label">Rangliste</span>${IC.chev}</button></section>
 
     <p class="group-label">Weitere Spieler online</p>
@@ -115,17 +117,17 @@ function renderLobby(msg){
     else setHint('lobbyHint','Duell-Codes haben 4 Ziffern, Lobby-Codes 5.',true);
   };
   view.querySelector('#joinCode').onclick=join; ci.onkeydown=e=>{ if(e.key==='Enter') join(); };
-  renderFriendList(); renderOnlineList('onlineList');
+  renderRequests(); renderFriendList(); renderOnlineList('onlineList');
   onLobbyPeers();
 }
 
-/* Spieler online, die (noch) keine Freunde sind: mit „+“ hinzufügen oder herausfordern */
+/* Spieler online, die (noch) keine Freunde sind: Anfrage senden oder herausfordern */
 function renderOnlineList(boxId){
   const box=document.getElementById(boxId); if(!box) return;
   const list=lobbyPeers().filter(p=>!isFriend(p.by));
   if(!list.length){ box.innerHTML=infoRow('Gerade ist sonst niemand online.','Schick deinen Freunden den Link zu dieser Seite. Sobald sie angemeldet sind, erscheinen sie hier.'); return; }
-  box.innerHTML=list.map(p=>`<div class="row">${avatarFor(p.by,p.presence.nick,p.presence.busy)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'spielt gerade':'online'}</small></span><button class="iconbtn addf" data-addf="${esc(p.by)}" aria-label="Als Freund hinzufügen" title="Als Freund hinzufügen">+</button>${p.presence.busy?'':`<button class="btn tinted small" data-ch="${esc(p.peer)}">Herausfordern</button>`}</div>`).join('');
-  box.querySelectorAll('[data-addf]').forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await addFriend(b.dataset.addf); }catch(e){ b.disabled=false; } });
+  box.innerHTML=list.map(p=>`<div class="row">${avatarFor(p.by,p.presence.nick,p.presence.busy)}<span class="label"><span>${esc(p.presence.nick||'Spieler')}</span><small>${p.presence.busy?'spielt gerade':'online'}</small></span>${friendActionHTML(p.by,true)}${p.presence.busy?'':`<button class="btn tinted small" data-ch="${esc(p.peer)}">Herausfordern</button>`}</div>`).join('');
+  bindFriendActions(box);
   box.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>challenge(b.dataset.ch));
 }
 function challenge(peer){ const p=lobbyPeers().find(x=>x.peer===peer); if(p&&!p.presence.busy) hostDuel(newDuelCode(),p); }

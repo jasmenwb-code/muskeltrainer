@@ -10,30 +10,62 @@
     "rooms": {
       "$room": {
         ".read": "auth != null",
-        "$uid": { ".write": "auth != null && auth.uid === $uid" }
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid"
+        }
       }
     },
     "users": {
       ".read": "auth != null",
-      ".indexOn": ["score", "nameLower"],
+      ".indexOn": [
+        "score",
+        "nameLower"
+      ],
       "$uid": {
         ".write": "auth != null && auth.uid === $uid",
-        "photo": { ".validate": "newData.isString() && newData.val().length < 60000" }
+        "photo": {
+          ".validate": "newData.isString() && newData.val().length < 60000"
+        }
       }
     },
     "codes": {
       ".read": "auth != null",
-      "$code": { ".write": "auth != null && !data.exists() && newData.val() === auth.uid" }
+      "$code": {
+        ".write": "auth != null && !data.exists() && newData.val() === auth.uid"
+      }
     },
     "friends": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        "$fid": { ".write": "auth != null && (auth.uid === $uid || auth.uid === $fid)" }
+        "$fid": {
+          ".write": "auth != null && ((!newData.exists() && (auth.uid === $uid || auth.uid === $fid)) || (newData.val() === true && ((auth.uid === $uid && root.child('requests').child($uid).child($fid).exists()) || (auth.uid === $fid && root.child('requests').child($fid).child($uid).exists()))))"
+        }
+      }
+    },
+    "requests": {
+      "$to": {
+        ".read": "auth != null && auth.uid === $to",
+        "$from": {
+          ".read": "auth != null && auth.uid === $from",
+          ".write": "auth != null && ((auth.uid === $from && $from !== $to && (!newData.exists() || !root.child('friends').child($to).child($from).exists())) || (auth.uid === $to && !newData.exists()))",
+          ".validate": "newData.hasChildren(['name', 'at']) && newData.child('name').isString() && newData.child('name').val().length <= 24 && newData.child('at').val() === now"
+        }
+      }
+    },
+    "sent": {
+      "$from": {
+        ".read": "auth != null && auth.uid === $from",
+        "$to": {
+          ".write": "auth != null && ((auth.uid === $from && $from !== $to) || (auth.uid === $to && !newData.exists()))",
+          ".validate": "newData.val() === true"
+        }
       }
     },
     "h2h": {
       ".read": "auth != null",
-      "$pair": { ".write": "auth != null && ($pair.beginsWith(auth.uid + '_') || $pair.endsWith('_' + auth.uid))" }
+      "$pair": {
+        ".write": "auth != null && ($pair.beginsWith(auth.uid + '_') || $pair.endsWith('_' + auth.uid))"
+      }
     }
   }
 }

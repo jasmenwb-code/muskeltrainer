@@ -1,6 +1,7 @@
 /* ---------- Firebase: wird erst geladen, wenn jemand online spielen will ---------- */
 const FB_VER='10.12.2';
 const FB={app:null,auth:null,db:null,user:null,loading:null};
+const serverTime=()=>firebase.database.ServerValue.TIMESTAMP;   // Zeitstempel setzt der Server
 
 function loadScript(src){
   return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=res; s.onerror=()=>rej(new Error('load')); document.head.appendChild(s); });

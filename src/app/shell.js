@@ -16,6 +16,11 @@ function bindHeader(){
   document.getElementById('profileBtn').onclick=()=>{ if(inMatch()) return; stopSpeaking(); openProfile(); };
   document.getElementById('settingsBtn').onclick=()=>{ if(inMatch()) return; stopSpeaking(); renderSettings(); };
 }
+function setRequestBadge(n){
+  const dot=document.getElementById('reqDot'); if(!dot) return;
+  dot.hidden=!n; dot.textContent=n>9?'9+':String(n||'');
+  document.getElementById('profileBtn').setAttribute('aria-label',n?`Profil, ${n} ${n===1?'Freundschaftsanfrage':'Freundschaftsanfragen'}`:'Profil');
+}
 function setProfileIcon(photo){
   const b=document.getElementById('profileBtn');
   b.innerHTML=photo?`<img src="${photo}" alt="">`:IC.person;

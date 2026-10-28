@@ -1,4 +1,65 @@
-/* ---------- Seiten: Freundesliste, Freund, Rangliste, eigenes Profil ---------- */
+/* ---------- Seiten: Freundesliste, Anfragen, Freund, Rangliste, eigenes Profil ---------- */
+
+/* „zuletzt online vor 5 Min.“ */
+function fmtAgo(ts){
+  const min=Math.round((Date.now()-ts)/60000);
+  if(min<2) return 'gerade eben';
+  if(min<60) return `vor ${min} Min.`;
+  if(min<24*60) return `vor ${Math.round(min/60)} Std.`;
+  const days=Math.round(min/1440);
+  return days===1?'gestern':days<7?`vor ${days} Tagen`:'am '+fmtDate(ts);
+}
+function presenceText(uid,p){
+  if(p) return p.presence.busy?'spielt gerade':'online';
+  const seen=(SOC.info[uid]||{}).lastSeen;
+  return typeof seen==='number'?'zuletzt online '+fmtAgo(seen):'offline';
+}
+
+/* Knopf passend zum Freundschaftsstand; compact = nur „+“ */
+function friendActionHTML(uid,compact){
+  const id=esc(uid);
+  switch(friendState(uid)){
+    case 'friend': return '<span class="value">Freund</span>';
+    case 'sent': return `<button class="btn plain small" data-fcancel="${id}" title="Anfrage zurückziehen">Angefragt</button>`;
+    case 'incoming': return `<button class="btn tinted small" data-faccept="${id}">Annehmen</button>`;
+    case 'none': return compact
+      ?`<button class="iconbtn addf" data-freq="${id}" aria-label="Freundschaftsanfrage senden" title="Freundschaftsanfrage senden">+</button>`
+      :`<button class="btn tinted small" data-freq="${id}">Anfrage senden</button>`;
+    default: return '';
+  }
+}
+const FRIEND_ACTIONS={freq:sendRequest,fcancel:cancelRequest,faccept:acceptRequest,fdecline:declineRequest};
+function bindFriendActions(box){
+  for(const [key,fn] of Object.entries(FRIEND_ACTIONS)) box.querySelectorAll(`[data-${key}]`).forEach(b=>b.onclick=async()=>{
+    b.disabled=true;
+    try{ await fn(b.dataset[key]); }catch(e){ b.disabled=false; return; }
+    refreshPeople();
+  });
+}
+
+/* Eingehende Anfragen (Lobby und Profil) */
+function renderRequests(){
+  const box=document.getElementById('reqBox'); if(!box) return;
+  const ids=Object.keys(SOC.incoming);
+  box.hidden=!ids.length;
+  box.innerHTML=ids.length?`<p class="group-label">Freundschaftsanfragen</p><section class="group list">${ids.map(id=>{
+    ensureInfo(id); const nm=(SOC.info[id]||{}).name||(SOC.incoming[id]||{}).name||'Spieler';
+    return `<div class="row">${avatarHTML(id,nm)}<span class="label"><span>${esc(nm)}</span><small>möchte mit dir befreundet sein</small></span><button class="iconbtn" data-fdecline="${esc(id)}" aria-label="Ablehnen" title="Ablehnen">✕</button><button class="btn tinted small" data-faccept="${esc(id)}">Annehmen</button></div>`;
+  }).join('')}</section>`:'';
+  bindFriendActions(box);
+}
+/* Gesendete Anfragen (Profil) */
+function renderSentList(){
+  const box=document.getElementById('sentBox'); if(!box) return;
+  const ids=Object.keys(SOC.sent);
+  box.hidden=!ids.length;
+  box.innerHTML=ids.length?`<p class="group-label">Gesendete Anfragen</p><section class="group list">${ids.map(id=>{
+    ensureInfo(id); const nm=(SOC.info[id]||{}).name||'Spieler';
+    return `<div class="row">${avatarHTML(id,nm)}<span class="label"><span>${esc(nm)}</span><small>wartet auf Bestätigung</small></span><button class="btn plain small" data-fcancel="${esc(id)}">Zurückziehen</button></div>`;
+  }).join('')}</section>`:'';
+  bindFriendActions(box);
+}
+
 function renderFriendList(){
   const box=document.getElementById('friendList'); if(!box) return;
   const ids=Object.keys(SOC.friends);
@@ -9,7 +70,7 @@ function renderFriendList(){
   box.innerHTML=ids.map(fid=>{
     const p=online.get(fid), rc=record(fid), nm=(p&&p.presence.nick)||nameOf(fid)||'Spieler';
     const status=p?(p.presence.busy?'busy':'on'):'off';
-    return `<div class="row">${avatarHTML(fid,nm,status)}<button class="label rowlink" data-fr="${esc(fid)}"><span>${esc(nm)}</span><small>${p?(p.presence.busy?'spielt gerade':'online'):'offline'}${rc.games?` · Bilanz ${rc.w} : ${rc.l}`:''}</small></button>${p&&!p.presence.busy?`<button class="btn tinted small" data-ch="${esc(p.peer)}">Herausfordern</button>`:''}</div>`;
+    return `<div class="row">${avatarHTML(fid,nm,status)}<button class="label rowlink" data-fr="${esc(fid)}"><span>${esc(nm)}</span><small>${presenceText(fid,p)}${rc.games?` · Bilanz ${rc.w} : ${rc.l}`:''}</small></button>${p&&!p.presence.busy?`<button class="btn tinted small" data-ch="${esc(p.peer)}">Herausfordern</button>`:''}</div>`;
   }).join('');
   box.querySelectorAll('[data-fr]').forEach(b=>b.onclick=()=>renderFriend(b.dataset.fr));
   box.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>challenge(b.dataset.ch));
@@ -24,7 +85,7 @@ function renderFriend(fid){
   const nm=(p&&p.presence.nick)||info.name||'Spieler';
   const st=Object.assign(emptyStats(),info.stats||{});
   showPage(`<div class="stack">
-    <div class="pagehead">${avatarHTML(fid,nm,null,'xl')}<h2 class="pagetitle">${esc(nm)}</h2><p class="sub">${p?(p.presence.busy?'spielt gerade':'online'):'offline'}</p></div>
+    <div class="pagehead">${avatarHTML(fid,nm,null,'xl')}<h2 class="pagetitle">${esc(nm)}</h2><p class="sub">${presenceText(fid,p)}</p></div>
     <div class="score"><div class="sc me"><small>Du</small><b>${rc.w}</b></div><div class="sc mid">Siege<br>${rc.games} ${rc.games===1?'Duell':'Duelle'}</div><div class="sc op"><small>${esc(nm)}</small><b>${rc.l}</b></div></div>
     <p class="group-label">Eure Bilanz</p>
     <section class="group list">
@@ -75,6 +136,7 @@ async function openProfile(){
   if(!(await ensureAuth('profile'))) return;
   await initLobby();
   renderProfile();
+  loadFriendData();   // „zuletzt online“ auffrischen
 }
 function renderProfile(msg){
   if(!SOC.profile){ openProfile(); return; }
@@ -90,6 +152,7 @@ function renderProfile(msg){
       <input type="file" id="photoIn" accept="image/*" hidden>
       <p class="hint" id="photoHint" role="status"></p>
     </section>
+    <div class="stack" id="reqBox" hidden></div>
     <section class="stack-sm"><label class="group-label" for="pName">Dein Name</label><input id="pName" class="field" maxlength="24" value="${esc(p.name)}" autocomplete="nickname"></section>
     <section class="group list">
       <div class="row"><span class="label"><span>Dein Freundescode</span><b class="fcode">${esc(p.code||'…')}</b><small>Freunde können dich damit finden</small></span><button class="btn tinted small" id="copyCode">Kopieren</button></div>
@@ -101,6 +164,8 @@ function renderProfile(msg){
       <input id="fSearch" class="field" type="search" placeholder="Name oder Freundescode" aria-label="Freunde suchen" autocomplete="off">
       <div class="list" id="fResults"></div>
     </section>
+
+    <div class="stack" id="sentBox" hidden></div>
 
     <p class="group-label">Deine Freunde</p>
     <section class="group list" id="friendList"></section>
@@ -133,15 +198,21 @@ function renderProfile(msg){
   const fs=document.getElementById('fSearch'), fr=document.getElementById('fResults'); let searchTimer=null, seq=0;
   fs.oninput=()=>{
     clearTimeout(searchTimer);
-    if(fs.value.trim().length<2){ fr.innerHTML=''; return; }
+    if(fs.value.trim().length<2){ searchResults=null; fr.innerHTML=''; return; }
     searchTimer=setTimeout(async()=>{
       const my=++seq; fr.innerHTML=infoRow('','Suche …');
       const res=await searchUsers(fs.value); if(my!==seq) return;
-      if(!res.length){ fr.innerHTML=infoRow('','Niemand gefunden. Prüf die Schreibweise oder frag nach dem Freundescode.'); return; }
-      fr.innerHTML=res.map(({id,u})=>`<div class="row">${avatarHTML(id,u.name,null,'',u.photo||null)}<span class="label"><span>${esc(u.name||'Spieler')}</span><small>${(u.stats&&u.stats.games)||0} Duelle</small></span>${isFriend(id)?'<span class="value">Freund</span>':`<button class="btn tinted small" data-addr="${esc(id)}">Hinzufügen</button>`}</div>`).join('');
-      fr.querySelectorAll('[data-addr]').forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await addFriend(b.dataset.addr); b.outerHTML='<span class="value">Freund</span>'; }catch(e){ b.disabled=false; } });
+      searchResults=res; renderSearchResults();
     },350);
   };
   document.getElementById('lbRow').onclick=()=>renderLeaderboard('all');
-  renderFriendList(); renderOnlineList('othersOnline');
+  searchResults=null;
+  renderRequests(); renderSentList(); renderFriendList(); renderOnlineList('othersOnline');
+}
+let searchResults=null;
+function renderSearchResults(){
+  const fr=document.getElementById('fResults'); if(!fr||!searchResults) return;
+  if(!searchResults.length){ fr.innerHTML=infoRow('','Niemand gefunden. Prüf die Schreibweise oder frag nach dem Freundescode.'); return; }
+  fr.innerHTML=searchResults.map(({id,u})=>`<div class="row">${avatarHTML(id,u.name,null,'',u.photo||null)}<span class="label"><span>${esc(u.name||'Spieler')}</span><small>${(u.stats&&u.stats.games)||0} Duelle</small></span>${friendActionHTML(id)}</div>`).join('');
+  bindFriendActions(fr);
 }
