@@ -31,14 +31,15 @@ function correctKey(q, M) {
   return new Set(keys).size === 4 && keys.includes(key) ? key : null;
 }
 
-/* Richtig = 1 Punkt; Bonus +2 bis 10 s, +1 bis 20 s (wie in der Website) */
+/* Punkte nach Tempo (wie in der Website, src/online/round.js): richtig sofort 100, nach 30 s 10, falsch 0 */
+const PTS_MAX = 100, PTS_MIN = 10;
+const speedPoints = t => Math.round(PTS_MAX - (PTS_MAX - PTS_MIN) * Math.min(Math.max(t, 0), QTIME) / QTIME);
 function evalAnswer(a, start, key) {
   if (!a || typeof a.at !== 'number' || typeof a.c !== 'string' || typeof start !== 'number') return { ok: false, pt: 0, t: null };
   const t = a.at - start;
   if (t < 0 || t > QTIME + GRACE) return { ok: false, pt: 0, t: null };
   const ok = a.c === key;
-  const bonus = ok ? (t <= 10000 ? 2 : t <= 20000 ? 1 : 0) : 0;
-  return { ok, pt: ok ? 1 + bonus : 0, t: Math.min(t, QTIME) };
+  return { ok, pt: ok ? speedPoints(t) : 0, t: Math.min(t, QTIME) };
 }
 
 /* Ergebnis: {valid:false, reason} oder {valid:true, players:[host, op], points:{uid:n}, winner:uid|null} */
@@ -63,4 +64,4 @@ function scoreDuel(game, M) {
   return { valid: true, players, points, winner: points[a] > points[b] ? a : points[b] > points[a] ? b : null };
 }
 
-module.exports = { scoreDuel, correctKey, evalAnswer, ROUNDS, QTIME, GRACE };
+module.exports = { scoreDuel, correctKey, evalAnswer, speedPoints, ROUNDS, QTIME, GRACE };

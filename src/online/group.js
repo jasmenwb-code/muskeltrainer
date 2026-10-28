@@ -69,7 +69,7 @@ function renderGroupLobby(msg){
   setBack('Verlassen',()=>leaveGroup());
   const hp=gHostPeer();
   showPage(`<div class="stack">
-    <div class="pagehead"><h2 class="pagetitle">Lobby</h2><p class="sub">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · ${ROUNDS} Runden à 30 Sekunden</p></div>
+    <div class="pagehead"><h2 class="pagetitle">Lobby</h2><p class="sub">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · ${ROUNDS} Runden à 30 Sekunden · je schneller richtig, desto mehr Punkte</p></div>
     <section class="card center">
       <p class="sectionhead">Lobby-Code</p><div class="codebig">${esc(GRP.code)}</div>
       <p class="sub">${GRP.host?'Schick den Code an deine Freunde. Sie geben ihn unter „Online spielen“ → „Mit Code beitreten“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
@@ -182,7 +182,7 @@ function gResultRow(r,res){
 }
 function gShowReveal(g){
   const q=g.qs[g.r], res=g.res||{};
-  const mine=res[gMe()]||{c:'',ok:false,pt:0,bonus:0,t:QTIME};
+  const mine=res[gMe()]||{c:'',ok:false,pt:0,t:QTIME};
   if(!GRP.hist.some(h=>h.r===g.r)) GRP.hist.push({r:g.r,mid:q.m,k:q.k,me:mine});
   const last=g.r+1>=ROUNDS, right=Object.values(res).filter(e=>e.ok).length;
   showPage(`<div class="stack">${gTopHTML(g)}

@@ -1319,7 +1319,7 @@ function renderLobby(msg){
   leaveOnline(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
   setBack('Start',renderStart);
   showPage(`<div class="stack">
-    <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Richtig gibt 1 Punkt, unter 10 s +2 Bonus, unter 20 s +1.</p></div>
+    <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Je schneller richtig, desto mehr Punkte: sofort 100, kurz vor Schluss 10.</p></div>
     <section class="group"><button class="row" id="mkGroup"><span class="tile">${IC.bolt}</span><span class="label">Lobby erstellen<small>Mit bis zu ${GMAX} Spielern gleichzeitig spielen</small></span>${IC.chev}</button></section>
 
     <p class="group-label">Freunde</p>
@@ -1407,11 +1407,13 @@ function showOfficialResult(gid,oppId){
 const ROUNDS=10, QTIME=30000, REVEAL=6000;
 const RT={tInt:null,deadline:null,revInt:null,next:null,start:0,myAns:null};
 
-/* Richtig = 1 Punkt; Bonus +2 unter 10 s, +1 unter 20 s */
+/* Punkte nach Tempo: richtig sofort = 100, kurz vor Ablauf = 10, dazwischen fließend; falsch = 0.
+   Wer nachschlägt, verliert Zeit und damit die meisten Punkte. */
+const PTS_MAX=100, PTS_MIN=10;
+function speedPoints(t){ return Math.round(PTS_MAX-(PTS_MAX-PTS_MIN)*Math.min(Math.max(t,0),QTIME)/QTIME); }
 function evalChoice(c,key,t){
   c=typeof c==='string'?c:''; const ok=!!c&&c===key; t=Math.min(Number(t)||QTIME,QTIME);
-  const bonus=ok?(t<=10000?2:t<=20000?1:0):0;
-  return {c,ok,pt:ok?1+bonus:0,bonus,t};
+  return {c,ok,pt:ok?speedPoints(t):0,t};
 }
 /* 10 Fragen zu 10 verschiedenen Muskeln */
 function pickQs(){
@@ -1469,7 +1471,7 @@ function startRevealCountdown(last){
   RT.revInt=setInterval(()=>{ const s=Math.max(0,Math.ceil((REVEAL-(performance.now()-t0))/1000)); if(el) el.textContent=(last?'Auswertung in ':'Nächste Runde in ')+s+' s'; },250);
 }
 function verdictHTML(label,r){
-  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':!r.c?'Keine Antwort':'Falsch'}</b><span>${r.ok?`+${r.pt}${r.bonus?` (inkl. ${r.bonus} Bonus)`:''}`:'+0'}</span></div><small class="tm">${r.c?fmtSec(r.t):'—'}</small></div>`;
+  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':!r.c?'Keine Antwort':'Falsch'}</b><span>+${r.pt}</span></div><small class="tm">${r.c?fmtSec(r.t):'—'}</small></div>`;
 }
 
 /* ---------- Duell 1 gegen 1 ----------
@@ -1717,7 +1719,7 @@ function renderGroupLobby(msg){
   setBack('Verlassen',()=>leaveGroup());
   const hp=gHostPeer();
   showPage(`<div class="stack">
-    <div class="pagehead"><h2 class="pagetitle">Lobby</h2><p class="sub">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · ${ROUNDS} Runden à 30 Sekunden</p></div>
+    <div class="pagehead"><h2 class="pagetitle">Lobby</h2><p class="sub">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · ${ROUNDS} Runden à 30 Sekunden · je schneller richtig, desto mehr Punkte</p></div>
     <section class="card center">
       <p class="sectionhead">Lobby-Code</p><div class="codebig">${esc(GRP.code)}</div>
       <p class="sub">${GRP.host?'Schick den Code an deine Freunde. Sie geben ihn unter „Online spielen“ → „Mit Code beitreten“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
@@ -1830,7 +1832,7 @@ function gResultRow(r,res){
 }
 function gShowReveal(g){
   const q=g.qs[g.r], res=g.res||{};
-  const mine=res[gMe()]||{c:'',ok:false,pt:0,bonus:0,t:QTIME};
+  const mine=res[gMe()]||{c:'',ok:false,pt:0,t:QTIME};
   if(!GRP.hist.some(h=>h.r===g.r)) GRP.hist.push({r:g.r,mid:q.m,k:q.k,me:mine});
   const last=g.r+1>=ROUNDS, right=Object.values(res).filter(e=>e.ok).length;
   showPage(`<div class="stack">${gTopHTML(g)}

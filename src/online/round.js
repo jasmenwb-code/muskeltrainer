@@ -4,11 +4,13 @@
 const ROUNDS=10, QTIME=30000, REVEAL=6000;
 const RT={tInt:null,deadline:null,revInt:null,next:null,start:0,myAns:null};
 
-/* Richtig = 1 Punkt; Bonus +2 unter 10 s, +1 unter 20 s */
+/* Punkte nach Tempo: richtig sofort = 100, kurz vor Ablauf = 10, dazwischen fließend; falsch = 0.
+   Wer nachschlägt, verliert Zeit und damit die meisten Punkte. */
+const PTS_MAX=100, PTS_MIN=10;
+function speedPoints(t){ return Math.round(PTS_MAX-(PTS_MAX-PTS_MIN)*Math.min(Math.max(t,0),QTIME)/QTIME); }
 function evalChoice(c,key,t){
   c=typeof c==='string'?c:''; const ok=!!c&&c===key; t=Math.min(Number(t)||QTIME,QTIME);
-  const bonus=ok?(t<=10000?2:t<=20000?1:0):0;
-  return {c,ok,pt:ok?1+bonus:0,bonus,t};
+  return {c,ok,pt:ok?speedPoints(t):0,t};
 }
 /* 10 Fragen zu 10 verschiedenen Muskeln */
 function pickQs(){
@@ -66,5 +68,5 @@ function startRevealCountdown(last){
   RT.revInt=setInterval(()=>{ const s=Math.max(0,Math.ceil((REVEAL-(performance.now()-t0))/1000)); if(el) el.textContent=(last?'Auswertung in ':'Nächste Runde in ')+s+' s'; },250);
 }
 function verdictHTML(label,r){
-  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':!r.c?'Keine Antwort':'Falsch'}</b><span>${r.ok?`+${r.pt}${r.bonus?` (inkl. ${r.bonus} Bonus)`:''}`:'+0'}</span></div><small class="tm">${r.c?fmtSec(r.t):'—'}</small></div>`;
+  return `<div class="pv ${r.ok?'ok':'no'}"><div class="pvh"><small>${esc(label)}</small><b>${r.ok?'Richtig':!r.c?'Keine Antwort':'Falsch'}</b><span>+${r.pt}</span></div><small class="tm">${r.c?fmtSec(r.t):'—'}</small></div>`;
 }
