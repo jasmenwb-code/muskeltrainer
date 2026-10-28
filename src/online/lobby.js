@@ -82,7 +82,7 @@ function renderLobby(msg){
   leaveOnline(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
   setBack('Start',renderStart);
   showPage(`<div class="stack">
-    <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Richtig gibt 1 Punkt, unter 10 s +2 Bonus, unter 20 s +1.</p></div>
+    <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Je schneller richtig, desto mehr Punkte: sofort 100, kurz vor Schluss 10.</p></div>
     <section class="group"><button class="row" id="mkGroup"><span class="tile">${IC.bolt}</span><span class="label">Lobby erstellen<small>Mit bis zu ${GMAX} Spielern gleichzeitig spielen</small></span>${IC.chev}</button></section>
 
     <p class="group-label">Freunde</p>
