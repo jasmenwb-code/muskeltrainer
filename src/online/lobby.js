@@ -1,9 +1,10 @@
 /* ---------- Lobby: wer ist online, Einladungen, Einstieg in Duell und Gruppe ----------
    Jeder angemeldete Spieler hat in "lobby" einen Eintrag:
    {app:'mt', nick, busy, inv:{to,code} (Duell-Einladung), ginv:{to:[…],code} (Gruppen-Einladung), dec:{to,code} (Absage)}
-   DUEL.view sagt, welche Online-Ansicht gerade offen ist (off, note, auth, lobby, wait, game, group, profile, friend, board). */
+   DUEL.view sagt, welche Online-Ansicht gerade offen ist:
+   off, note, auth, hub (Modi), one (1 gegen 1), grouphome, ranked, rkwait (Suche), wait, game, group, profile, friend, board */
 const DUEL={room:null,loading:null,myPeer:null,view:'off',outInv:null,decline:null,seen:new Set(),
-  role:null,code:null,named:null,unsub:[],timers:[],game:null,hg:null,lastKey:null,hist:[],oppNick:'',oppId:null,target:null,reported:null};
+  role:null,code:null,named:null,unsub:[],timers:[],game:null,hg:null,lastKey:null,hist:[],oppNick:'',oppId:null,target:null,reported:null,ranked:false};
 
 const myName=()=>((SOC.profile&&SOC.profile.name)||'Spieler').slice(0,24);
 
@@ -25,7 +26,7 @@ async function disconnectLobby(){
 }
 function pushLobby(){
   if(!DUEL.room) return;
-  DUEL.room.presence({app:'mt',nick:myName(),busy:inMatch(),inv:DUEL.outInv,ginv:groupInvitePresence(),dec:DUEL.decline}).catch(()=>{});
+  DUEL.room.presence({app:'mt',nick:myName(),busy:inMatch()||DUEL.view==='rkwait',inv:DUEL.outInv,ginv:groupInvitePresence(),dec:DUEL.decline}).catch(()=>{});
 }
 function lobbyPeers(){
   if(!DUEL.room) return [];
@@ -34,6 +35,7 @@ function lobbyPeers(){
 }
 /* Verlässt laufende Online-Ansichten (z. B. beim Wechsel zur Startseite) */
 function leaveOnline(){
+  leaveQueue(); DUEL.ranked=false;
   if(GRP.named) leaveGroupRoom();
   if(DUEL.named) leaveDuelRoom();
   DUEL.view='off'; pushLobby();
@@ -51,7 +53,8 @@ function onLobbyPeers(){
 }
 /* Listen mit Spielern auf der gerade offenen Seite neu zeichnen */
 function refreshPeople(){
-  if(DUEL.view==='lobby'){ renderRequests(); renderOnlineList('onlineList'); renderFriendList(); }
+  if(DUEL.view==='hub') renderRequests();
+  if(DUEL.view==='one'){ renderRequests(); renderOnlineList('onlineList'); renderFriendList(); }
   if(DUEL.view==='profile'){ renderRequests(); renderSentList(); renderSearchResults(); renderOnlineList('othersOnline'); renderFriendList(); }
   if(DUEL.view==='group') renderGroupMembers();
 }
@@ -72,43 +75,39 @@ function showInvite(duelInv,groupInv){
   };
 }
 
-/* ----- Lobby-Seite ----- */
+/* ----- Duell-Übersicht: drei Spielmodi ----- */
+const RULES_TEXT='10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · je schneller richtig, desto mehr Punkte (sofort 100, kurz vor Schluss 10).';
 async function openDuel(){
   if(!(await ensureAuth('duel'))) return;
   await initLobby();
-  renderLobby();
+  renderDuelHub();
   loadFriendData();   // „zuletzt online“ auffrischen
 }
-function renderLobby(msg){
-  leaveOnline(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
+const modeRow=(id,tile,icon,title,sub)=>`<button class="row moderow" id="${id}"><span class="tile big ${tile}">${icon}</span><span class="label"><span>${title}</span><small>${sub}</small></span>${IC.chev}</button>`;
+function renderDuelHub(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='hub'; pushLobby(); inviteBar.hidden=true;
   setBack('Start',renderStart);
   showPage(`<div class="stack">
-    <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Je schneller richtig, desto mehr Punkte: sofort 100, kurz vor Schluss 10.</p></div>
+    <div class="pagehead"><h2 class="pagetitle">Duell</h2><p class="sub">Wähle einen Spielmodus</p></div>
     <div class="stack" id="reqBox" hidden></div>
-    <section class="group"><button class="row" id="mkGroup"><span class="tile">${IC.bolt}</span><span class="label">Lobby erstellen<small>Mit bis zu ${GMAX} Spielern gleichzeitig spielen</small></span>${IC.chev}</button></section>
-
-    <p class="group-label">Freunde</p>
-    <section class="group list" id="friendList"></section>
-    <section class="group"><button class="row" id="toProfile"><span class="tile tile-ok">${IC.plus}</span><span class="label">Freunde hinzufügen<small>Anfrage per Name oder Freundescode</small></span>${IC.chev}</button></section>
-    <section class="group"><button class="row" id="lbRow"><span class="tile tile-warn">${IC.trophy}</span><span class="label">Rangliste</span>${IC.chev}</button></section>
-
-    <p class="group-label">Weitere Spieler online</p>
-    <section class="group list" id="onlineList"></section>
-
-    <p class="group-label">Mit Code beitreten</p>
-    <section class="card">
-      <div class="coderow"><input id="codeIn" class="field" inputmode="numeric" maxlength="5" placeholder="Code" aria-label="Duell- oder Lobby-Code"><button class="btn tinted" id="joinCode">Beitreten</button></div>
-      <button class="btn plain" id="mkCode">Duell-Code für 1 gegen 1 erstellen</button>
+    <section class="group list">
+      ${modeRow('mode1v1','',IC.bolt,'1 gegen 1','Freunde herausfordern oder per Code spielen')}
+      ${modeRow('modeGroup','tile-blue',IC.users,`2–${GMAX} Spieler`,'Lobby erstellen und gemeinsam spielen')}
+      ${modeRow('modeRanked','tile-warn',IC.trophy,'Ranked',`Zufälliger Gegner · deine Wertung: ${myRating()}`)}
     </section>
-    ${accountRowHTML()}
+    <section class="group"><button class="row" id="lbRow"><span class="label">Rangliste</span>${IC.chev}</button></section>
     <p class="hint" id="lobbyHint" role="status"></p>
   </div>`);
   if(msg) setHint('lobbyHint',msg,true);
-  bindAccount();
-  view.querySelector('#mkGroup').onclick=()=>openGroup();
-  view.querySelector('#toProfile').onclick=()=>renderProfile();
+  view.querySelector('#mode1v1').onclick=()=>render1v1();
+  view.querySelector('#modeGroup').onclick=()=>renderGroupHome();
+  view.querySelector('#modeRanked').onclick=()=>renderRanked();
   view.querySelector('#lbRow').onclick=()=>renderLeaderboard('all');
-  view.querySelector('#mkCode').onclick=()=>hostDuel(newDuelCode(),null);
+  renderRequests();
+  onLobbyPeers();
+}
+/* Gemeinsames Code-Feld: 4 Ziffern = Duell, 5 Ziffern = Lobby */
+function bindCodeJoin(){
   const ci=view.querySelector('#codeIn');
   const join=()=>{
     const c=ci.value.replace(/\D/g,'');
@@ -117,8 +116,50 @@ function renderLobby(msg){
     else setHint('lobbyHint','Duell-Codes haben 4 Ziffern, Lobby-Codes 5.',true);
   };
   view.querySelector('#joinCode').onclick=join; ci.onkeydown=e=>{ if(e.key==='Enter') join(); };
+}
+const codeRowHTML=ph=>`<div class="coderow"><input id="codeIn" class="field" inputmode="numeric" maxlength="5" placeholder="${ph}" aria-label="${ph}"><button class="btn tinted" id="joinCode">Beitreten</button></div>`;
+
+/* ----- 1 gegen 1 ----- */
+function render1v1(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='one'; pushLobby(); inviteBar.hidden=true;
+  setBack('Duell',renderDuelHub);
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">1 gegen 1</h2><p class="sub">${RULES_TEXT}</p></div>
+    <div class="stack" id="reqBox" hidden></div>
+    <p class="group-label">Freunde</p>
+    <section class="group list" id="friendList"></section>
+    <section class="group"><button class="row" id="toProfile"><span class="tile tile-ok">${IC.plus}</span><span class="label">Freunde hinzufügen<small>Anfrage per Name oder Freundescode</small></span>${IC.chev}</button></section>
+    <p class="group-label">Weitere Spieler online</p>
+    <section class="group list" id="onlineList"></section>
+    <p class="group-label">Mit Code</p>
+    <section class="card">
+      ${codeRowHTML('Duell-Code')}
+      <button class="btn plain" id="mkCode">Eigenen Duell-Code erstellen</button>
+    </section>
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('lobbyHint',msg,true);
+  view.querySelector('#toProfile').onclick=()=>renderProfile();
+  view.querySelector('#mkCode').onclick=()=>hostDuel(newDuelCode(),null);
+  bindCodeJoin();
   renderRequests(); renderFriendList(); renderOnlineList('onlineList');
   onLobbyPeers();
+}
+
+/* ----- 2 bis 8 Spieler ----- */
+function renderGroupHome(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='grouphome'; pushLobby(); inviteBar.hidden=true;
+  setBack('Duell',renderDuelHub);
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">2–${GMAX} Spieler</h2><p class="sub">Erstelle eine Lobby, lade Freunde ein und spielt alle gleichzeitig. ${RULES_TEXT}</p></div>
+    <button class="btn primary" id="mkGroup">Lobby erstellen</button>
+    <p class="group-label">Einer Lobby beitreten</p>
+    <section class="card">${codeRowHTML('Lobby-Code')}</section>
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('lobbyHint',msg,true);
+  view.querySelector('#mkGroup').onclick=()=>openGroup();
+  bindCodeJoin();
 }
 
 /* Spieler online, die (noch) keine Freunde sind: Anfrage senden oder herausfordern */

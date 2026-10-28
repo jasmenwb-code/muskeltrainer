@@ -19,7 +19,8 @@
       ".read": "auth != null",
       ".indexOn": [
         "score",
-        "nameLower"
+        "nameLower",
+        "rating"
       ],
       "$uid": {
         ".write": "auth != null && auth.uid === $uid",

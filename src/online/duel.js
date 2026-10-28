@@ -1,6 +1,7 @@
 /* ---------- Duell 1 gegen 1 ----------
    Raum "duel-<4 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand}, Gast: {role:'guest', nick, a:Antwort}.
-   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}} */
+   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}}
+   Ranked-Duelle (siehe ranked.js) tragen zusätzlich ranked:true und rk:{Spieler:Wertung vor dem Spiel}. */
 const newDuelCode=()=>String(Math.floor(1000+Math.random()*9000));
 const isHost=()=>DUEL.role==='host';
 const curGame=()=>isHost()?DUEL.game:DUEL.hg;
@@ -47,6 +48,7 @@ function onDuelPeers(){
   const g=h.presence.g;
   if(!g){ const s=document.getElementById('waitSub'); if(s) s.textContent='Verbunden. Gleich geht es los …'; return; }
   if(g.op!==DUEL.myPeer){ leaveDuel('Dieses Duell läuft schon mit jemand anderem.'); return; }
+  if(g.ranked) DUEL.ranked=true;
   guestFollow(g);
 }
 
@@ -54,6 +56,11 @@ function onDuelPeers(){
 function startDuel(op){
   DUEL.outInv=null; DUEL.hist=[]; DUEL.view='game'; pushLobby();
   DUEL.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  if(DUEL.ranked){
+    DUEL.game.ranked=true;
+    DUEL.game.rk={[DUEL.myPeer]:myRating(),[op]:(RK.opp&&RK.opp.id===op&&typeof RK.opp.rating==='number')?RK.opp.rating:RANK_START};
+    leaveQueue();
+  }
   const opp=oppPeer(); DUEL.oppNick=(opp&&opp.presence.nick)||'Gegner';
   pushHost(); beginRound();
 }
@@ -105,9 +112,10 @@ function renderWait(){
   const host=isHost();
   showPage(`<div class="stack">
     <section class="card center tall">
-      ${host&&!DUEL.target?`<p class="sectionhead">Dein Duell-Code</p><div class="codebig">${esc(DUEL.code)}</div><p class="sub">Schick den Code deinem Freund. Er tippt unter „Online spielen“ auf „Beitreten“ und gibt ihn ein.</p>`:''}
-      ${host&&DUEL.target?`<p class="sectionhead">Herausforderung gesendet</p><p>Warte, bis <b>${esc(DUEL.target)}</b> annimmt …</p>`:''}
-      ${!host?`<p class="sectionhead">Duell ${esc(DUEL.code)}</p><p id="waitSub">Verbinde …</p>`:''}
+      ${DUEL.ranked?`<p class="sectionhead">Ranked</p><p><b>Gegner gefunden${RK.opp&&RK.opp.nick?': '+esc(RK.opp.nick):''}</b></p><p class="sub" id="waitSub">Verbinde …</p>`:''}
+      ${!DUEL.ranked&&host&&!DUEL.target?`<p class="sectionhead">Dein Duell-Code</p><div class="codebig">${esc(DUEL.code)}</div><p class="sub">Schick den Code deinem Freund. Er gibt ihn unter Duell → „1 gegen 1“ ein.</p>`:''}
+      ${!DUEL.ranked&&host&&DUEL.target?`<p class="sectionhead">Herausforderung gesendet</p><p>Warte, bis <b>${esc(DUEL.target)}</b> annimmt …</p>`:''}
+      ${!DUEL.ranked&&!host?`<p class="sectionhead">Duell ${esc(DUEL.code)}</p><p id="waitSub">Verbinde …</p>`:''}
       <div class="spinner" aria-hidden="true"></div>
     </section>
     <button class="btn plain" id="cancel">Abbrechen</button>
@@ -146,20 +154,30 @@ function showDuelEnd(g){
   setBack('Zurück',()=>leaveDuel());
   const [a,b]=scores(g);
   const head=a>b?'Gewonnen!':a<b?'Verloren':'Unentschieden';
+  const oppId=isHost()?g.op:DUEL.oppId;
+  let rankLine='';
+  if(g.ranked&&g.rk){
+    const before=g.rk[DUEL.myPeer], delta=eloDelta(before,g.rk[oppId],a>b?1:a<b?0:0.5);
+    rankLine=`<div class="rankchange ${delta>=0?'up':'down'}"><span>Wertung</span><b>${before} → ${before+delta}</b><i>${delta>=0?'+':''}${delta}</i></div>`;
+  }
   const rows=DUEL.hist.slice().sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(FIELD[h.k])}</small></span><span class="badges"><span class="badge ${h.me.ok?'good':'bad'}">Du +${h.me.pt}</span><span class="badge ${h.op.ok?'good':'bad'}">${esc(oppName())} +${h.op.pt}</span></span></div>`).join('');
   showPage(`<div class="stack">
     <div class="pagehead"><h2 class="pagetitle big${a>b?' win':''}">${head}</h2><p class="sub score-line">Du ${a} : ${b} ${esc(oppName())}</p></div>
+    ${rankLine}
     <p class="footnote" id="h2hLine"></p>
     <section class="group list">${rows}</section>
-    <div class="stack-sm">${isHost()?'<button class="btn primary" id="again">Revanche</button>':'<p class="footnote">Revanche? Dein Gegner kann eine neue Runde starten. Bleib einfach hier.</p>'}<button class="btn plain" id="leave">Duell verlassen</button></div>
+    <div class="stack-sm">${g.ranked?'<button class="btn primary" id="rkAgain">Neuen Gegner suchen</button>'
+      :isHost()?'<button class="btn primary" id="again">Revanche</button>':'<p class="footnote">Revanche? Dein Gegner kann eine neue Runde starten. Bleib einfach hier.</p>'}<button class="btn plain" id="leave">${g.ranked?'Zurück':'Duell verlassen'}</button></div>
   </div>`);
+  const rkA=view.querySelector('#rkAgain'); if(rkA) rkA.onclick=()=>{ leaveDuelRoom(); startSearch(); };
   const ag=view.querySelector('#again');
   if(ag) ag.onclick=()=>{ const opp=oppPeer(); if(opp) startDuel(opp.peer); else leaveDuel('Dein Gegner ist nicht mehr da.'); };
   view.querySelector('#leave').onclick=()=>leaveDuel();
   if(autoRead) speak(head+'. '+a+' zu '+b+'.');
   if(DUEL.reported!==g.id){
     DUEL.reported=g.id;
-    saveGameResult({gid:g.id,opp:isHost()?g.op:DUEL.oppId,me:a,them:b,host:isHost()});
+    saveGameResult({gid:g.id,opp:oppId,me:a,them:b,host:isHost(),
+      rk:g.ranked&&g.rk?{mine:g.rk[DUEL.myPeer],theirs:g.rk[oppId]}:null});
   }
 }
 
@@ -170,4 +188,4 @@ function leaveDuelRoom(){
   const r=DUEL.named; DUEL.named=null; if(r) r.leave().catch(()=>{});
   Object.assign(DUEL,{game:null,hg:null,lastKey:null,outInv:null,role:null,code:null,target:null});
 }
-function leaveDuel(msg){ leaveDuelRoom(); stopSpeaking(); renderLobby(msg); }
+function leaveDuel(msg){ const ranked=DUEL.ranked; leaveDuelRoom(); stopSpeaking(); ranked?renderRanked(msg):render1v1(msg); }

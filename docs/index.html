@@ -125,6 +125,23 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .tile.tile-ok{background:var(--ok)}
 .tile.tile-warn{background:var(--warn)}
 .tile svg{width:18px;height:18px}
+.tile.tile-blue{background:#1F8FBF}
+.tile.big{width:44px;height:44px;border-radius:12px}
+.tile.big svg{width:24px;height:24px}
+.moderow{min-height:72px}
+.moderow .label > span{font-size:18px;font-weight:600}
+
+/* ---------- Startseite: zwei große Kacheln ---------- */
+.home{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:center;min-height:calc(100svh - 160px)}
+.hometile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;aspect-ratio:1/1.15;padding:18px 12px;border:0;border-radius:24px;
+  background:var(--surface);box-shadow:var(--shadow);text-align:center;transition:transform .1s ease}
+.hometile:active{transform:scale(.97)}
+.hticon{width:72px;height:72px;border-radius:22px;display:grid;place-items:center;background:var(--accent);color:#fff;margin-bottom:6px}
+.hometile.learn .hticon{background:var(--ok)}
+.hticon svg{width:38px;height:38px}
+.hometile b{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.hometile small{font-size:13px;color:var(--muted);line-height:1.3}
+@media (max-width:340px){ .home{grid-template-columns:1fr} .hometile{aspect-ratio:auto;min-height:170px} }
 .badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
 .badge{font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--fill);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .badge.good{background:var(--ok-soft);color:var(--ok)}
@@ -244,6 +261,12 @@ details.more > *:not(summary){margin:0 18px 14px}
 .pv.ok b{color:var(--ok)} .pv.no b{color:var(--accent)}
 .pvh span{font-size:14px;font-variant-numeric:tabular-nums}
 .pv .tm{font-size:12px;color:var(--muted)}
+.rankchange{display:flex;align-items:center;gap:10px;justify-content:center;background:var(--surface);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow);font-variant-numeric:tabular-nums}
+.rankchange span{color:var(--muted);font-size:15px}
+.rankchange b{font-size:20px}
+.rankchange i{font-style:normal;font-weight:700;padding:2px 8px;border-radius:999px}
+.rankchange.up i{background:var(--ok-soft);color:var(--ok)}
+.rankchange.down i{background:var(--accent-soft);color:var(--accent)}
 
 /* ---------- Einladung (Sheet von unten) ---------- */
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.18);
@@ -694,6 +717,8 @@ const IC={
   bolt:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
   trophy:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3v3a5 5 0 0 1-4.6 5A5 5 0 0 1 13 15.9V18h3v3H8v-3h3v-2.1A5 5 0 0 1 8.6 13 5 5 0 0 1 4 8V5h3zm0 4H6v1a3 3 0 0 0 1 2.2zm10 0v3.2A3 3 0 0 0 18 8V7z"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 0 2 2h14v-4"/><path d="M9 7h7M9 11h5"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.6c2.6.2 4.2 2 4.8 5.4"/></svg>',
   person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'
 };
 
@@ -816,17 +841,37 @@ function optionsHTML(q,state){
   }).join('')}</div>`;
 }
 
-/* ---------- Lernmodus: 20 Fragen aus der gewählten Auswahl ---------- */
+/* ---------- Lernmodus: Region antippen, 20 kurze Fragen ---------- */
 const ROUND_LEN=20;
-const S={regions:new Set(Object.keys(REG)), cats:new Set(QF), regOpen:false, phase:'start', queue:[], qi:0, right:0, results:{}};
+const S={region:'all', cats:new Set(QF), phase:'start', queue:[], qi:0, right:0, results:{}};
 function fieldsFor(m){ return qFields(m).filter(k=>S.cats.has(k)); }
-function selected(){ return M.filter(m=>S.regions.has(m.r)&&fieldsFor(m).length); }
+function selected(){ return M.filter(m=>(S.region==='all'||m.r===S.region)&&fieldsFor(m).length); }
 
-function startQuiz(){
+function renderLearn(){
+  S.phase='learn'; setBack('Start',renderStart);
+  const count=r=>M.filter(m=>r==='all'||m.r===r).length;
+  const regionRow=(r,label)=>`<button class="row" data-region="${r}"><span class="label">${esc(label)}</span><span class="count">${count(r)}</span>${IC.chev}</button>`;
+  const catRows=QF.map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k]}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
+  view.innerHTML=`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">Lernen</h2><p class="sub">Tippe eine Region an: ${ROUND_LEN} kurze Fragen mit Lösung und Abbildung.</p></div>
+    <section class="group">${regionRow('all','Alle Regionen')}</section>
+    <p class="group-label">Regionen</p>
+    <section class="group">${Object.keys(REG).map(r=>regionRow(r,REG[r])).join('')}</section>
+    <p class="group-label">Abgefragt wird</p>
+    <section class="group">${catRows}</section>
+  </div>`;
+  view.querySelectorAll('[data-region]').forEach(b=>b.onclick=()=>startQuiz(b.dataset.region));
+  view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return;   // eine Kategorie bleibt immer an
+    S.cats.has(k)?S.cats.delete(k):S.cats.add(k); b.setAttribute('aria-checked',S.cats.has(k));
+  });
+}
+function startQuiz(region){
+  if(region) S.region=region;
   const qs=[];
   selected().forEach(m=>fieldsFor(m).forEach(k=>{ const q=makeQuestion(m.id,k); if(q) qs.push(q); }));
   S.queue=shuffle(qs).slice(0,ROUND_LEN); S.qi=0; S.results={}; S.right=0;
-  if(S.queue.length) renderAsk(); else renderStart();
+  if(S.queue.length) renderAsk(); else renderLearn();
 }
 function progressHTML(){
   return `<div class="progress"><span>Frage ${S.qi+1} von ${S.queue.length}</span><div class="track"><span style="width:${S.qi/S.queue.length*100}%"></span></div><span>${S.right} ✓</span></div>`;
@@ -882,7 +927,7 @@ function showResult(choice){
   if(autoRead) speak(verdict);
 }
 function renderEnd(){
-  S.phase='end'; setBack('Start',renderStart);
+  S.phase='end'; setBack('Lernen',renderLearn);
   const ids=Object.keys(S.results).map(Number);
   const answered=ids.reduce((a,id)=>a+Object.keys(S.results[id]).length,0);
   const rows=ids.map(id=>{ const r=S.results[id];
@@ -890,10 +935,10 @@ function renderEnd(){
   showPage(`<div class="stack">
     <div class="pagehead"><h2 class="pagetitle">Durchgang beendet</h2><p class="sub">${answered?`${S.right} von ${answered} Fragen richtig`:'Keine Fragen beantwortet'}</p></div>
     ${rows?`<section class="group list">${rows}</section>`:''}
-    <div class="stack-sm"><button class="btn primary" id="again">Neue Runde mit gleicher Auswahl</button><button class="btn plain" id="back">Zur Auswahl</button></div>
+    <div class="stack-sm"><button class="btn primary" id="again">Neue Runde: ${esc(S.region==='all'?'Alle Regionen':REG[S.region])}</button><button class="btn plain" id="back">Andere Region</button></div>
   </div>`);
-  view.querySelector('#again').onclick=startQuiz;
-  view.querySelector('#back').onclick=renderStart;
+  view.querySelector('#again').onclick=()=>startQuiz();
+  view.querySelector('#back').onclick=renderLearn;
 }
 
 /* ---------- Kopfzeile, Einstellungen und Startseite ---------- */
@@ -926,7 +971,7 @@ function setProfileIcon(photo){
 
 function renderSettings(){
   const from=S.phase; S.phase='settings';
-  setBack('Zurück',()=>from==='duel'?openDuel():renderStart());
+  setBack('Zurück',()=>from==='duel'?openDuel():from==='learn'?renderLearn():renderStart());
   showPage(`<div class="stack">
     <h2 class="pagetitle">Einstellungen</h2>
     <p class="group-label">Darstellung</p>
@@ -941,42 +986,16 @@ function renderSettings(){
   if(rs) rs.onclick=()=>{ autoRead=!autoRead; lsSet('ad-read',autoRead?'1':'0'); if(autoRead) speak('Vorlesen ist an.'); else stopSpeaking(); rs.setAttribute('aria-checked',autoRead); };
 }
 
-function regionValue(){ const n=S.regions.size, all=Object.keys(REG).length; return n===all?'Alle':n===0?'Keine':`${n} von ${all}`; }
+/* Startseite: zwei große Kacheln */
 function renderStart(){
   S.phase='start'; setBack(null);
   leaveOnline();
-  const counts={}; M.forEach(m=>counts[m.r]=(counts[m.r]||0)+1);
-  const n=selected().length;
-  const regRows=Object.keys(REG).map(r=>`<button class="row" role="menuitemcheckbox" data-reg="${r}" aria-checked="${S.regions.has(r)}"><span class="label">${esc(REG[r])}</span><span class="count">${counts[r]}</span>${IC.check}</button>`).join('');
-  const catRows=QF.map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k]}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
-  view.innerHTML=`<div class="stack">
-    <section class="group">
-      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Gegen Freunde spielen<small>Duell 1 gegen 1 oder Lobby mit bis zu ${GMAX} Spielern</small></span>${IC.chev}</button>
-    </section>
-
-    <p class="group-label">Lernen</p>
-    <section class="group">
-      <button class="row" id="regRow" aria-expanded="${S.regOpen}" aria-controls="regList"><span class="label">Regionen</span><span class="value">${regionValue()}</span>${IC.chev}</button>
-      <div class="sublist" id="regList" ${S.regOpen?'':'hidden'}>${regRows}
-        <div class="tools"><button class="link" id="regAll">Alle auswählen</button><button class="link" id="regNone">Keine</button></div></div>
-    </section>
-
-    <p class="group-label">Abfragen</p>
-    <section class="group">${catRows}</section>
-
-    <div class="stack-sm">
-      <button class="btn primary" id="go" ${n?'':'disabled'}>Abfrage starten</button>
-      <p class="footnote">${n} ${n===1?'Muskel':'Muskeln'} ausgewählt · ${ROUND_LEN} Fragen pro Runde</p>
-    </div>
-  </div>`;
-  const rerender=()=>{ const y=window.scrollY; renderStart(); window.scrollTo(0,y); };
-  view.querySelector('#regRow').onclick=()=>{ S.regOpen=!S.regOpen; rerender(); };
-  view.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{ const r=b.dataset.reg; S.regions.has(r)?S.regions.delete(r):S.regions.add(r); rerender(); });
-  view.querySelector('#regAll').onclick=()=>{ Object.keys(REG).forEach(r=>S.regions.add(r)); rerender(); };
-  view.querySelector('#regNone').onclick=()=>{ S.regions.clear(); rerender(); };
-  view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return; S.cats.has(k)?S.cats.delete(k):S.cats.add(k); rerender(); });
-  view.querySelector('#go').onclick=startQuiz;
+  showPage(`<div class="home">
+    <button class="hometile" id="duel"><span class="hticon">${IC.bolt}</span><b>Duell</b><small>Gegen Freunde oder zufällige Gegner</small></button>
+    <button class="hometile learn" id="learn"><span class="hticon">${IC.book}</span><b>Lernen</b><small>${M.length} Muskeln nach Regionen</small></button>
+  </div>`);
   view.querySelector('#duel').onclick=()=>{ stopSpeaking(); openDuel(); };
+  view.querySelector('#learn').onclick=renderLearn;
 }
 
 /* ---------- Firebase: wird erst geladen, wenn jemand online spielen will ---------- */
@@ -1119,7 +1138,8 @@ function bindAccount(){
 }
 
 /* ---------- Profile, Freunde, Statistik (Firebase-Daten) ----------
-   users/{uid}:   {name, nameLower, code, photo, stats:{games,wins,losses,draws,points}, score, lastGid}
+   users/{uid}:   {name, nameLower, code, photo, lastSeen, stats:{games,wins,losses,draws,points}, score, lastGid,
+                   rating (Ranked-Wertung, Start 1000), rgames, rwins}
    codes/{CODE}:  uid (6-stelliger Freundescode)
    friends/{uid}/{fid}: true (beidseitig, entsteht erst, wenn eine Anfrage angenommen wird)
    requests/{an}/{von}: {name, at}  eingehende Freundschaftsanfragen (liest nur der Empfänger)
@@ -1228,6 +1248,10 @@ async function saveGameResult(r){
       p=p||{}; p.stats=Object.assign(emptyStats(),p.stats||{});
       if(p.lastGid===r.gid) return p;
       p.stats.games++; p.stats[res]++; p.stats.points+=r.me; p.lastGid=r.gid;
+      if(r.rk){   // Ranked: Elo-Wertung aus den Werten vor dem Spiel
+        p.rating=r.rk.mine+eloDelta(r.rk.mine,r.rk.theirs,res==='wins'?1:res==='losses'?0:0.5);
+        p.rgames=(p.rgames||0)+1; if(res==='wins') p.rwins=(p.rwins||0)+1;
+      }
       p.score=scoreOf(p.stats); p.name=p.name||myName(); return p;
     });
   }catch(e){}
@@ -1312,9 +1336,10 @@ async function searchUsers(q){
 /* ---------- Lobby: wer ist online, Einladungen, Einstieg in Duell und Gruppe ----------
    Jeder angemeldete Spieler hat in "lobby" einen Eintrag:
    {app:'mt', nick, busy, inv:{to,code} (Duell-Einladung), ginv:{to:[…],code} (Gruppen-Einladung), dec:{to,code} (Absage)}
-   DUEL.view sagt, welche Online-Ansicht gerade offen ist (off, note, auth, lobby, wait, game, group, profile, friend, board). */
+   DUEL.view sagt, welche Online-Ansicht gerade offen ist:
+   off, note, auth, hub (Modi), one (1 gegen 1), grouphome, ranked, rkwait (Suche), wait, game, group, profile, friend, board */
 const DUEL={room:null,loading:null,myPeer:null,view:'off',outInv:null,decline:null,seen:new Set(),
-  role:null,code:null,named:null,unsub:[],timers:[],game:null,hg:null,lastKey:null,hist:[],oppNick:'',oppId:null,target:null,reported:null};
+  role:null,code:null,named:null,unsub:[],timers:[],game:null,hg:null,lastKey:null,hist:[],oppNick:'',oppId:null,target:null,reported:null,ranked:false};
 
 const myName=()=>((SOC.profile&&SOC.profile.name)||'Spieler').slice(0,24);
 
@@ -1336,7 +1361,7 @@ async function disconnectLobby(){
 }
 function pushLobby(){
   if(!DUEL.room) return;
-  DUEL.room.presence({app:'mt',nick:myName(),busy:inMatch(),inv:DUEL.outInv,ginv:groupInvitePresence(),dec:DUEL.decline}).catch(()=>{});
+  DUEL.room.presence({app:'mt',nick:myName(),busy:inMatch()||DUEL.view==='rkwait',inv:DUEL.outInv,ginv:groupInvitePresence(),dec:DUEL.decline}).catch(()=>{});
 }
 function lobbyPeers(){
   if(!DUEL.room) return [];
@@ -1345,6 +1370,7 @@ function lobbyPeers(){
 }
 /* Verlässt laufende Online-Ansichten (z. B. beim Wechsel zur Startseite) */
 function leaveOnline(){
+  leaveQueue(); DUEL.ranked=false;
   if(GRP.named) leaveGroupRoom();
   if(DUEL.named) leaveDuelRoom();
   DUEL.view='off'; pushLobby();
@@ -1362,7 +1388,8 @@ function onLobbyPeers(){
 }
 /* Listen mit Spielern auf der gerade offenen Seite neu zeichnen */
 function refreshPeople(){
-  if(DUEL.view==='lobby'){ renderRequests(); renderOnlineList('onlineList'); renderFriendList(); }
+  if(DUEL.view==='hub') renderRequests();
+  if(DUEL.view==='one'){ renderRequests(); renderOnlineList('onlineList'); renderFriendList(); }
   if(DUEL.view==='profile'){ renderRequests(); renderSentList(); renderSearchResults(); renderOnlineList('othersOnline'); renderFriendList(); }
   if(DUEL.view==='group') renderGroupMembers();
 }
@@ -1383,43 +1410,39 @@ function showInvite(duelInv,groupInv){
   };
 }
 
-/* ----- Lobby-Seite ----- */
+/* ----- Duell-Übersicht: drei Spielmodi ----- */
+const RULES_TEXT='10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · je schneller richtig, desto mehr Punkte (sofort 100, kurz vor Schluss 10).';
 async function openDuel(){
   if(!(await ensureAuth('duel'))) return;
   await initLobby();
-  renderLobby();
+  renderDuelHub();
   loadFriendData();   // „zuletzt online“ auffrischen
 }
-function renderLobby(msg){
-  leaveOnline(); S.phase='duel'; DUEL.view='lobby'; pushLobby(); inviteBar.hidden=true;
+const modeRow=(id,tile,icon,title,sub)=>`<button class="row moderow" id="${id}"><span class="tile big ${tile}">${icon}</span><span class="label"><span>${title}</span><small>${sub}</small></span>${IC.chev}</button>`;
+function renderDuelHub(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='hub'; pushLobby(); inviteBar.hidden=true;
   setBack('Start',renderStart);
   showPage(`<div class="stack">
-    <div class="pagehead"><h2 class="pagetitle">Online spielen</h2><p class="sub">10 Runden · alle bekommen dieselbe Frage · 30 Sekunden · 4 Antworten, eine ist richtig. Je schneller richtig, desto mehr Punkte: sofort 100, kurz vor Schluss 10.</p></div>
+    <div class="pagehead"><h2 class="pagetitle">Duell</h2><p class="sub">Wähle einen Spielmodus</p></div>
     <div class="stack" id="reqBox" hidden></div>
-    <section class="group"><button class="row" id="mkGroup"><span class="tile">${IC.bolt}</span><span class="label">Lobby erstellen<small>Mit bis zu ${GMAX} Spielern gleichzeitig spielen</small></span>${IC.chev}</button></section>
-
-    <p class="group-label">Freunde</p>
-    <section class="group list" id="friendList"></section>
-    <section class="group"><button class="row" id="toProfile"><span class="tile tile-ok">${IC.plus}</span><span class="label">Freunde hinzufügen<small>Anfrage per Name oder Freundescode</small></span>${IC.chev}</button></section>
-    <section class="group"><button class="row" id="lbRow"><span class="tile tile-warn">${IC.trophy}</span><span class="label">Rangliste</span>${IC.chev}</button></section>
-
-    <p class="group-label">Weitere Spieler online</p>
-    <section class="group list" id="onlineList"></section>
-
-    <p class="group-label">Mit Code beitreten</p>
-    <section class="card">
-      <div class="coderow"><input id="codeIn" class="field" inputmode="numeric" maxlength="5" placeholder="Code" aria-label="Duell- oder Lobby-Code"><button class="btn tinted" id="joinCode">Beitreten</button></div>
-      <button class="btn plain" id="mkCode">Duell-Code für 1 gegen 1 erstellen</button>
+    <section class="group list">
+      ${modeRow('mode1v1','',IC.bolt,'1 gegen 1','Freunde herausfordern oder per Code spielen')}
+      ${modeRow('modeGroup','tile-blue',IC.users,`2–${GMAX} Spieler`,'Lobby erstellen und gemeinsam spielen')}
+      ${modeRow('modeRanked','tile-warn',IC.trophy,'Ranked',`Zufälliger Gegner · deine Wertung: ${myRating()}`)}
     </section>
-    ${accountRowHTML()}
+    <section class="group"><button class="row" id="lbRow"><span class="label">Rangliste</span>${IC.chev}</button></section>
     <p class="hint" id="lobbyHint" role="status"></p>
   </div>`);
   if(msg) setHint('lobbyHint',msg,true);
-  bindAccount();
-  view.querySelector('#mkGroup').onclick=()=>openGroup();
-  view.querySelector('#toProfile').onclick=()=>renderProfile();
+  view.querySelector('#mode1v1').onclick=()=>render1v1();
+  view.querySelector('#modeGroup').onclick=()=>renderGroupHome();
+  view.querySelector('#modeRanked').onclick=()=>renderRanked();
   view.querySelector('#lbRow').onclick=()=>renderLeaderboard('all');
-  view.querySelector('#mkCode').onclick=()=>hostDuel(newDuelCode(),null);
+  renderRequests();
+  onLobbyPeers();
+}
+/* Gemeinsames Code-Feld: 4 Ziffern = Duell, 5 Ziffern = Lobby */
+function bindCodeJoin(){
   const ci=view.querySelector('#codeIn');
   const join=()=>{
     const c=ci.value.replace(/\D/g,'');
@@ -1428,8 +1451,50 @@ function renderLobby(msg){
     else setHint('lobbyHint','Duell-Codes haben 4 Ziffern, Lobby-Codes 5.',true);
   };
   view.querySelector('#joinCode').onclick=join; ci.onkeydown=e=>{ if(e.key==='Enter') join(); };
+}
+const codeRowHTML=ph=>`<div class="coderow"><input id="codeIn" class="field" inputmode="numeric" maxlength="5" placeholder="${ph}" aria-label="${ph}"><button class="btn tinted" id="joinCode">Beitreten</button></div>`;
+
+/* ----- 1 gegen 1 ----- */
+function render1v1(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='one'; pushLobby(); inviteBar.hidden=true;
+  setBack('Duell',renderDuelHub);
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">1 gegen 1</h2><p class="sub">${RULES_TEXT}</p></div>
+    <div class="stack" id="reqBox" hidden></div>
+    <p class="group-label">Freunde</p>
+    <section class="group list" id="friendList"></section>
+    <section class="group"><button class="row" id="toProfile"><span class="tile tile-ok">${IC.plus}</span><span class="label">Freunde hinzufügen<small>Anfrage per Name oder Freundescode</small></span>${IC.chev}</button></section>
+    <p class="group-label">Weitere Spieler online</p>
+    <section class="group list" id="onlineList"></section>
+    <p class="group-label">Mit Code</p>
+    <section class="card">
+      ${codeRowHTML('Duell-Code')}
+      <button class="btn plain" id="mkCode">Eigenen Duell-Code erstellen</button>
+    </section>
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('lobbyHint',msg,true);
+  view.querySelector('#toProfile').onclick=()=>renderProfile();
+  view.querySelector('#mkCode').onclick=()=>hostDuel(newDuelCode(),null);
+  bindCodeJoin();
   renderRequests(); renderFriendList(); renderOnlineList('onlineList');
   onLobbyPeers();
+}
+
+/* ----- 2 bis 8 Spieler ----- */
+function renderGroupHome(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='grouphome'; pushLobby(); inviteBar.hidden=true;
+  setBack('Duell',renderDuelHub);
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">2–${GMAX} Spieler</h2><p class="sub">Erstelle eine Lobby, lade Freunde ein und spielt alle gleichzeitig. ${RULES_TEXT}</p></div>
+    <button class="btn primary" id="mkGroup">Lobby erstellen</button>
+    <p class="group-label">Einer Lobby beitreten</p>
+    <section class="card">${codeRowHTML('Lobby-Code')}</section>
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('lobbyHint',msg,true);
+  view.querySelector('#mkGroup').onclick=()=>openGroup();
+  bindCodeJoin();
 }
 
 /* Spieler online, die (noch) keine Freunde sind: Anfrage senden oder herausfordern */
@@ -1518,7 +1583,8 @@ function verdictHTML(label,r){
 
 /* ---------- Duell 1 gegen 1 ----------
    Raum "duel-<4 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand}, Gast: {role:'guest', nick, a:Antwort}.
-   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}} */
+   Spielstand g: {id, qs, r (Runde), ph (q/rev/end), op (Gast), sc:[Gastgeber, Gast], res:{h,o}}
+   Ranked-Duelle (siehe ranked.js) tragen zusätzlich ranked:true und rk:{Spieler:Wertung vor dem Spiel}. */
 const newDuelCode=()=>String(Math.floor(1000+Math.random()*9000));
 const isHost=()=>DUEL.role==='host';
 const curGame=()=>isHost()?DUEL.game:DUEL.hg;
@@ -1565,6 +1631,7 @@ function onDuelPeers(){
   const g=h.presence.g;
   if(!g){ const s=document.getElementById('waitSub'); if(s) s.textContent='Verbunden. Gleich geht es los …'; return; }
   if(g.op!==DUEL.myPeer){ leaveDuel('Dieses Duell läuft schon mit jemand anderem.'); return; }
+  if(g.ranked) DUEL.ranked=true;
   guestFollow(g);
 }
 
@@ -1572,6 +1639,11 @@ function onDuelPeers(){
 function startDuel(op){
   DUEL.outInv=null; DUEL.hist=[]; DUEL.view='game'; pushLobby();
   DUEL.game={id:Math.random().toString(36).slice(2,8),qs:pickQs(),r:0,ph:'q',op,sc:[0,0]};
+  if(DUEL.ranked){
+    DUEL.game.ranked=true;
+    DUEL.game.rk={[DUEL.myPeer]:myRating(),[op]:(RK.opp&&RK.opp.id===op&&typeof RK.opp.rating==='number')?RK.opp.rating:RANK_START};
+    leaveQueue();
+  }
   const opp=oppPeer(); DUEL.oppNick=(opp&&opp.presence.nick)||'Gegner';
   pushHost(); beginRound();
 }
@@ -1623,9 +1695,10 @@ function renderWait(){
   const host=isHost();
   showPage(`<div class="stack">
     <section class="card center tall">
-      ${host&&!DUEL.target?`<p class="sectionhead">Dein Duell-Code</p><div class="codebig">${esc(DUEL.code)}</div><p class="sub">Schick den Code deinem Freund. Er tippt unter „Online spielen“ auf „Beitreten“ und gibt ihn ein.</p>`:''}
-      ${host&&DUEL.target?`<p class="sectionhead">Herausforderung gesendet</p><p>Warte, bis <b>${esc(DUEL.target)}</b> annimmt …</p>`:''}
-      ${!host?`<p class="sectionhead">Duell ${esc(DUEL.code)}</p><p id="waitSub">Verbinde …</p>`:''}
+      ${DUEL.ranked?`<p class="sectionhead">Ranked</p><p><b>Gegner gefunden${RK.opp&&RK.opp.nick?': '+esc(RK.opp.nick):''}</b></p><p class="sub" id="waitSub">Verbinde …</p>`:''}
+      ${!DUEL.ranked&&host&&!DUEL.target?`<p class="sectionhead">Dein Duell-Code</p><div class="codebig">${esc(DUEL.code)}</div><p class="sub">Schick den Code deinem Freund. Er gibt ihn unter Duell → „1 gegen 1“ ein.</p>`:''}
+      ${!DUEL.ranked&&host&&DUEL.target?`<p class="sectionhead">Herausforderung gesendet</p><p>Warte, bis <b>${esc(DUEL.target)}</b> annimmt …</p>`:''}
+      ${!DUEL.ranked&&!host?`<p class="sectionhead">Duell ${esc(DUEL.code)}</p><p id="waitSub">Verbinde …</p>`:''}
       <div class="spinner" aria-hidden="true"></div>
     </section>
     <button class="btn plain" id="cancel">Abbrechen</button>
@@ -1664,20 +1737,30 @@ function showDuelEnd(g){
   setBack('Zurück',()=>leaveDuel());
   const [a,b]=scores(g);
   const head=a>b?'Gewonnen!':a<b?'Verloren':'Unentschieden';
+  const oppId=isHost()?g.op:DUEL.oppId;
+  let rankLine='';
+  if(g.ranked&&g.rk){
+    const before=g.rk[DUEL.myPeer], delta=eloDelta(before,g.rk[oppId],a>b?1:a<b?0:0.5);
+    rankLine=`<div class="rankchange ${delta>=0?'up':'down'}"><span>Wertung</span><b>${before} → ${before+delta}</b><i>${delta>=0?'+':''}${delta}</i></div>`;
+  }
   const rows=DUEL.hist.slice().sort((x,y)=>x.r-y.r).map(h=>`<div class="row"><span class="label"><span>${esc(M[h.mid].n)}</span><small>${esc(FIELD[h.k])}</small></span><span class="badges"><span class="badge ${h.me.ok?'good':'bad'}">Du +${h.me.pt}</span><span class="badge ${h.op.ok?'good':'bad'}">${esc(oppName())} +${h.op.pt}</span></span></div>`).join('');
   showPage(`<div class="stack">
     <div class="pagehead"><h2 class="pagetitle big${a>b?' win':''}">${head}</h2><p class="sub score-line">Du ${a} : ${b} ${esc(oppName())}</p></div>
+    ${rankLine}
     <p class="footnote" id="h2hLine"></p>
     <section class="group list">${rows}</section>
-    <div class="stack-sm">${isHost()?'<button class="btn primary" id="again">Revanche</button>':'<p class="footnote">Revanche? Dein Gegner kann eine neue Runde starten. Bleib einfach hier.</p>'}<button class="btn plain" id="leave">Duell verlassen</button></div>
+    <div class="stack-sm">${g.ranked?'<button class="btn primary" id="rkAgain">Neuen Gegner suchen</button>'
+      :isHost()?'<button class="btn primary" id="again">Revanche</button>':'<p class="footnote">Revanche? Dein Gegner kann eine neue Runde starten. Bleib einfach hier.</p>'}<button class="btn plain" id="leave">${g.ranked?'Zurück':'Duell verlassen'}</button></div>
   </div>`);
+  const rkA=view.querySelector('#rkAgain'); if(rkA) rkA.onclick=()=>{ leaveDuelRoom(); startSearch(); };
   const ag=view.querySelector('#again');
   if(ag) ag.onclick=()=>{ const opp=oppPeer(); if(opp) startDuel(opp.peer); else leaveDuel('Dein Gegner ist nicht mehr da.'); };
   view.querySelector('#leave').onclick=()=>leaveDuel();
   if(autoRead) speak(head+'. '+a+' zu '+b+'.');
   if(DUEL.reported!==g.id){
     DUEL.reported=g.id;
-    saveGameResult({gid:g.id,opp:isHost()?g.op:DUEL.oppId,me:a,them:b,host:isHost()});
+    saveGameResult({gid:g.id,opp:oppId,me:a,them:b,host:isHost(),
+      rk:g.ranked&&g.rk?{mine:g.rk[DUEL.myPeer],theirs:g.rk[oppId]}:null});
   }
 }
 
@@ -1688,7 +1771,98 @@ function leaveDuelRoom(){
   const r=DUEL.named; DUEL.named=null; if(r) r.leave().catch(()=>{});
   Object.assign(DUEL,{game:null,hg:null,lastKey:null,outInv:null,role:null,code:null,target:null});
 }
-function leaveDuel(msg){ leaveDuelRoom(); stopSpeaking(); renderLobby(msg); }
+function leaveDuel(msg){ const ranked=DUEL.ranked; leaveDuelRoom(); stopSpeaking(); ranked?renderRanked(msg):render1v1(msg); }
+
+/* ---------- Ranked: zufälliger Gegner, Elo-Wertung ----------
+   Warteschlange = Raum "ranked" (rooms/ranked). Eintrag je Suchendem: {nick, rating, since, offer:{to,code}}
+   Paarung: Alle Suchenden ohne Angebot werden nach Wartezeit sortiert und in Paare (1+2, 3+4, …) geteilt.
+   In jedem Paar eröffnet der mit der kleineren ID ein Duell und schickt dem anderen den Code (offer).
+   Wertung: Start 1000, Elo mit K = 32 – ein Sieg gegen Stärkere bringt mehr als gegen Schwächere. */
+const RANK_START=1000, ELO_K=32, OFFER_TIMEOUT=12000;
+const RK={q:null,unsub:null,since:0,offer:null,opp:null};
+
+const myRating=()=>{ const r=(SOC.profile||{}).rating; return typeof r==='number'?r:RANK_START; };
+function eloDelta(mine,theirs,score){ const expected=1/(1+Math.pow(10,(theirs-mine)/400)); return Math.round(ELO_K*(score-expected)); }
+
+function renderRanked(msg){
+  leaveOnline(); S.phase='duel'; DUEL.view='ranked'; pushLobby(); inviteBar.hidden=true;
+  setBack('Duell',renderDuelHub);
+  const p=SOC.profile||{}, games=p.rgames||0, wins=p.rwins||0;
+  showPage(`<div class="stack">
+    <div class="pagehead"><h2 class="pagetitle">Ranked</h2><p class="sub">Zufälliger Gegner, der gerade auch sucht. ${RULES_TEXT} Das Ergebnis zählt für deine Wertung und die Rangliste.</p></div>
+    <section class="card center tall">
+      <p class="sectionhead">Deine Wertung</p>
+      <div class="codebig" id="rkRating">${myRating()}</div>
+      <p class="sub">${games?`${games} ${games===1?'Spiel':'Spiele'} · ${wins} ${wins===1?'Sieg':'Siege'}`:'Noch keine Ranked-Spiele · Start bei 1000'}</p>
+    </section>
+    <button class="btn primary" id="rkFind">Gegner suchen</button>
+    <section class="group"><button class="row" id="lbRow"><span class="tile tile-warn">${IC.trophy}</span><span class="label">Rangliste</span>${IC.chev}</button></section>
+    <p class="hint" id="lobbyHint" role="status"></p>
+  </div>`);
+  if(msg) setHint('lobbyHint',msg,true);
+  view.querySelector('#rkFind').onclick=startSearch;
+  view.querySelector('#lbRow').onclick=()=>renderLeaderboard('all');
+}
+
+/* ----- Suche ----- */
+async function startSearch(){
+  leaveOnline();
+  DUEL.view='rkwait'; pushLobby(); renderSearching();
+  let q;
+  try{ q=await DUEL.room.join('ranked'); }catch(e){ renderRanked('Die Suche konnte nicht starten. Versuch es gleich nochmal.'); return; }
+  if(DUEL.view!=='rkwait'){ q.leave().catch(()=>{}); return; }
+  Object.assign(RK,{q,since:Date.now(),offer:null,opp:null});
+  RK.unsub=q.onPeers(onQueue,()=>{ if(RK.q===q){ leaveQueue(); renderRanked('Die Verbindung ist abgebrochen.'); } });
+  pushQueue();
+}
+function renderSearching(){
+  S.phase='duel'; inviteBar.hidden=true;
+  setBack('Abbrechen',()=>renderRanked());
+  showPage(`<div class="stack">
+    <section class="card center tall">
+      <p class="sectionhead">Ranked</p>
+      <p><b>Suche Gegner …</b></p>
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="sub" id="rkCount">Deine Wertung: ${myRating()}</p>
+    </section>
+    <button class="btn plain" id="rkCancel">Abbrechen</button>
+  </div>`);
+  view.querySelector('#rkCancel').onclick=()=>renderRanked();
+}
+function pushQueue(){ if(RK.q) RK.q.presence({nick:myName(),rating:myRating(),since:RK.since,offer:RK.offer}).catch(()=>{}); }
+const queuePeers=()=>RK.q?RK.q.peers().filter(p=>p.presence.nick):[];
+function leaveQueue(){
+  if(RK.unsub) try{ RK.unsub(); }catch(e){}
+  const q=RK.q; Object.assign(RK,{q:null,unsub:null,offer:null});
+  if(q) q.leave().catch(()=>{});
+}
+
+function onQueue(){
+  if(!RK.q||DUEL.view!=='rkwait') return;
+  const me=DUEL.myPeer, ps=queuePeers(), others=ps.filter(p=>!p.isMe).length;
+  const cnt=document.getElementById('rkCount');
+  if(cnt) cnt.textContent=others?`${others} ${others===1?'weiterer Spieler sucht':'weitere Spieler suchen'} gerade`:'Gerade sucht sonst niemand. Bleib dran oder sag Freunden Bescheid.';
+  // Angebot an mich: annehmen und beitreten
+  const offer=ps.find(p=>!p.isMe&&p.presence.offer&&p.presence.offer.to===me);
+  if(offer&&!RK.offer){
+    const code=offer.presence.offer.code;
+    RK.opp={id:offer.peer,nick:offer.presence.nick,rating:offer.presence.rating};
+    leaveQueue(); DUEL.ranked=true; joinDuel(code);
+    return;
+  }
+  // Paarung bestimmen
+  const waiting=ps.filter(p=>!p.presence.offer||p.isMe).sort((a,b)=>(a.presence.since-b.presence.since)||(a.peer<b.peer?-1:1));
+  const i=waiting.findIndex(p=>p.isMe), partner=i<0?null:waiting[i^1];
+  if(!partner||me>partner.peer) return;   // der mit der kleineren ID eröffnet
+  const code=newDuelCode();
+  RK.offer={to:partner.peer,code}; RK.opp={id:partner.peer,nick:partner.presence.nick,rating:partner.presence.rating};
+  pushQueue();
+  DUEL.ranked=true; hostDuel(code,null);
+  // Kommt der Gegner nicht, weitersuchen
+  DUEL.timers.push(setTimeout(()=>{
+    if(DUEL.ranked&&DUEL.view==='wait'&&DUEL.code===code&&!DUEL.game){ leaveDuelRoom(); RK.offer=null; DUEL.view='rkwait'; renderSearching(); pushQueue(); onQueue(); }
+  },OFFER_TIMEOUT));
+}
 
 /* ---------- Gruppen-Lobby: bis zu 8 Spieler gleichzeitig ----------
    Raum "grp-<5 Ziffern>". Gastgeber-Eintrag: {role:'host', nick, g:Spielstand|null}, Mitspieler: {role:'m', nick, a:Antwort}.
@@ -1705,7 +1879,7 @@ const gMe=()=>DUEL.myPeer;
 
 async function openGroup(code){
   if(!(await ensureAuth('duel'))) return;
-  if(!(await initLobby())){ renderLobby('Keine Verbindung. Versuch es gleich nochmal.'); return; }
+  if(!(await initLobby())){ renderGroupHome('Keine Verbindung. Versuch es gleich nochmal.'); return; }
   GRP.host=!code;
   await enterGroup(code||newGroupCode());
 }
@@ -1764,7 +1938,7 @@ function renderGroupLobby(msg){
     <div class="pagehead"><h2 class="pagetitle">Lobby</h2><p class="sub">Bis zu ${GMAX} Spieler · alle bekommen dieselbe Frage · ${ROUNDS} Runden à 30 Sekunden · je schneller richtig, desto mehr Punkte</p></div>
     <section class="card center">
       <p class="sectionhead">Lobby-Code</p><div class="codebig">${esc(GRP.code)}</div>
-      <p class="sub">${GRP.host?'Schick den Code an deine Freunde. Sie geben ihn unter „Online spielen“ → „Mit Code beitreten“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
+      <p class="sub">${GRP.host?'Schick den Code an deine Freunde. Sie geben ihn unter Duell → „2–${GMAX} Spieler“ ein. Oder lade sie unten direkt ein.':`Warte, bis ${esc((hp&&hp.presence.nick)||'der Gastgeber')} das Spiel startet …`}</p>
     </section>
     <p class="group-label" id="gCount">Spieler</p>
     <section class="group list" id="gMembers"></section>
@@ -1932,7 +2106,7 @@ function leaveGroupRoom(){
   const r=GRP.named; GRP.named=null; if(r) r.leave().catch(()=>{});
   Object.assign(GRP,{game:null,hg:null,lastKey:null,code:null,hist:[],invited:new Set()});
 }
-function leaveGroup(msg){ leaveGroupRoom(); GRP.host=false; stopSpeaking(); renderLobby(msg); }
+function leaveGroup(msg){ leaveGroupRoom(); GRP.host=false; stopSpeaking(); renderGroupHome(msg); }
 
 /* ---------- Seiten: Freundesliste, Anfragen, Freund, Rangliste, eigenes Profil ---------- */
 
@@ -2016,7 +2190,7 @@ function fmtDate(ts){ if(!ts) return '—'; try{ return new Date(ts).toLocaleDat
 const avg=(sum,n)=>n?(sum/n).toFixed(1).replace('.',','):'—';
 const valueRow=(label,value)=>`<div class="row"><span class="label">${label}</span><span class="value">${value}</span></div>`;
 function renderFriend(fid){
-  DUEL.view='friend'; S.phase='duel'; setBack('Zurück',()=>renderLobby());
+  DUEL.view='friend'; S.phase='duel'; setBack('Zurück',()=>render1v1());
   const info=SOC.info[fid]||{}, rc=record(fid), p=lobbyPeers().find(x=>x.by===fid);
   const nm=(p&&p.presence.nick)||info.name||'Spieler';
   const st=Object.assign(emptyStats(),info.stats||{});
@@ -2029,7 +2203,7 @@ function renderFriend(fid){
       ${valueRow('Ø Punkte pro Duell',avg(rc.pm,rc.games)+' : '+avg(rc.pf,rc.games))}${valueRow('Letztes Duell',fmtDate(rc.last))}
     </section>
     <p class="group-label">Gesamt von ${esc(nm)}</p>
-    <section class="group list">${valueRow('Ranglistenpunkte',scoreOf(st))}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}</section>
+    <section class="group list">${valueRow('Ranked-Wertung',typeof info.rating==='number'?info.rating:RANK_START)}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}</section>
     ${p&&!p.presence.busy?'<button class="btn primary" id="frCh">Herausfordern</button>':''}
     <button class="btn plain muted" id="frRm">Freund entfernen</button>
   </div>`);
@@ -2037,34 +2211,33 @@ function renderFriend(fid){
   const rm=document.getElementById('frRm');
   rm.onclick=async()=>{
     if(rm.dataset.sure!=='1'){ rm.dataset.sure='1'; rm.textContent='Wirklich entfernen? Nochmal tippen'; rm.classList.remove('muted'); return; }
-    rm.disabled=true; await removeFriend(fid); renderLobby('Freund entfernt.');
+    rm.disabled=true; await removeFriend(fid); render1v1('Freund entfernt.');
   };
 }
 
 async function renderLeaderboard(mode){
-  DUEL.view='board'; S.phase='duel'; setBack('Zurück',()=>renderLobby());
+  DUEL.view='board'; S.phase='duel'; setBack('Zurück',()=>renderDuelHub());
   showPage(`<div class="stack">
     <h2 class="pagetitle">Rangliste</h2>
     <div class="seg" role="group" aria-label="Rangliste"><button data-lb="all" aria-pressed="${mode==='all'}">Alle</button><button data-lb="friends" aria-pressed="${mode==='friends'}">Freunde</button></div>
     <section class="group list" id="lbList">${infoRow('Lade …')}</section>
-    <p class="footnote">Duelle 1 gegen 1 · Sieg 3 Punkte · Unentschieden 1 Punkt</p>
+    <p class="footnote">Nur Ranked-Spiele · Start bei 1000 · ein Sieg gegen Stärkere bringt mehr</p>
   </div>`);
   view.querySelectorAll('[data-lb]').forEach(b=>b.onclick=()=>renderLeaderboard(b.dataset.lb));
   const me=FB.user.uid; let rows=[];
   try{
     if(mode==='all'){
-      const v=(await FB.db.ref('users').orderByChild('score').limitToLast(100).once('value')).val()||{};
+      const v=(await FB.db.ref('users').orderByChild('rating').limitToLast(100).once('value')).val()||{};
       rows=Object.keys(v).map(id=>Object.assign({id},v[id]));
     } else {
       rows=await Promise.all([me,...Object.keys(SOC.friends)].map(async id=>Object.assign({id},(await userRef(id).once('value').catch(()=>null))?.val()||{})));
     }
   }catch(e){ const l=document.getElementById('lbList'); if(l) l.innerHTML=infoRow('Die Rangliste konnte nicht geladen werden.'); return; }
   const l=document.getElementById('lbList'); if(!l||DUEL.view!=='board') return;
-  rows=rows.filter(r=>r.id===me||(r.stats&&r.stats.games>0))
-    .sort((a,b)=>(b.score||0)-(a.score||0)||((b.stats||{}).wins||0)-((a.stats||{}).wins||0));
-  if(!rows.length){ l.innerHTML=infoRow('Noch keine Duelle gespielt.'); return; }
-  l.innerHTML=rows.map((r,i)=>{ const st=Object.assign(emptyStats(),r.stats||{});
-    return `<div class="row${r.id===me?' me-row':''}"><span class="rank">${i+1}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${st.games} Duelle · ${st.wins} Siege</small></span><span class="value"><b>${r.score||0}</b></span></div>`; }).join('');
+  const rating=r=>typeof r.rating==='number'?r.rating:RANK_START;
+  rows=rows.filter(r=>r.id===me||r.rgames>0).sort((a,b)=>rating(b)-rating(a)||(b.rgames||0)-(a.rgames||0));
+  if(!rows.length){ l.innerHTML=infoRow('Noch keine Ranked-Spiele.'); return; }
+  l.innerHTML=rows.map((r,i)=>`<div class="row${r.id===me?' me-row':''}"><span class="rank">${r.rgames?i+1:'–'}</span>${avatarHTML(r.id,r.name||'Spieler',null,'',r.photo||null)}<span class="label"><span>${esc(r.name||'Spieler')}${r.id===me?' (du)':''}</span><small>${r.rgames?`${r.rgames} Ranked-Spiele · ${r.rwins||0} Siege`:'noch kein Ranked-Spiel'}</small></span><span class="value"><b>${rating(r)}</b></span></div>`).join('');
 }
 
 /* ----- Eigenes Profil: Bild, Name, Freundescode, Freunde finden, wer ist online ----- */
@@ -2092,7 +2265,7 @@ function renderProfile(msg){
     <section class="stack-sm"><label class="group-label" for="pName">Dein Name</label><input id="pName" class="field" maxlength="24" value="${esc(p.name)}" autocomplete="nickname"></section>
     <section class="group list">
       <div class="row"><span class="label"><span>Dein Freundescode</span><b class="fcode">${esc(p.code||'…')}</b><small>Freunde können dich damit finden</small></span><button class="btn tinted small" id="copyCode">Kopieren</button></div>
-      ${valueRow('Ranglistenpunkte','<b>'+scoreOf(st)+'</b>')}${valueRow('Duelle · Siege',st.games+' · '+st.wins)}
+      ${valueRow('Ranked-Wertung','<b>'+myRating()+'</b>')}${valueRow('Ranked-Spiele · Siege',(p.rgames||0)+' · '+(p.rwins||0))}${valueRow('Alle Duelle · Siege',st.games+' · '+st.wins)}
     </section>
 
     <p class="group-label">Freunde finden</p>

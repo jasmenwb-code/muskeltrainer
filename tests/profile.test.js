@@ -36,7 +36,7 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,input,regist
 
   // Abmelden
   A.w.eval('renderProfile()'); await sleep(50); $(A,'#logout').click(); await sleep(150);
-  assert.ok($(A,'#go'),'zurück auf der Startseite');
+  assert.ok($(A,'#duel')&&$(A,'#learn'),'zurück auf der Startseite');
   assert.ok(!$(A,'#profileBtn img'),'Foto aus der Kopfzeile entfernt');
   assert.ok(!store.lobby?.u_anna,'aus der Lobby abgemeldet');
   assert.deepStrictEqual(errors,[]);

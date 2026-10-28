@@ -1,5 +1,6 @@
 /* ---------- Profile, Freunde, Statistik (Firebase-Daten) ----------
-   users/{uid}:   {name, nameLower, code, photo, stats:{games,wins,losses,draws,points}, score, lastGid}
+   users/{uid}:   {name, nameLower, code, photo, lastSeen, stats:{games,wins,losses,draws,points}, score, lastGid,
+                   rating (Ranked-Wertung, Start 1000), rgames, rwins}
    codes/{CODE}:  uid (6-stelliger Freundescode)
    friends/{uid}/{fid}: true (beidseitig, entsteht erst, wenn eine Anfrage angenommen wird)
    requests/{an}/{von}: {name, at}  eingehende Freundschaftsanfragen (liest nur der Empfänger)
@@ -108,6 +109,10 @@ async function saveGameResult(r){
       p=p||{}; p.stats=Object.assign(emptyStats(),p.stats||{});
       if(p.lastGid===r.gid) return p;
       p.stats.games++; p.stats[res]++; p.stats.points+=r.me; p.lastGid=r.gid;
+      if(r.rk){   // Ranked: Elo-Wertung aus den Werten vor dem Spiel
+        p.rating=r.rk.mine+eloDelta(r.rk.mine,r.rk.theirs,res==='wins'?1:res==='losses'?0:0.5);
+        p.rgames=(p.rgames||0)+1; if(res==='wins') p.rwins=(p.rwins||0)+1;
+      }
       p.score=scoreOf(p.stats); p.name=p.name||myName(); return p;
     });
   }catch(e){}

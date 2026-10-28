@@ -5,7 +5,8 @@ const rows=(c,sel)=>texts(c,sel+' .row');
   const [A,B,C,D]=['anna','ben','cara','dan'].map(n=>client(n+'@x.de')); await sleep(50);
   await register(A,'Anna'); await register(B,'Ben'); await register(C,'🌟 Cara'); await register(D,'Dan'); await sleep(200);
 
-  // Anna schickt Ben aus der Online-Liste eine Anfrage
+  // Anna schickt Ben aus der Online-Liste (1 gegen 1) eine Anfrage; Ben bleibt in der Duell-Übersicht
+  $(A,'#mode1v1').click(); $(D,'#mode1v1').click(); await sleep(50);
   $(A,'#onlineList [data-freq="u_ben"]').click(); await sleep(250);
   assert.ok(store.requests?.u_ben.u_anna&&store.sent?.u_anna.u_ben,'Anfrage und Gesendet-Eintrag');
   assert.ok(!store.friends,'noch keine Freundschaft');
@@ -33,6 +34,7 @@ const rows=(c,sel)=>texts(c,sel+' .row');
   assert.ok(!store.requests?.u_anna,'zurückgezogen'); assert.strictEqual($(A,'#reqDot').hidden,true);
 
   // Gegenseitig: Cara fragt Anna, Anna fragt Cara über die Suche -> sofort befreundet
+  $(C,'#mode1v1').click(); await sleep(50);
   $(C,'#onlineList [data-freq="u_anna"]').click(); await sleep(200);
   A.w.eval('renderProfile()'); await sleep(50);
   input(A,'#fSearch','cara'); await sleep(500);
@@ -47,11 +49,12 @@ const rows=(c,sel)=>texts(c,sel+' .row');
   A.w.eval('loadFriendData()'); await sleep(200);
   assert.ok(rows(A,'#friendList').some(t=>/Cara.*zuletzt online vor 5 Min\./.test(t)),'offline mit „zuletzt online“');
   // … und taucht beim Einladen in eine Lobby als „offline“ auf
-  $(A,'#navBack').click(); await sleep(100); $(A,'#duel').click(); await sleep(200); $(A,'#mkGroup').click(); await sleep(300);
+  $(A,'#navBack').click(); await sleep(100); $(A,'#duel').click(); await sleep(200); $(A,'#modeGroup').click(); await sleep(50); $(A,'#mkGroup').click(); await sleep(300);
   assert.ok(rows(A,'#gInvite').some(t=>/Cara.*Freund · zuletzt online/.test(t)),'Offline-Freund in der Einladeliste');
   $(A,'#gLeave').click(); await sleep(200);
 
   // Freund entfernen: auf beiden Seiten weg
+  $(A,'#modeGroup')||0; A.w.eval('render1v1()'); await sleep(50);
   $(A,'[data-fr="u_ben"]').click(); await sleep(50); $(A,'#frRm').click(); $(A,'#frRm').click(); await sleep(300);
   assert.ok(!store.friends?.u_anna.u_ben&&!(store.friends?.u_ben||{}).u_anna,'beidseitig entfernt');
   assert.deepStrictEqual(errors,[]);

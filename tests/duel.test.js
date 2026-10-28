@@ -11,7 +11,11 @@ async function play(A,B,aAlwaysRight){
 (async()=>{
   const A=client('anna@x.de'), B=client('ben@x.de'), C=client('cara@x.de'); await sleep(50);
   await register(A,'Anna'); await register(B,'Ben'); await register(C,'Cara'); await sleep(200);
-  assert.strictEqual(text(A,'.pagetitle'),'Online spielen');
+  assert.strictEqual(text(A,'.pagetitle'),'Duell');
+  assert.deepStrictEqual(['#mode1v1','#modeGroup','#modeRanked'].map(s=>!!$(A,s)),[true,true,true],'drei Spielmodi');
+  for(const c of [A,B,C]) $(c,'#mode1v1').click();
+  await sleep(100);
+  assert.strictEqual(text(A,'.pagetitle'),'1 gegen 1');
   assert.strictEqual($$(A,'#onlineList [data-ch]').length,2,'Ben und Cara online');
 
   // Herausfordern und annehmen

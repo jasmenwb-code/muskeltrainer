@@ -28,7 +28,7 @@ function setProfileIcon(photo){
 
 function renderSettings(){
   const from=S.phase; S.phase='settings';
-  setBack('Zurück',()=>from==='duel'?openDuel():renderStart());
+  setBack('Zurück',()=>from==='duel'?openDuel():from==='learn'?renderLearn():renderStart());
   showPage(`<div class="stack">
     <h2 class="pagetitle">Einstellungen</h2>
     <p class="group-label">Darstellung</p>
@@ -43,40 +43,14 @@ function renderSettings(){
   if(rs) rs.onclick=()=>{ autoRead=!autoRead; lsSet('ad-read',autoRead?'1':'0'); if(autoRead) speak('Vorlesen ist an.'); else stopSpeaking(); rs.setAttribute('aria-checked',autoRead); };
 }
 
-function regionValue(){ const n=S.regions.size, all=Object.keys(REG).length; return n===all?'Alle':n===0?'Keine':`${n} von ${all}`; }
+/* Startseite: zwei große Kacheln */
 function renderStart(){
   S.phase='start'; setBack(null);
   leaveOnline();
-  const counts={}; M.forEach(m=>counts[m.r]=(counts[m.r]||0)+1);
-  const n=selected().length;
-  const regRows=Object.keys(REG).map(r=>`<button class="row" role="menuitemcheckbox" data-reg="${r}" aria-checked="${S.regions.has(r)}"><span class="label">${esc(REG[r])}</span><span class="count">${counts[r]}</span>${IC.check}</button>`).join('');
-  const catRows=QF.map(k=>`<button class="row" role="switch" data-cat="${k}" aria-checked="${S.cats.has(k)}"><span class="label">${FIELD[k]}</span><span class="switch" aria-hidden="true"></span></button>`).join('');
-  view.innerHTML=`<div class="stack">
-    <section class="group">
-      <button class="row" id="duel"><span class="tile">${IC.bolt}</span><span class="label">Gegen Freunde spielen<small>Duell 1 gegen 1 oder Lobby mit bis zu ${GMAX} Spielern</small></span>${IC.chev}</button>
-    </section>
-
-    <p class="group-label">Lernen</p>
-    <section class="group">
-      <button class="row" id="regRow" aria-expanded="${S.regOpen}" aria-controls="regList"><span class="label">Regionen</span><span class="value">${regionValue()}</span>${IC.chev}</button>
-      <div class="sublist" id="regList" ${S.regOpen?'':'hidden'}>${regRows}
-        <div class="tools"><button class="link" id="regAll">Alle auswählen</button><button class="link" id="regNone">Keine</button></div></div>
-    </section>
-
-    <p class="group-label">Abfragen</p>
-    <section class="group">${catRows}</section>
-
-    <div class="stack-sm">
-      <button class="btn primary" id="go" ${n?'':'disabled'}>Abfrage starten</button>
-      <p class="footnote">${n} ${n===1?'Muskel':'Muskeln'} ausgewählt · ${ROUND_LEN} Fragen pro Runde</p>
-    </div>
-  </div>`;
-  const rerender=()=>{ const y=window.scrollY; renderStart(); window.scrollTo(0,y); };
-  view.querySelector('#regRow').onclick=()=>{ S.regOpen=!S.regOpen; rerender(); };
-  view.querySelectorAll('[data-reg]').forEach(b=>b.onclick=()=>{ const r=b.dataset.reg; S.regions.has(r)?S.regions.delete(r):S.regions.add(r); rerender(); });
-  view.querySelector('#regAll').onclick=()=>{ Object.keys(REG).forEach(r=>S.regions.add(r)); rerender(); };
-  view.querySelector('#regNone').onclick=()=>{ S.regions.clear(); rerender(); };
-  view.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ const k=b.dataset.cat; if(S.cats.has(k)&&S.cats.size===1) return; S.cats.has(k)?S.cats.delete(k):S.cats.add(k); rerender(); });
-  view.querySelector('#go').onclick=startQuiz;
+  showPage(`<div class="home">
+    <button class="hometile" id="duel"><span class="hticon">${IC.bolt}</span><b>Duell</b><small>Gegen Freunde oder zufällige Gegner</small></button>
+    <button class="hometile learn" id="learn"><span class="hticon">${IC.book}</span><b>Lernen</b><small>${M.length} Muskeln nach Regionen</small></button>
+  </div>`);
   view.querySelector('#duel').onclick=()=>{ stopSpeaking(); openDuel(); };
+  view.querySelector('#learn').onclick=renderLearn;
 }

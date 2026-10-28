@@ -4,6 +4,8 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,register,ans
   const [A,B,C,D]=['anna','ben','cara','dan'].map(n=>client(n+'@x.de')); await sleep(50);
   for(const [c,n] of [[A,'Anna'],[B,'Ben'],[C,'Cara'],[D,'Dan']]) await register(c,n);
   await sleep(150);
+  for(const c of [A,B,C,D]) $(c,'#modeGroup').click();
+  await sleep(50);
   $(A,'#mkGroup').click(); await sleep(250);
   const code=A.w.eval('GRP.code');
   assert.match(code,/^\d{5}$/);
@@ -41,7 +43,7 @@ const assert=require('assert'); const {client,sleep,$,$$,text,texts,register,ans
   answerRound([A,B,C,D],A.w.eval('correctKey(GRP.game.qs[GRP.game.r])'),[1,1,1,0]); await sleep(500);
   // Cara geht mitten im Spiel
   $(C,'#navBack').click(); await sleep(200);
-  assert.strictEqual(text(C,'.pagetitle'),'Online spielen');
+  assert.strictEqual(text(C,'.pagetitle'),'2–8 Spieler');
   answerRound([A,B,D],A.w.eval('correctKey(GRP.game.qs[GRP.game.r])'),[1,0,1]); await sleep(150);
   assert.ok(texts(A,'.group.list .row').some(t=>/Cara.*hat verlassen/.test(t)),'Cara als „hat verlassen“');
   await sleep(500);
